@@ -1,0 +1,48 @@
+.card {
+  border-radius: 15px;
+}
+
+.input-group-text {
+  background-color: #f8f9fa;
+  border-left: none;
+}
+
+.form-control {
+  border-right: none;
+}
+
+.form-control:focus {
+  box-shadow: none;
+  border-color: #007bff;
+}
+
+.btn-primary {
+  background: linear-gradient(45deg, #007bff, #0056b3);
+  border: none;
+  border-radius: 25px;
+  padding: 12px;
+  font-weight: 600;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(45deg, #0056b3, #004085);
+}
+
+.demo-buttons .btn {
+  font-size: 0.8rem;
+  padding: 0.25rem 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .row {
+    margin: 0;
+  }
+  
+  .col-md-6:first-child {
+    display: none;
+  }
+  
+  .card {
+    margin: 1rem;
+  }
+}
