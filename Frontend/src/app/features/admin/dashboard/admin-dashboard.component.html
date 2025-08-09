@@ -1,0 +1,214 @@
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+    <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+      <div class="position-sticky pt-3">
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link active" routerLink="/admin/dashboard">
+              <i class="fas fa-tachometer-alt me-2"></i>
+              لوحة التحكم
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin/students">
+              <i class="fas fa-user-graduate me-2"></i>
+              إدارة الطلاب
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin/teachers">
+              <i class="fas fa-chalkboard-teacher me-2"></i>
+              إدارة المعلمين
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin/classes">
+              <i class="fas fa-school me-2"></i>
+              إدارة الصفوف
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin/subjects">
+              <i class="fas fa-book me-2"></i>
+              إدارة المواد
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin/exams">
+              <i class="fas fa-clipboard-list me-2"></i>
+              إدارة الامتحانات
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin/attendance">
+              <i class="fas fa-calendar-check me-2"></i>
+              تقارير الحضور
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin/salaries">
+              <i class="fas fa-money-bill-wave me-2"></i>
+              إدارة الرواتب
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Main content -->
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">لوحة تحكم المدير</h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+          <div class="btn-group me-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary">
+              <i class="fas fa-download me-1"></i>
+              تصدير التقارير
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Statistics Cards -->
+      <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card dashboard-card border-right-primary">
+            <div class="card-body">
+              <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                  <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                    إجمالي الطلاب
+                  </div>
+                  <div class="h5 mb-0 font-weight-bold text-gray-800">
+                    {{ statistics.totalStudents }}
+                  </div>
+                </div>
+                <div class="col-auto">
+                  <i class="fas fa-user-graduate fa-2x text-primary"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card dashboard-card border-right-success">
+            <div class="card-body">
+              <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                  <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                    إجمالي المعلمين
+                  </div>
+                  <div class="h5 mb-0 font-weight-bold text-gray-800">
+                    {{ statistics.totalTeachers }}
+                  </div>
+                </div>
+                <div class="col-auto">
+                  <i class="fas fa-chalkboard-teacher fa-2x text-success"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card dashboard-card border-right-info">
+            <div class="card-body">
+              <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                  <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                    إجمالي الصفوف
+                  </div>
+                  <div class="h5 mb-0 font-weight-bold text-gray-800">
+                    {{ statistics.totalClasses }}
+                  </div>
+                </div>
+                <div class="col-auto">
+                  <i class="fas fa-school fa-2x text-info"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card dashboard-card border-right-warning">
+            <div class="card-body">
+              <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                  <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                    الامتحانات القادمة
+                  </div>
+                  <div class="h5 mb-0 font-weight-bold text-gray-800">
+                    {{ statistics.upcomingExams }}
+                  </div>
+                </div>
+                <div class="col-auto">
+                  <i class="fas fa-clipboard-list fa-2x text-warning"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Activities -->
+      <div class="row">
+        <div class="col-lg-8">
+          <div class="card shadow mb-4">
+            <div class="card-header py-3">
+              <h6 class="m-0 font-weight-bold text-primary">الأنشطة الأخيرة</h6>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-bordered" width="100%" cellspacing="0">
+                  <thead>
+                    <tr>
+                      <th>النشاط</th>
+                      <th>المستخدم</th>
+                      <th>التاريخ</th>
+                      <th>الحالة</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let activity of recentActivities">
+                      <td>{{ activity.description }}</td>
+                      <td>{{ activity.userName }}</td>
+                      <td>{{ activity.date | date:'short':'ar' }}</td>
+                      <td>
+                        <span [class]="'badge ' + getStatusClass(activity.status)">
+                          {{ activity.status }}
+                        </span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-4">
+          <div class="card shadow mb-4">
+            <div class="card-header py-3">
+              <h6 class="m-0 font-weight-bold text-primary">الإشعارات</h6>
+            </div>
+            <div class="card-body">
+              <div class="list-group list-group-flush">
+                <div class="list-group-item" *ngFor="let notification of notifications">
+                  <div class="d-flex w-100 justify-content-between">
+                    <h6 class="mb-1">{{ notification.title }}</h6>
+                    <small>{{ notification.date | date:'short':'ar' }}</small>
+                  </div>
+                  <p class="mb-1">{{ notification.message }}</p>
+                  <small [class]="'text-' + notification.type">{{ notification.type }}</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>

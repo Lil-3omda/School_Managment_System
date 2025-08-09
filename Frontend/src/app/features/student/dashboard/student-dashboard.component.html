@@ -1,0 +1,211 @@
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+    <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+      <div class="position-sticky pt-3">
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link active" routerLink="/student/dashboard">
+              <i class="fas fa-tachometer-alt me-2"></i>
+              الرئيسية
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/student/profile">
+              <i class="fas fa-user me-2"></i>
+              الملف الشخصي
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/student/schedule">
+              <i class="fas fa-calendar me-2"></i>
+              الجدول الدراسي
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/student/grades">
+              <i class="fas fa-chart-line me-2"></i>
+              الدرجات والنتائج
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/student/attendance">
+              <i class="fas fa-calendar-check me-2"></i>
+              سجل الحضور
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/student/exams">
+              <i class="fas fa-clipboard-list me-2"></i>
+              الامتحانات
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Main content -->
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">مرحباً {{ currentUser?.fullName }}</h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+          <div class="btn-group me-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary">
+              <i class="fas fa-bell me-1"></i>
+              الإشعارات
+              <span class="badge bg-danger ms-1">3</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Stats -->
+      <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card dashboard-card bg-primary text-white">
+            <div class="card-body">
+              <div class="d-flex justify-content-between">
+                <div>
+                  <div class="text-white-50 small">المعدل العام</div>
+                  <div class="h5 mb-0">{{ studentStats.gpa }}</div>
+                </div>
+                <div class="align-self-center">
+                  <i class="fas fa-chart-line fa-2x"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card dashboard-card bg-success text-white">
+            <div class="card-body">
+              <div class="d-flex justify-content-between">
+                <div>
+                  <div class="text-white-50 small">نسبة الحضور</div>
+                  <div class="h5 mb-0">{{ studentStats.attendanceRate }}%</div>
+                </div>
+                <div class="align-self-center">
+                  <i class="fas fa-calendar-check fa-2x"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card dashboard-card bg-info text-white">
+            <div class="card-body">
+              <div class="d-flex justify-content-between">
+                <div>
+                  <div class="text-white-50 small">المواد المسجلة</div>
+                  <div class="h5 mb-0">{{ studentStats.enrolledSubjects }}</div>
+                </div>
+                <div class="align-self-center">
+                  <i class="fas fa-book fa-2x"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card dashboard-card bg-warning text-white">
+            <div class="card-body">
+              <div class="d-flex justify-content-between">
+                <div>
+                  <div class="text-white-50 small">الامتحانات القادمة</div>
+                  <div class="h5 mb-0">{{ studentStats.upcomingExams }}</div>
+                </div>
+                <div class="align-self-center">
+                  <i class="fas fa-clipboard-list fa-2x"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Grades and Upcoming Exams -->
+      <div class="row">
+        <div class="col-lg-8">
+          <div class="card shadow mb-4">
+            <div class="card-header py-3">
+              <h6 class="m-0 font-weight-bold text-primary">أحدث الدرجات</h6>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-bordered" width="100%" cellspacing="0">
+                  <thead>
+                    <tr>
+                      <th>المادة</th>
+                      <th>نوع الامتحان</th>
+                      <th>الدرجة</th>
+                      <th>التاريخ</th>
+                      <th>الحالة</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let grade of recentGrades">
+                      <td>{{ grade.subject }}</td>
+                      <td>{{ grade.examType }}</td>
+                      <td class="arabic-numbers">{{ grade.score }}/{{ grade.totalScore }}</td>
+                      <td>{{ grade.date | date:'short':'ar' }}</td>
+                      <td>
+                        <span [class]="'badge ' + getGradeStatusClass(grade.isPassed)">
+                          {{ grade.isPassed ? 'نجح' : 'راسب' }}
+                        </span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-4">
+          <div class="card shadow mb-4">
+            <div class="card-header py-3">
+              <h6 class="m-0 font-weight-bold text-primary">الامتحانات القادمة</h6>
+            </div>
+            <div class="card-body">
+              <div class="list-group list-group-flush">
+                <div class="list-group-item d-flex justify-content-between align-items-center" 
+                     *ngFor="let exam of upcomingExams">
+                  <div>
+                    <h6 class="mb-1">{{ exam.subject }}</h6>
+                    <p class="mb-1">{{ exam.type }}</p>
+                    <small class="text-muted">{{ exam.date | date:'fullDate':'ar' }}</small>
+                  </div>
+                  <span class="badge bg-primary rounded-pill">
+                    {{ getDaysUntilExam(exam.date) }} يوم
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Weekly Schedule -->
+          <div class="card shadow mb-4">
+            <div class="card-header py-3">
+              <h6 class="m-0 font-weight-bold text-primary">جدول اليوم</h6>
+            </div>
+            <div class="card-body">
+              <div class="list-group list-group-flush">
+                <div class="list-group-item" *ngFor="let class of todaySchedule">
+                  <div class="d-flex w-100 justify-content-between">
+                    <h6 class="mb-1">{{ class.subject }}</h6>
+                    <small>{{ class.time }}</small>
+                  </div>
+                  <p class="mb-1">{{ class.teacher }}</p>
+                  <small class="text-muted">{{ class.room }}</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
