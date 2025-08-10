@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 
 import { LoginComponent } from './login/login.component';
 
-const routes = [
+const routes: Routes = [
   {
     path: 'login',
     component: LoginComponent
@@ -18,13 +18,11 @@ const routes = [
 ];
 
 @NgModule({
-  declarations: [
-    LoginComponent
-  ],
   imports: [
     CommonModule,
     RouterModule.forChild(routes),
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    LoginComponent 
   ]
 })
-export class AuthModule { }
+export class AuthModule {}

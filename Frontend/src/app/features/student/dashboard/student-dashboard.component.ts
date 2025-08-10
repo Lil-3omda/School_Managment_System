@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../../core/services/auth.service';
 import { User } from '../../../core/models/user.model';
+import { CommonModule, DatePipe } from '@angular/common';
 
 interface StudentStats {
   gpa: number;
@@ -33,6 +34,10 @@ interface ClassSchedule {
 
 @Component({
   selector: 'app-student-dashboard',
+  imports: [
+    DatePipe,
+    CommonModule
+  ],
   templateUrl: './student-dashboard.component.html',
   styleUrls: ['./student-dashboard.component.scss']
 })
