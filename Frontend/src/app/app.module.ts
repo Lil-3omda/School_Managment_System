@@ -4,14 +4,14 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
+// import { AppComponent } from './shared/components/';
 import { AuthInterceptor } from './core/interceptors/auth.interceptor';
 import { SharedModule } from './shared/shared.module';
 
 @NgModule({
-  declarations: [
-    AppComponent
-  ],
+  // declarations: [
+  //   AppComponent
+  // ],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -26,6 +26,6 @@ import { SharedModule } from './shared/shared.module';
       multi: true
     }
   ],
-  bootstrap: [AppComponent]
+  // bootstrap: [AppComponent]
 })
 export class AppModule { }

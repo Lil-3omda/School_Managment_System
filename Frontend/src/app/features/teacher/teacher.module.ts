@@ -1,12 +1,12 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 
 import { TeacherDashboardComponent } from './dashboard/teacher-dashboard.component';
 import { SharedModule } from '../../shared/shared.module';
 
-const routes = [
+const routes: Routes = [
   {
     path: 'dashboard',
     component: TeacherDashboardComponent
@@ -19,14 +19,12 @@ const routes = [
 ];
 
 @NgModule({
-  declarations: [
-    TeacherDashboardComponent
-  ],
   imports: [
     CommonModule,
     RouterModule.forChild(routes),
     ReactiveFormsModule,
-    SharedModule
+    SharedModule,
+    TeacherDashboardComponent 
   ]
 })
-export class TeacherModule { }
+export class TeacherModule {}

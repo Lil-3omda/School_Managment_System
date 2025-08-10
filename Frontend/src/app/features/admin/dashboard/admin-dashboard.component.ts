@@ -1,3 +1,4 @@
+import { CommonModule, DatePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 
 interface Statistics {
@@ -23,6 +24,10 @@ interface Notification {
 
 @Component({
   selector: 'app-admin-dashboard',
+  imports:[
+    DatePipe,
+    CommonModule
+  ],
   templateUrl: './admin-dashboard.component.html',
   styleUrls: ['./admin-dashboard.component.scss']
 })

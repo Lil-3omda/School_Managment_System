@@ -1,10 +1,17 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
+
 import { AuthService } from '../../../core/services/auth.service';
 import { User, UserRole } from '../../../core/models/user.model';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-navbar',
+  imports:[
+    CommonModule,
+    RouterModule
+  ],
+  
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss']
 })

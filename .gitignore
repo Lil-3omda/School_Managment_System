@@ -1,2 +1,71 @@
 node_modules/
 .env
+# ========== Backend: ASP.NET Core ==========
+**/bin/
+**/obj/
+**/*.db
+**/*.user
+**/*.suo
+**/*.pdb
+**/*.cache
+**/*.log
+**/*.nupkg
+**/appsettings.*.json
+**/.env
+**/.vs/
+**/CopilotIndices/
+*.db-shm
+*.db-wal
+
+wwwroot/
+
+# EF Core Migrations Snapshots
+**/Migrations/*Designer.cs
+**/Migrations/*Snapshot.cs
+
+# Rider IDE
+.idea/
+
+# ========== Frontend: Angular ==========
+Netflix/node_modules/
+Netflix/dist/
+Netflix/.angular/
+Netflix/.env
+Netflix/angular.json.*
+Netflix/tsconfig.*.json
+Netflix/.output/
+Netflix/.cache/
+
+# ========== Swagger (Swashbuckle) ==========
+**/swagger/
+**/swagger.json
+**/swagger*.js
+**/swagger*.map
+**/wwwroot/swagger/
+
+# ========== General ==========
+*.log
+*.tmp
+*.bak
+.env
+.env.*
+.DS_Store
+Thumbs.db
+
+# ========== Editor Configs ==========
+.vscode/
+.idea/
+
+"Netflix.API/Netflix.API/packages-microsoft-prod.deb" 
+=======
+# ========== OS-Specific ==========
+# macOS
+*.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+*~

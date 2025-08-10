@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../../core/services/auth.service';
 import { User } from '../../../core/models/user.model';
+import { CommonModule, DatePipe } from '@angular/common';
 
 interface TeacherStats {
   totalClasses: number;
@@ -25,6 +26,10 @@ interface PendingTask {
 
 @Component({
   selector: 'app-teacher-dashboard',
+  imports:[
+    DatePipe,
+    CommonModule
+  ],
   templateUrl: './teacher-dashboard.component.html',
   styleUrls: ['./teacher-dashboard.component.scss']
 })
