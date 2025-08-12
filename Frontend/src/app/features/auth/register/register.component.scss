@@ -1,0 +1,52 @@
+.card {
+  border-radius: 15px;
+}
+
+.input-group-text {
+  background-color: #f8f9fa;
+  border-left: none;
+}
+
+.form-control, .form-select {
+  border-right: none;
+}
+
+.form-control:focus, .form-select:focus {
+  box-shadow: none;
+  border-color: #28a745;
+}
+
+.btn-success {
+  background: linear-gradient(45deg, #28a745, #20c997);
+  border: none;
+  border-radius: 25px;
+  padding: 12px;
+  font-weight: 600;
+}
+
+.btn-success:hover {
+  background: linear-gradient(45deg, #20c997, #17a2b8);
+}
+
+.form-label {
+  font-weight: 600;
+  color: #495057;
+}
+
+@media (max-width: 768px) {
+  .row {
+    margin: 0;
+  }
+  
+  .col-md-6:first-child {
+    display: none;
+  }
+  
+  .card {
+    margin: 1rem;
+  }
+  
+  .card-body {
+    padding: 2rem !important;
+  }
+}
