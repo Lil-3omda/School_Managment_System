@@ -1,0 +1,226 @@
+<div class="container-fluid vh-100">
+  <div class="row h-100">
+    <div class="col-md-6 d-flex align-items-center justify-content-center bg-success">
+      <div class="text-center text-white">
+        <h1 class="display-4 mb-4">انضم إلى نظام إدارة المدرسة</h1>
+        <p class="lead">سجل حسابك الجديد للوصول إلى النظام</p>
+        <div class="mt-4">
+          <i class="fas fa-user-plus fa-3x mb-3"></i>
+          <p>إنشاء حساب جديد • إدارة شاملة • أمان عالي</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-6 d-flex align-items-center justify-content-center">
+      <div class="card shadow-lg border-0" style="width: 100%; max-width: 500px;">
+        <div class="card-body p-5">
+          <div class="text-center mb-4">
+            <h3 class="card-title">إنشاء حساب جديد</h3>
+            <p class="text-muted">املأ البيانات التالية لإنشاء حسابك</p>
+          </div>
+          
+          <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="firstName" class="form-label">الاسم الأول</label>
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  id="firstName"
+                  formControlName="firstName"
+                  [class.is-invalid]="isFieldInvalid('firstName')"
+                  placeholder="أدخل الاسم الأول">
+                <div class="invalid-feedback" *ngIf="isFieldInvalid('firstName')">
+                  الاسم الأول مطلوب
+                </div>
+              </div>
+              
+              <div class="col-md-6 mb-3">
+                <label for="lastName" class="form-label">الاسم الأخير</label>
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  id="lastName"
+                  formControlName="lastName"
+                  [class.is-invalid]="isFieldInvalid('lastName')"
+                  placeholder="أدخل الاسم الأخير">
+                <div class="invalid-feedback" *ngIf="isFieldInvalid('lastName')">
+                  الاسم الأخير مطلوب
+                </div>
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label for="email" class="form-label">البريد الإلكتروني</label>
+              <div class="input-group">
+                <span class="input-group-text">
+                  <i class="fas fa-envelope"></i>
+                </span>
+                <input 
+                  type="email" 
+                  class="form-control" 
+                  id="email"
+                  formControlName="email"
+                  [class.is-invalid]="isFieldInvalid('email')"
+                  placeholder="أدخل البريد الإلكتروني">
+              </div>
+              <div class="invalid-feedback" *ngIf="isFieldInvalid('email')">
+                البريد الإلكتروني مطلوب وصحيح
+              </div>
+            </div>
+            
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="password" class="form-label">كلمة المرور</label>
+                <div class="input-group">
+                  <span class="input-group-text">
+                    <i class="fas fa-lock"></i>
+                  </span>
+                  <input 
+                    [type]="showPassword ? 'text' : 'password'" 
+                    class="form-control" 
+                    id="password"
+                    formControlName="password"
+                    [class.is-invalid]="isFieldInvalid('password')"
+                    placeholder="أدخل كلمة المرور">
+                  <button 
+                    class="btn btn-outline-secondary" 
+                    type="button"
+                    (click)="togglePassword()">
+                    <i [class]="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                  </button>
+                </div>
+                <div class="invalid-feedback" *ngIf="isFieldInvalid('password')">
+                  كلمة المرور مطلوبة (6 أحرف على الأقل)
+                </div>
+              </div>
+              
+              <div class="col-md-6 mb-3">
+                <label for="confirmPassword" class="form-label">تأكيد كلمة المرور</label>
+                <div class="input-group">
+                  <span class="input-group-text">
+                    <i class="fas fa-lock"></i>
+                  </span>
+                  <input 
+                    [type]="showConfirmPassword ? 'text' : 'password'" 
+                    class="form-control" 
+                    id="confirmPassword"
+                    formControlName="confirmPassword"
+                    [class.is-invalid]="isFieldInvalid('confirmPassword')"
+                    placeholder="أعد إدخال كلمة المرور">
+                  <button 
+                    class="btn btn-outline-secondary" 
+                    type="button"
+                    (click)="toggleConfirmPassword()">
+                    <i [class]="showConfirmPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                  </button>
+                </div>
+                <div class="invalid-feedback" *ngIf="isFieldInvalid('confirmPassword')">
+                  كلمات المرور غير متطابقة
+                </div>
+              </div>
+            </div>
+            
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="phoneNumber" class="form-label">رقم الهاتف</label>
+                <input 
+                  type="tel" 
+                  class="form-control" 
+                  id="phoneNumber"
+                  formControlName="phoneNumber"
+                  [class.is-invalid]="isFieldInvalid('phoneNumber')"
+                  placeholder="05xxxxxxxx">
+                <div class="invalid-feedback" *ngIf="isFieldInvalid('phoneNumber')">
+                  رقم الهاتف مطلوب
+                </div>
+              </div>
+              
+              <div class="col-md-6 mb-3">
+                <label for="dateOfBirth" class="form-label">تاريخ الميلاد</label>
+                <input 
+                  type="date" 
+                  class="form-control" 
+                  id="dateOfBirth"
+                  formControlName="dateOfBirth"
+                  [class.is-invalid]="isFieldInvalid('dateOfBirth')">
+                <div class="invalid-feedback" *ngIf="isFieldInvalid('dateOfBirth')">
+                  تاريخ الميلاد مطلوب
+                </div>
+              </div>
+            </div>
+            
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="gender" class="form-label">الجنس</label>
+                <select 
+                  class="form-select" 
+                  id="gender"
+                  formControlName="gender"
+                  [class.is-invalid]="isFieldInvalid('gender')">
+                  <option value="">اختر الجنس</option>
+                  <option value="1">ذكر</option>
+                  <option value="2">أنثى</option>
+                </select>
+                <div class="invalid-feedback" *ngIf="isFieldInvalid('gender')">
+                  الجنس مطلوب
+                </div>
+              </div>
+              
+              <div class="col-md-6 mb-3">
+                <label for="role" class="form-label">نوع الحساب</label>
+                <select 
+                  class="form-select" 
+                  id="role"
+                  formControlName="role"
+                  [class.is-invalid]="isFieldInvalid('role')">
+                  <option value="">اختر نوع الحساب</option>
+                  <option value="2">معلم</option>
+                  <option value="3">طالب</option>
+                </select>
+                <div class="invalid-feedback" *ngIf="isFieldInvalid('role')">
+                  نوع الحساب مطلوب
+                </div>
+              </div>
+            </div>
+            
+            <div class="mb-4">
+              <label for="address" class="form-label">العنوان</label>
+              <textarea 
+                class="form-control" 
+                id="address"
+                formControlName="address"
+                [class.is-invalid]="isFieldInvalid('address')"
+                rows="2"
+                placeholder="أدخل العنوان الكامل"></textarea>
+              <div class="invalid-feedback" *ngIf="isFieldInvalid('address')">
+                العنوان مطلوب
+              </div>
+            </div>
+            
+            <div class="alert alert-danger" *ngIf="errorMessage">
+              <i class="fas fa-exclamation-triangle me-2"></i>
+              {{ errorMessage }}
+            </div>
+            
+            <button 
+              type="submit" 
+              class="btn btn-success w-100 mb-3"
+              [disabled]="registerForm.invalid || loading">
+              <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+              <i *ngIf="!loading" class="fas fa-user-plus me-2"></i>
+              {{ loading ? 'جاري إنشاء الحساب...' : 'إنشاء حساب' }}
+            </button>
+          </form>
+          
+          <div class="text-center">
+            <small class="text-muted">
+              لديك حساب بالفعل؟ 
+              <a routerLink="/auth/login" class="text-primary">سجل دخولك هنا</a>
+            </small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
