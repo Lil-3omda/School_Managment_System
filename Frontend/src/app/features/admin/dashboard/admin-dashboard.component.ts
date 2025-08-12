@@ -1,5 +1,6 @@
 import { CommonModule, DatePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { RouterModule } from '@angular/router';
 
 interface Statistics {
   totalStudents: number;
@@ -24,9 +25,11 @@ interface Notification {
 
 @Component({
   selector: 'app-admin-dashboard',
+  standalone: true,
   imports:[
     DatePipe,
-    CommonModule
+    CommonModule,
+    RouterModule
   ],
   templateUrl: './admin-dashboard.component.html',
   styleUrls: ['./admin-dashboard.component.scss']
