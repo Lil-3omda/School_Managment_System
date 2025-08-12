@@ -10,5 +10,9 @@
 		<ProjectReference Include="..\SchoolManagement.Domain\SchoolManagement.Domain.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.8" />
+	</ItemGroup>
+
 
 </Project>
