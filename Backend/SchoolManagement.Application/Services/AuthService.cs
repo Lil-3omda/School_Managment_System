@@ -28,10 +28,24 @@ public class AuthService : IAuthService
 
     public async Task<LoginResponseDto> LoginAsync(LoginDto loginDto)
     {
+        if (loginDto == null)
+            throw new ArgumentException("بيانات تسجيل الدخول مطلوبة");
+
+        if (string.IsNullOrEmpty(loginDto.Email))
+            throw new ArgumentException("البريد الإلكتروني مطلوب");
+
+        if (string.IsNullOrEmpty(loginDto.Password))
+            throw new ArgumentException("كلمة المرور مطلوبة");
+
         var user = await GetUserByEmailAsync(loginDto.Email);
         if (user == null || !await ValidatePasswordAsync(loginDto.Email, loginDto.Password))
         {
             throw new UnauthorizedAccessException("البريد الإلكتروني أو كلمة المرور غير صحيحة");
+        }
+
+        if (!user.IsActive)
+        {
+            throw new UnauthorizedAccessException("الحساب غير مفعل");
         }
 
         var token = await GenerateJwtTokenAsync(user);

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { BehaviorSubject, Observable, tap, catchError } from 'rxjs';
 import { LoginRequest, LoginResponse, User } from '../models/user.model';
 import { RegisterRequest } from '../models/auth.model';
 import { environment } from '../../../environments/environment';
@@ -18,13 +18,21 @@ export class AuthService {
   }
 
   login(credentials: LoginRequest): Observable<LoginResponse> {
+    console.log('AuthService: Attempting login to:', `${this.API_URL}/login`);
+    console.log('AuthService: Credentials:', { email: credentials.email, password: '***' });
+    
     return this.http.post<LoginResponse>(`${this.API_URL}/login`, credentials)
       .pipe(
         tap(response => {
+          console.log('AuthService: Login response received:', response);
           localStorage.setItem('token', response.token);
           localStorage.setItem('refreshToken', response.refreshToken);
           localStorage.setItem('user', JSON.stringify(response.user));
           this.currentUserSubject.next(response.user);
+        }),
+        catchError(error => {
+          console.error('AuthService: Login error:', error);
+          throw error;
         })
       );
   }

@@ -26,6 +26,16 @@ public class AuthController : ControllerBase
     {
         try
         {
+            if (loginDto == null)
+            {
+                return BadRequest(new { message = "بيانات تسجيل الدخول مطلوبة" });
+            }
+
+            if (string.IsNullOrEmpty(loginDto.Email) || string.IsNullOrEmpty(loginDto.Password))
+            {
+                return BadRequest(new { message = "البريد الإلكتروني وكلمة المرور مطلوبان" });
+            }
+
             var result = await _authService.LoginAsync(loginDto);
             return Ok(result);
         }
@@ -33,9 +43,13 @@ public class AuthController : ControllerBase
         {
             return Unauthorized(new { message = ex.Message });
         }
-        catch (Exception ex)
+        catch (ArgumentException ex)
         {
             return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "حدث خطأ في الخادم", details = ex.Message });
         }
     }
 
