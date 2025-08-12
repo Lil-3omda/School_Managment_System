@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using SchoolManagement.Domain.Entities;
 using SchoolManagement.Domain.Enums;
+using BCrypt.Net;
 
 namespace SchoolManagement.Infrastructure.Data;
 
