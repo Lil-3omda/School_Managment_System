@@ -62,12 +62,12 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 // Services
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IStudentService, StudentService>();
-builder.Services.AddScoped<ITeacherService, TeacherService>();
-builder.Services.AddScoped<IClassService, ClassService>();
-builder.Services.AddScoped<ISubjectService, SubjectService>();
-builder.Services.AddScoped<IExamService, ExamService>();
-builder.Services.AddScoped<IAttendanceService, AttendanceService>();
-builder.Services.AddScoped<ISalaryService, SalaryService>();
+//builder.Services.AddScoped<ITeacherService, TeacherService>();
+//builder.Services.AddScoped<IClassService, ClassService>();
+//builder.Services.AddScoped<ISubjectService, SubjectService>();
+//builder.Services.AddScoped<IExamService, ExamService>();
+//builder.Services.AddScoped<IAttendanceService, AttendanceService>();
+//builder.Services.AddScoped<ISalaryService, SalaryService>();
 
 // JWT Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
