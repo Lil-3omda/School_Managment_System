@@ -43,16 +43,30 @@ export class LoginComponent implements OnInit {
       this.loading = true;
       this.errorMessage = '';
       
+      console.log('Attempting login with:', this.loginForm.value);
+      
       this.authService.login(this.loginForm.value).subscribe({
         next: (response) => {
+          console.log('Login successful:', response);
           this.loading = false;
           this.redirectToDashboard();
         },
         error: (error) => {
+          console.error('Login error:', error);
           this.loading = false;
-          this.errorMessage = error.error?.message || 'حدث خطأ في تسجيل الدخول';
+          if (error.status === 0) {
+            this.errorMessage = 'لا يمكن الاتصال بالخادم. تأكد من تشغيل الخادم';
+          } else if (error.status === 401) {
+            this.errorMessage = error.error?.message || 'البريد الإلكتروني أو كلمة المرور غير صحيحة';
+          } else if (error.status === 400) {
+            this.errorMessage = error.error?.message || 'بيانات غير صحيحة';
+          } else {
+            this.errorMessage = error.error?.message || 'حدث خطأ في تسجيل الدخول';
+          }
         }
       });
+    } else {
+      this.errorMessage = 'يرجى ملء جميع الحقول المطلوبة';
     }
   }
 
