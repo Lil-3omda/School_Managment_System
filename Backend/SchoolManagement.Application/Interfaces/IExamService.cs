@@ -11,4 +11,6 @@ public interface IExamService
     Task<ExamDto> UpdateExamAsync(int id, CreateExamDto updateExamDto);
     Task<bool> DeleteExamAsync(int id);
     Task<PagedResult<ExamDto>> GetExamsByClassIdAsync(int classId, int pageNumber, int pageSize);
+    Task<PagedResult<ExamDto>> GetExamsByTeacherAsync(int teacherId, int pageNumber, int pageSize);
+    Task<List<ExamDto>> GetUpcomingExamsForStudentAsync(int studentId);
 }
