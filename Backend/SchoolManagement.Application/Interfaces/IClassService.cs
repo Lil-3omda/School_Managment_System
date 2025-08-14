@@ -10,4 +10,5 @@ public interface IClassService
     Task<ClassDto> CreateClassAsync(CreateClassDto createClassDto);
     Task<ClassDto> UpdateClassAsync(int id, CreateClassDto updateClassDto);
     Task<bool> DeleteClassAsync(int id);
+    Task<List<ClassDto>> GetClassesByTeacherAsync(int teacherId);
 }

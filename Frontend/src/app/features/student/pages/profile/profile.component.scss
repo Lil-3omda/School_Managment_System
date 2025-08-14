@@ -1,0 +1,58 @@
+.profile-card {
+  margin: 2rem 0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.section-title {
+  color: #1976d2;
+  border-bottom: 2px solid #e3f2fd;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.mat-form-field {
+  margin-bottom: 1rem;
+}
+
+.mat-card-header {
+  background: linear-gradient(135deg, #1976d2 0%, #42a5f5 100%);
+  color: white;
+  margin: -24px -24px 24px -24px;
+  padding: 24px;
+}
+
+.mat-card-title,
+.mat-card-subtitle {
+  color: white !important;
+}
+
+.mat-card-actions {
+  padding: 16px 24px;
+  border-top: 1px solid #e0e0e0;
+  margin: 24px -24px -24px -24px;
+}
+
+.mat-raised-button {
+  min-width: 120px;
+}
+
+@media (max-width: 768px) {
+  .container-fluid {
+    padding: 1rem;
+  }
+  
+  .profile-card {
+    margin: 1rem 0;
+  }
+  
+  .mat-card-header {
+    margin: -16px -16px 16px -16px;
+    padding: 16px;
+  }
+  
+  .mat-card-actions {
+    margin: 16px -16px -16px -16px;
+    padding: 16px;
+  }
+}

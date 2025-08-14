@@ -11,4 +11,5 @@ public interface IAttendanceService
     Task<AttendanceDto> UpdateAttendanceAsync(int id, CreateAttendanceDto updateAttendanceDto);
     Task<bool> DeleteAttendanceAsync(int id);
     Task<PagedResult<AttendanceDto>> GetStudentAttendanceAsync(int studentId, int pageNumber, int pageSize);
+    Task<AttendanceReportDto> GetAttendanceReportsAsync(DateTime? startDate, DateTime? endDate, int? classId);
 }

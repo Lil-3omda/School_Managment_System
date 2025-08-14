@@ -1,0 +1,185 @@
+.schedule-header-card {
+  background: linear-gradient(135deg, #1976d2 0%, #42a5f5 100%);
+  color: white;
+  margin-bottom: 2rem;
+  
+  .mat-card-title,
+  .mat-card-subtitle {
+    color: white !important;
+  }
+}
+
+.day-card {
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  &.current-day {
+    border-left: 4px solid #4caf50;
+    background: linear-gradient(90deg, #e8f5e8 0%, #ffffff 10%);
+    
+    .mat-card-header {
+      background: rgba(76, 175, 80, 0.1);
+    }
+  }
+}
+
+.mat-card-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
+  .mat-card-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #1976d2;
+  }
+}
+
+.current-day-badge {
+  background: #4caf50;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.schedule-table-container {
+  padding: 0;
+}
+
+.schedule-table {
+  width: 100%;
+  
+  .mat-header-cell {
+    background: #f5f5f5;
+    font-weight: 600;
+    color: #333;
+    border-bottom: 2px solid #1976d2;
+  }
+  
+  .mat-cell {
+    padding: 16px 12px;
+    border-bottom: 1px solid #e0e0e0;
+  }
+}
+
+.schedule-row {
+  transition: background-color 0.2s ease;
+  
+  &:hover {
+    background-color: #f8f9fa;
+  }
+}
+
+.time-cell {
+  min-width: 120px;
+  
+  .time-slot {
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+    color: #1976d2;
+    
+    .time-separator {
+      margin: 0 8px;
+      color: #666;
+    }
+  }
+}
+
+.subject-cell {
+  .subject-info {
+    .subject-name {
+      font-weight: 600;
+      color: #333;
+      font-size: 1rem;
+    }
+  }
+}
+
+.teacher-cell,
+.room-cell {
+  .teacher-info,
+  .room-info {
+    display: flex;
+    align-items: center;
+    color: #666;
+    
+    i {
+      color: #1976d2;
+    }
+  }
+}
+
+.no-classes {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #999;
+  
+  i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: #ddd;
+  }
+  
+  p {
+    font-size: 1.1rem;
+    margin: 0;
+  }
+}
+
+.loading-card {
+  .loading-spinner {
+    padding: 3rem 1rem;
+    text-align: center;
+    
+    i {
+      color: #1976d2;
+      margin-bottom: 1rem;
+    }
+    
+    p {
+      color: #666;
+      font-size: 1.1rem;
+      margin: 0;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .container-fluid {
+    padding: 1rem;
+  }
+  
+  .schedule-table {
+    font-size: 0.9rem;
+    
+    .mat-cell,
+    .mat-header-cell {
+      padding: 12px 8px;
+    }
+  }
+  
+  .time-cell {
+    min-width: 100px;
+  }
+  
+  .teacher-info,
+  .room-info {
+    flex-direction: column;
+    align-items: flex-start;
+    
+    i {
+      margin-bottom: 4px;
+      margin-right: 0 !important;
+    }
+  }
+}

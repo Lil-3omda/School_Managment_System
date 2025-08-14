@@ -1,0 +1,183 @@
+<div class="container-fluid p-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <mat-card class="profile-card">
+        <mat-card-header>
+          <mat-card-title>الملف الشخصي</mat-card-title>
+          <mat-card-subtitle>عرض وتعديل المعلومات الشخصية</mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content>
+          <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+            <div class="row">
+              <!-- Personal Information -->
+              <div class="col-12">
+                <h5 class="section-title">المعلومات الشخصية</h5>
+              </div>
+              
+              <div class="col-md-6 mb-3">
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>الاسم الأول</mat-label>
+                  <input matInput formControlName="firstName" placeholder="أدخل الاسم الأول">
+                  <mat-error *ngIf="profileForm.get('firstName')?.hasError('required')">
+                    الاسم الأول مطلوب
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>الاسم الأخير</mat-label>
+                  <input matInput formControlName="lastName" placeholder="أدخل الاسم الأخير">
+                  <mat-error *ngIf="profileForm.get('lastName')?.hasError('required')">
+                    الاسم الأخير مطلوب
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>البريد الإلكتروني</mat-label>
+                  <input matInput type="email" formControlName="email" placeholder="أدخل البريد الإلكتروني">
+                  <mat-error *ngIf="profileForm.get('email')?.hasError('required')">
+                    البريد الإلكتروني مطلوب
+                  </mat-error>
+                  <mat-error *ngIf="profileForm.get('email')?.hasError('email')">
+                    البريد الإلكتروني غير صحيح
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>رقم الهاتف</mat-label>
+                  <input matInput formControlName="phoneNumber" placeholder="أدخل رقم الهاتف">
+                  <mat-error *ngIf="profileForm.get('phoneNumber')?.hasError('required')">
+                    رقم الهاتف مطلوب
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>تاريخ الميلاد</mat-label>
+                  <input matInput [matDatepicker]="picker" formControlName="dateOfBirth">
+                  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                  <mat-datepicker #picker></mat-datepicker>
+                  <mat-error *ngIf="profileForm.get('dateOfBirth')?.hasError('required')">
+                    تاريخ الميلاد مطلوب
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>الجنس</mat-label>
+                  <mat-select formControlName="gender">
+                    <mat-option value="1">ذكر</mat-option>
+                    <mat-option value="2">أنثى</mat-option>
+                  </mat-select>
+                  <mat-error *ngIf="profileForm.get('gender')?.hasError('required')">
+                    الجنس مطلوب
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="col-12 mb-3">
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>العنوان</mat-label>
+                  <textarea matInput formControlName="address" rows="3" placeholder="أدخل العنوان الكامل"></textarea>
+                  <mat-error *ngIf="profileForm.get('address')?.hasError('required')">
+                    العنوان مطلوب
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <!-- Student Information -->
+              <div class="col-12 mt-4">
+                <h5 class="section-title">معلومات الطالب</h5>
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>رقم الطالب</mat-label>
+                  <input matInput [value]="studentData?.studentNumber" readonly>
+                </mat-form-field>
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>الصف</mat-label>
+                  <input matInput [value]="studentData?.className" readonly>
+                </mat-form-field>
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>تاريخ التسجيل</mat-label>
+                  <input matInput [value]="studentData?.enrollmentDate | date:'shortDate':'ar'" readonly>
+                </mat-form-field>
+              </div>
+
+              <!-- Guardian Information -->
+              <div class="col-12 mt-4">
+                <h5 class="section-title">معلومات ولي الأمر</h5>
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>اسم ولي الأمر</mat-label>
+                  <input matInput formControlName="guardianName" placeholder="أدخل اسم ولي الأمر">
+                  <mat-error *ngIf="profileForm.get('guardianName')?.hasError('required')">
+                    اسم ولي الأمر مطلوب
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>هاتف ولي الأمر</mat-label>
+                  <input matInput formControlName="guardianPhone" placeholder="أدخل هاتف ولي الأمر">
+                  <mat-error *ngIf="profileForm.get('guardianPhone')?.hasError('required')">
+                    هاتف ولي الأمر مطلوب
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>بريد ولي الأمر</mat-label>
+                  <input matInput type="email" formControlName="guardianEmail" placeholder="أدخل بريد ولي الأمر">
+                  <mat-error *ngIf="profileForm.get('guardianEmail')?.hasError('required')">
+                    بريد ولي الأمر مطلوب
+                  </mat-error>
+                  <mat-error *ngIf="profileForm.get('guardianEmail')?.hasError('email')">
+                    البريد الإلكتروني غير صحيح
+                  </mat-error>
+                </mat-form-field>
+              </div>
+            </div>
+          </form>
+        </mat-card-content>
+
+        <mat-card-actions align="end">
+          <button mat-button type="button" (click)="toggleEdit()" *ngIf="!editing">
+            <i class="fas fa-edit me-2"></i>
+            تعديل
+          </button>
+          <button mat-button type="button" (click)="toggleEdit()" *ngIf="editing">
+            إلغاء
+          </button>
+          <button mat-raised-button color="primary" type="submit" 
+                  (click)="onSubmit()" 
+                  [disabled]="profileForm.invalid || loading" 
+                  *ngIf="editing">
+            <i class="fas fa-save me-2" *ngIf="!loading"></i>
+            <mat-spinner diameter="20" *ngIf="loading"></mat-spinner>
+            {{ loading ? 'جاري الحفظ...' : 'حفظ التغييرات' }}
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  </div>
+</div>

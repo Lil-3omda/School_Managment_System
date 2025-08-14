@@ -1,0 +1,95 @@
+<div class="container-fluid p-4">
+  <div class="row">
+    <div class="col-12">
+      <mat-card class="schedule-header-card">
+        <mat-card-header>
+          <mat-card-title>الجدول الدراسي</mat-card-title>
+          <mat-card-subtitle>جدولك الأسبوعي للحصص الدراسية</mat-card-subtitle>
+        </mat-card-header>
+      </mat-card>
+    </div>
+  </div>
+
+  <div class="row" *ngIf="!loading">
+    <div class="col-12" *ngFor="let day of weekDays">
+      <mat-card class="day-card" [ngClass]="getCurrentDayClass(day.key)">
+        <mat-card-header>
+          <mat-card-title>{{ day.name }}</mat-card-title>
+          <span class="current-day-badge" *ngIf="getCurrentDayClass(day.key)">اليوم</span>
+        </mat-card-header>
+
+        <mat-card-content>
+          <div class="schedule-table-container">
+            <table mat-table [dataSource]="getScheduleForDay(day.key)" class="schedule-table">
+              <!-- Time Column -->
+              <ng-container matColumnDef="time">
+                <th mat-header-cell *matHeaderCellDef>الوقت</th>
+                <td mat-cell *matCellDef="let element" class="time-cell">
+                  <div class="time-slot">
+                    <span class="start-time">{{ element.startTime }}</span>
+                    <span class="time-separator">-</span>
+                    <span class="end-time">{{ element.endTime }}</span>
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Subject Column -->
+              <ng-container matColumnDef="subject">
+                <th mat-header-cell *matHeaderCellDef>المادة</th>
+                <td mat-cell *matCellDef="let element" class="subject-cell">
+                  <div class="subject-info">
+                    <span class="subject-name">{{ element.subjectName }}</span>
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Teacher Column -->
+              <ng-container matColumnDef="teacher">
+                <th mat-header-cell *matHeaderCellDef>المعلم</th>
+                <td mat-cell *matCellDef="let element" class="teacher-cell">
+                  <div class="teacher-info">
+                    <i class="fas fa-user-tie me-2"></i>
+                    <span>{{ element.teacherName }}</span>
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Room Column -->
+              <ng-container matColumnDef="room">
+                <th mat-header-cell *matHeaderCellDef>القاعة</th>
+                <td mat-cell *matCellDef="let element" class="room-cell">
+                  <div class="room-info">
+                    <i class="fas fa-door-open me-2"></i>
+                    <span>{{ element.room }}</span>
+                  </div>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="schedule-row"></tr>
+            </table>
+
+            <div class="no-classes" *ngIf="getScheduleForDay(day.key).length === 0">
+              <i class="fas fa-calendar-times"></i>
+              <p>لا توجد حصص في هذا اليوم</p>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="row" *ngIf="loading">
+    <div class="col-12 text-center">
+      <mat-card class="loading-card">
+        <mat-card-content>
+          <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin fa-2x"></i>
+            <p>جاري تحميل الجدول الدراسي...</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>
