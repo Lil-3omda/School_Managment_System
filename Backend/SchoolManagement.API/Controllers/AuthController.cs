@@ -125,4 +125,47 @@ public class AuthController : ControllerBase
         // In a real application, you might want to blacklist the token
         return Ok(new { message = "تم تسجيل الخروج بنجاح" });
     }
+
+    /// <summary>
+    /// Send forget password email
+    /// </summary>
+    /// <param name="forgetPasswordDto">Email for password reset</param>
+    /// <returns>Success message</returns>
+    [HttpPost("forget-password")]
+    public async Task<ActionResult> ForgetPassword([FromBody] ForgetPasswordDto forgetPasswordDto)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(forgetPasswordDto.Email))
+            {
+                return BadRequest(new { message = "البريد الإلكتروني مطلوب" });
+            }
+
+            await _authService.ForgetPasswordAsync(forgetPasswordDto.Email);
+            return Ok(new { message = "تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني" });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
+    /// <summary>
+    /// Reset password using token
+    /// </summary>
+    /// <param name="resetPasswordDto">Reset password data</param>
+    /// <returns>Success message</returns>
+    [HttpPost("reset-password")]
+    public async Task<ActionResult> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)
+    {
+        try
+        {
+            await _authService.ResetPasswordAsync(resetPasswordDto.Token, resetPasswordDto.NewPassword);
+            return Ok(new { message = "تم تغيير كلمة المرور بنجاح" });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
 }

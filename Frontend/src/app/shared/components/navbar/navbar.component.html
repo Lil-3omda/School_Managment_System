@@ -28,7 +28,7 @@
             {{ currentUser.fullName }}
           </a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" routerLink="/profile">الملف الشخصي</a></li>
+            <li><a class="dropdown-item" [routerLink]="getProfileRoute()">الملف الشخصي</a></li>
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" href="#" (click)="logout()">تسجيل الخروج</a></li>
           </ul>
