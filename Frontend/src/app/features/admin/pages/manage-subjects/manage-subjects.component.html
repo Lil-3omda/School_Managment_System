@@ -1,0 +1,148 @@
+<app-navbar></app-navbar>
+
+<div class="container-fluid">
+  <div class="row">
+    <!-- Header Section -->
+    <div class="col-12">
+      <mat-card class="subjects-header-card">
+        <mat-card-header>
+          <mat-card-title>إدارة المواد الدراسية</mat-card-title>
+          <mat-card-subtitle>عرض وإدارة جميع المواد الدراسية في النظام</mat-card-subtitle>
+        </mat-card-header>
+        
+        <mat-card-content>
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <mat-form-field appearance="outline" class="search-field">
+              <mat-label>البحث في المواد</mat-label>
+              <input matInput (keyup)="applyFilter($event)" placeholder="ابحث بالاسم أو الكود">
+              <mat-icon matSuffix>search</mat-icon>
+            </mat-form-field>
+            
+            <button mat-raised-button color="primary" (click)="addSubject()">
+              <mat-icon>add</mat-icon>
+              إضافة مادة جديدة
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Subjects Table Section -->
+    <div class="col-12">
+      <mat-card class="subjects-table-card">
+        <mat-card-content>
+          <div *ngIf="!loading; else loadingTemplate">
+            <table mat-table [dataSource]="dataSource" matSort class="subjects-table">
+              
+              <!-- Code Column -->
+              <ng-container matColumnDef="code">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>كود المادة</th>
+                <td mat-cell *matCellDef="let subject">
+                  <div class="subject-code">
+                    <mat-icon class="code-icon">code</mat-icon>
+                    <span class="code-text">{{ subject.code }}</span>
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Name Column -->
+              <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>اسم المادة</th>
+                <td mat-cell *matCellDef="let subject">
+                  <div class="subject-name">
+                    <mat-icon class="subject-icon">book</mat-icon>
+                    <div>
+                      <strong>{{ subject.name }}</strong>
+                      <br>
+                      <small class="text-muted">{{ subject.description }}</small>
+                    </div>
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Description Column -->
+              <ng-container matColumnDef="description">
+                <th mat-header-cell *matHeaderCellDef>الوصف</th>
+                <td mat-cell *matCellDef="let subject">
+                  <div class="description-info">
+                    <p class="description-text">{{ subject.description }}</p>
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Grade Column -->
+              <ng-container matColumnDef="grade">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>المرحلة</th>
+                <td mat-cell *matCellDef="let subject">
+                  <div class="grade-info">
+                    <mat-icon class="grade-icon">grade</mat-icon>
+                    {{ getGradeText(subject.grade) }}
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Status Column -->
+              <ng-container matColumnDef="isActive">
+                <th mat-header-cell *matHeaderCellDef>الحالة</th>
+                <td mat-cell *matCellDef="let subject">
+                  <div class="status-info">
+                    <span class="status-badge" [class]="subject.isActive ? 'status-active' : 'status-inactive'">
+                      {{ subject.isActive ? 'نشط' : 'غير نشط' }}
+                    </span>
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Actions Column -->
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef>الإجراءات</th>
+                <td mat-cell *matCellDef="let subject">
+                  <div class="action-buttons">
+                    <button mat-icon-button color="primary" 
+                            matTooltip="عرض التفاصيل"
+                            (click)="viewSubject(subject)">
+                      <mat-icon>visibility</mat-icon>
+                    </button>
+                    <button mat-icon-button color="accent" 
+                            matTooltip="تعديل"
+                            (click)="editSubject(subject)">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button mat-icon-button color="warn" 
+                            matTooltip="حذف"
+                            (click)="deleteSubject(subject)">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="subject-row"></tr>
+            </table>
+
+            <div *ngIf="dataSource.data.length === 0" class="no-data">
+              <mat-icon class="empty-icon">book</mat-icon>
+              <p>لا توجد مواد دراسية مسجلة في النظام</p>
+              <button mat-raised-button color="primary" (click)="addSubject()">
+                إضافة مادة جديدة
+              </button>
+            </div>
+          </div>
+
+          <mat-paginator [pageSizeOptions]="[5, 10, 20]" 
+                         showFirstLastButtons
+                         aria-label="Select page of subjects">
+          </mat-paginator>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>
+
+<ng-template #loadingTemplate>
+  <div class="loading-container">
+    <mat-spinner></mat-spinner>
+    <p>جاري تحميل بيانات المواد الدراسية...</p>
+  </div>
+</ng-template>

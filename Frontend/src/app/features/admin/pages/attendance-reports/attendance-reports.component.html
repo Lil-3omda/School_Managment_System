@@ -1,0 +1,178 @@
+<app-navbar></app-navbar>
+
+<div class="container-fluid">
+  <div class="row">
+    <!-- Header Section -->
+    <div class="col-12">
+      <mat-card class="attendance-header-card">
+        <mat-card-header>
+          <mat-card-title>تقارير الحضور والغياب</mat-card-title>
+          <mat-card-subtitle>عرض وإدارة تقارير الحضور والغياب للطلاب</mat-card-subtitle>
+        </mat-card-header>
+        
+        <mat-card-content>
+          <!-- Filter Form -->
+          <form [formGroup]="reportForm" class="filter-form">
+            <div class="row">
+              <div class="col-md-3">
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>اختر الصف</mat-label>
+                  <mat-select formControlName="classId" (selectionChange)="onClassChange()">
+                    <mat-option value="">جميع الصفوف</mat-option>
+                    <mat-option *ngFor="let class of classes" [value]="class.id">
+                      {{ class.name }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              
+              <div class="col-md-3">
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>من تاريخ</mat-label>
+                  <input matInput [matDatepicker]="startPicker" formControlName="startDate" (dateChange)="onDateChange()">
+                  <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+                  <mat-datepicker #startPicker></mat-datepicker>
+                </mat-form-field>
+              </div>
+              
+              <div class="col-md-3">
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>إلى تاريخ</mat-label>
+                  <input matInput [matDatepicker]="endPicker" formControlName="endDate">
+                  <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+                  <mat-datepicker #endPicker></mat-datepicker>
+                </mat-form-field>
+              </div>
+              
+              <div class="col-md-3 d-flex align-items-end">
+                <button mat-raised-button color="primary" (click)="generateReport()" class="w-100">
+                  <mat-icon>assessment</mat-icon>
+                  إنشاء التقرير
+                </button>
+              </div>
+            </div>
+          </form>
+
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <mat-form-field appearance="outline" class="search-field">
+              <mat-label>البحث في السجلات</mat-label>
+              <input matInput (keyup)="applyFilter($event)" placeholder="ابحث باسم الطالب">
+              <mat-icon matSuffix>search</mat-icon>
+            </mat-form-field>
+            
+            <button mat-raised-button color="accent" (click)="exportReport()">
+              <mat-icon>download</mat-icon>
+              تصدير التقرير
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Attendance Records Table Section -->
+    <div class="col-12">
+      <mat-card class="attendance-table-card">
+        <mat-card-content>
+          <div *ngIf="!loading; else loadingTemplate">
+            <table mat-table [dataSource]="dataSource" matSort class="attendance-table">
+              
+              <!-- Student Name Column -->
+              <ng-container matColumnDef="studentName">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>اسم الطالب</th>
+                <td mat-cell *matCellDef="let record">
+                  <div class="student-name">
+                    <mat-icon class="student-icon">person</mat-icon>
+                    {{ record.studentName }}
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Class Name Column -->
+              <ng-container matColumnDef="className">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>الصف</th>
+                <td mat-cell *matCellDef="let record">
+                  <div class="class-info">
+                    <mat-icon class="class-icon">school</mat-icon>
+                    {{ record.className }}
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Date Column -->
+              <ng-container matColumnDef="date">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>التاريخ</th>
+                <td mat-cell *matCellDef="let record">
+                  <div class="date-info">
+                    <mat-icon class="date-icon">event</mat-icon>
+                    {{ record.date | date:'dd/MM/yyyy' }}
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Status Column -->
+              <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>الحالة</th>
+                <td mat-cell *matCellDef="let record">
+                  <div class="status-info">
+                    <span class="status-badge" [class]="getStatusClass(record.status)">
+                      {{ getStatusText(record.status) }}
+                    </span>
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Remarks Column -->
+              <ng-container matColumnDef="remarks">
+                <th mat-header-cell *matHeaderCellDef>ملاحظات</th>
+                <td mat-cell *matCellDef="let record">
+                  <div class="remarks-info">
+                    <p class="remarks-text">{{ record.remarks || 'لا توجد ملاحظات' }}</p>
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Actions Column -->
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef>الإجراءات</th>
+                <td mat-cell *matCellDef="let record">
+                  <div class="action-buttons">
+                    <button mat-icon-button color="primary" 
+                            matTooltip="تعديل الحالة"
+                            (click)="editAttendance(record)">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button mat-icon-button color="warn" 
+                            matTooltip="حذف السجل"
+                            (click)="deleteAttendance(record)">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="attendance-row"></tr>
+            </table>
+
+            <div *ngIf="dataSource.data.length === 0" class="no-data">
+              <mat-icon class="empty-icon">event_note</mat-icon>
+              <p>لا توجد سجلات حضور في النظام</p>
+            </div>
+          </div>
+
+          <mat-paginator [pageSizeOptions]="[5, 10, 20]" 
+                         showFirstLastButtons
+                         aria-label="Select page of attendance records">
+          </mat-paginator>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>
+
+<ng-template #loadingTemplate>
+  <div class="loading-container">
+    <mat-spinner></mat-spinner>
+    <p>جاري تحميل بيانات الحضور...</p>
+  </div>
+</ng-template>
