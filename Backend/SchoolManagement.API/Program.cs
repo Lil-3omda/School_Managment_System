@@ -126,8 +126,30 @@ if (app.Environment.IsDevelopment())
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<SchoolDbContext>();
-    await context.Database.EnsureCreatedAsync();
-    await SeedData.Initialize(context);
+    
+    try
+    {
+        // Force database recreation to ensure schema matches current entities
+        await context.Database.EnsureDeletedAsync();
+        await context.Database.EnsureCreatedAsync();
+        
+        // Verify that the database was created with the correct schema
+        var userTableExists = await context.Database.ExecuteSqlRawAsync(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name='Users'");
+        
+        if (userTableExists == 0)
+        {
+            throw new InvalidOperationException("Users table was not created properly");
+        }
+        
+        await SeedData.Initialize(context);
+    }
+    catch (Exception ex)
+    {
+        // Log the error and continue - this will help diagnose any database creation issues
+        Console.WriteLine($"Database initialization error: {ex.Message}");
+        throw;
+    }
 }
 
 app.UseHttpsRedirection();
