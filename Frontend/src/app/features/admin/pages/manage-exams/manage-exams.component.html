@@ -1,0 +1,171 @@
+<app-navbar></app-navbar>
+
+<div class="container-fluid">
+  <div class="row">
+    <!-- Header Section -->
+    <div class="col-12">
+      <mat-card class="exams-header-card">
+        <mat-card-header>
+          <mat-card-title>إدارة الامتحانات</mat-card-title>
+          <mat-card-subtitle>عرض وإدارة جميع الامتحانات في النظام</mat-card-subtitle>
+        </mat-card-header>
+        
+        <mat-card-content>
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <mat-form-field appearance="outline" class="search-field">
+              <mat-label>البحث في الامتحانات</mat-label>
+              <input matInput (keyup)="applyFilter($event)" placeholder="ابحث بالعنوان أو المادة">
+              <mat-icon matSuffix>search</mat-icon>
+            </mat-form-field>
+            
+            <button mat-raised-button color="primary" (click)="addExam()">
+              <mat-icon>add</mat-icon>
+              إضافة امتحان جديد
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Exams Table Section -->
+    <div class="col-12">
+      <mat-card class="exams-table-card">
+        <mat-card-content>
+          <div *ngIf="!loading; else loadingTemplate">
+            <table mat-table [dataSource]="dataSource" matSort class="exams-table">
+              
+              <!-- Title Column -->
+              <ng-container matColumnDef="title">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>عنوان الامتحان</th>
+                <td mat-cell *matCellDef="let exam">
+                  <div class="exam-title">
+                    <mat-icon class="exam-icon">quiz</mat-icon>
+                    <div>
+                      <strong>{{ exam.title }}</strong>
+                      <br>
+                      <small class="text-muted">{{ exam.description }}</small>
+                    </div>
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Subject Column -->
+              <ng-container matColumnDef="subjectName">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>المادة</th>
+                <td mat-cell *matCellDef="let exam">
+                  <div class="subject-info">
+                    <mat-icon class="subject-icon">book</mat-icon>
+                    {{ exam.subjectName }}
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Class Column -->
+              <ng-container matColumnDef="className">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>الصف</th>
+                <td mat-cell *matCellDef="let exam">
+                  <div class="class-info">
+                    <mat-icon class="class-icon">school</mat-icon>
+                    {{ exam.className }}
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Exam Date Column -->
+              <ng-container matColumnDef="examDate">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>تاريخ الامتحان</th>
+                <td mat-cell *matCellDef="let exam">
+                  <div class="exam-date">
+                    <mat-icon class="date-icon">event</mat-icon>
+                    {{ exam.examDate | date:'dd/MM/yyyy' }}
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Duration Column -->
+              <ng-container matColumnDef="duration">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>المدة</th>
+                <td mat-cell *matCellDef="let exam">
+                  <div class="duration-info">
+                    <mat-icon class="time-icon">schedule</mat-icon>
+                    {{ formatDuration(exam.duration) }}
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Total Marks Column -->
+              <ng-container matColumnDef="totalMarks">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>الدرجة الكلية</th>
+                <td mat-cell *matCellDef="let exam">
+                  <div class="marks-info">
+                    <mat-icon class="marks-icon">grade</mat-icon>
+                    {{ exam.totalMarks }} درجة
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Status Column -->
+              <ng-container matColumnDef="isActive">
+                <th mat-header-cell *matHeaderCellDef>الحالة</th>
+                <td mat-cell *matCellDef="let exam">
+                  <div class="status-info">
+                    <span class="status-badge" [class]="exam.isActive ? 'status-active' : 'status-inactive'">
+                      {{ exam.isActive ? 'نشط' : 'غير نشط' }}
+                    </span>
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Actions Column -->
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef>الإجراءات</th>
+                <td mat-cell *matCellDef="let exam">
+                  <div class="action-buttons">
+                    <button mat-icon-button color="primary" 
+                            matTooltip="عرض التفاصيل"
+                            (click)="viewExam(exam)">
+                      <mat-icon>visibility</mat-icon>
+                    </button>
+                    <button mat-icon-button color="accent" 
+                            matTooltip="تعديل"
+                            (click)="editExam(exam)">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button mat-icon-button color="warn" 
+                            matTooltip="حذف"
+                            (click)="deleteExam(exam)">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="exam-row"></tr>
+            </table>
+
+            <div *ngIf="dataSource.data.length === 0" class="no-data">
+              <mat-icon class="empty-icon">quiz</mat-icon>
+              <p>لا توجد امتحانات مسجلة في النظام</p>
+              <button mat-raised-button color="primary" (click)="addExam()">
+                إضافة امتحان جديد
+              </button>
+            </div>
+          </div>
+
+          <mat-paginator [pageSizeOptions]="[5, 10, 20]" 
+                         showFirstLastButtons
+                         aria-label="Select page of exams">
+          </mat-paginator>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>
+
+<ng-template #loadingTemplate>
+  <div class="loading-container">
+    <mat-spinner></mat-spinner>
+    <p>جاري تحميل بيانات الامتحانات...</p>
+  </div>
+</ng-template>

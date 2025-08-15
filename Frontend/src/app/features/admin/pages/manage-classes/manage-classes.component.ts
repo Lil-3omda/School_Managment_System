@@ -1,28 +1,23 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatSortModule } from '@angular/material/sort';
+import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
+import { MatSortModule, MatSort } from '@angular/material/sort';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatTableDataSource } from '@angular/material/table';
+import { MatSelectModule } from '@angular/material/select';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NavbarComponent } from '../../../../shared/components/navbar/navbar.component';
-
-interface Class {
-  id: number;
-  name: string;
-  description: string;
-  capacity: number;
-  room: string;
-  startTime: string;
-  endTime: string;
-  currentStudents: number;
-  teacherName: string;
-}
+import { ClassService, Class } from '../../../../core/services/class.service';
+import { TeacherService, Teacher } from '../../../../core/services/teacher.service';
+import { catchError, finalize } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-manage-classes',
@@ -38,63 +33,71 @@ interface Class {
     MatPaginatorModule,
     MatSortModule,
     MatProgressSpinnerModule,
+    MatSelectModule,
+    MatDialogModule,
+    MatTooltipModule,
+    ReactiveFormsModule,
     NavbarComponent
   ],
   templateUrl: './manage-classes.component.html',
   styleUrls: ['./manage-classes.component.scss']
 })
-export class ManageClassesComponent implements OnInit {
-  displayedColumns: string[] = ['name', 'room', 'time', 'capacity', 'teacher', 'actions'];
+export class ManageClassesComponent implements OnInit, AfterViewInit {
+  displayedColumns: string[] = ['name', 'grade', 'capacity', 'teacherName', 'academicYear', 'isActive', 'actions'];
   dataSource = new MatTableDataSource<Class>();
   loading = false;
+  searchTerm = '';
+  totalCount = 0;
+  teachers: Teacher[] = [];
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
+
+  constructor(
+    private classService: ClassService,
+    private teacherService: TeacherService,
+    private dialog: MatDialog,
+    private fb: FormBuilder
+  ) {}
 
   ngOnInit(): void {
     this.loadClasses();
+    this.loadTeachers();
+  }
+
+  ngAfterViewInit(): void {
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
   }
 
   loadClasses(): void {
     this.loading = true;
-    // Mock data for now
-    const mockClasses: Class[] = [
-      {
-        id: 1,
-        name: 'الصف الأول أ',
-        description: 'صف أول ابتدائي - شعبة أ',
-        capacity: 30,
-        room: 'A101',
-        startTime: '08:00',
-        endTime: '12:00',
-        currentStudents: 25,
-        teacherName: 'أحمد محمد علي'
-      },
-      {
-        id: 2,
-        name: 'الصف الثاني ب',
-        description: 'صف ثاني ابتدائي - شعبة ب',
-        capacity: 28,
-        room: 'B201',
-        startTime: '08:00',
-        endTime: '12:30',
-        currentStudents: 27,
-        teacherName: 'فاطمة أحمد السالم'
-      },
-      {
-        id: 3,
-        name: 'الصف الثالث أ',
-        description: 'صف ثالث ابتدائي - شعبة أ',
-        capacity: 32,
-        room: 'C301',
-        startTime: '07:30',
-        endTime: '13:00',
-        currentStudents: 30,
-        teacherName: 'محمد عبد الله'
-      }
-    ];
+    
+    this.classService.getClasses(1, 10)
+      .pipe(
+        catchError(error => {
+          console.error('Error loading classes:', error);
+          return of({ items: [], totalCount: 0, pageNumber: 1, pageSize: 10, totalPages: 0 });
+        }),
+        finalize(() => this.loading = false)
+      )
+      .subscribe(result => {
+        this.dataSource.data = result.items;
+        this.totalCount = result.totalCount;
+      });
+  }
 
-    setTimeout(() => {
-      this.dataSource.data = mockClasses;
-      this.loading = false;
-    }, 1000);
+  loadTeachers(): void {
+    this.teacherService.getTeachers(1, 100)
+      .pipe(
+        catchError(error => {
+          console.error('Error loading teachers:', error);
+          return of({ items: [], totalCount: 0, pageNumber: 1, pageSize: 100, totalPages: 0 });
+        })
+      )
+      .subscribe(result => {
+        this.teachers = result.items;
+      });
   }
 
   applyFilter(event: Event): void {
@@ -103,33 +106,37 @@ export class ManageClassesComponent implements OnInit {
   }
 
   addClass(): void {
-    // TODO: Implement add class functionality
+    // TODO: Implement add class dialog
     console.log('Add class clicked');
   }
 
-  viewClass(classItem: Class): void {
-    // TODO: Implement view class functionality
-    console.log('View class:', classItem);
+  viewClass(classData: Class): void {
+    // TODO: Implement view class dialog
+    console.log('View class:', classData);
   }
 
-  editClass(classItem: Class): void {
-    // TODO: Implement edit class functionality
-    console.log('Edit class:', classItem);
+  editClass(classData: Class): void {
+    // TODO: Implement edit class dialog
+    console.log('Edit class:', classData);
   }
 
-  deleteClass(classItem: Class): void {
-    // TODO: Implement delete class functionality
-    console.log('Delete class:', classItem);
+  deleteClass(classData: Class): void {
+    if (confirm(`هل أنت متأكد من حذف الصف ${classData.name}؟`)) {
+      this.classService.deleteClass(classData.id)
+        .pipe(
+          catchError(error => {
+            console.error('Error deleting class:', error);
+            return of(void 0);
+          })
+        )
+        .subscribe(() => {
+          this.loadClasses();
+        });
+    }
   }
 
-  getCapacityPercentage(classItem: Class): number {
-    return (classItem.currentStudents / classItem.capacity) * 100;
-  }
-
-  getCapacityColor(classItem: Class): string {
-    const percentage = this.getCapacityPercentage(classItem);
-    if (percentage >= 90) return 'warn';
-    if (percentage >= 75) return 'accent';
-    return 'primary';
+  getGradeText(grade: number): string {
+    const grades = ['', 'الأول', 'الثاني', 'الثالث', 'الرابع', 'الخامس', 'السادس'];
+    return grades[grade] || grade.toString();
   }
 }
