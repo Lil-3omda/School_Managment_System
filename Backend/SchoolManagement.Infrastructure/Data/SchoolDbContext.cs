@@ -302,11 +302,11 @@ public class SchoolDbContext : DbContext
             entity.Property(e => e.Description).IsRequired().HasMaxLength(500);
             entity.Property(e => e.Credits).IsRequired();
         });
-
+        
         // ClassTeacher Configuration
         modelBuilder.Entity<ClassTeacher>(entity =>
         {
-            entity.HasKey(e => e.Id);
+            entity.HasKey(e => new { e.ClassId, e.TeacherId, e.SubjectId });
             entity.Property(e => e.ClassId).IsRequired();
             entity.Property(e => e.TeacherId).IsRequired();
             entity.Property(e => e.SubjectId).IsRequired();
@@ -323,7 +323,7 @@ public class SchoolDbContext : DbContext
                 .OnDelete(DeleteBehavior.Cascade);
                 
             entity.HasOne(e => e.Subject)
-                .WithMany(s => s.Classes)
+                .WithMany()
                 .HasForeignKey(e => e.SubjectId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
@@ -420,17 +420,31 @@ public class SchoolDbContext : DbContext
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
-        // Many-to-many relationship between Class and Subject
+        // Configure the ClassTeacher relationship properly
+        // This replaces the many-to-many relationship since we have ClassTeacher as an intermediate entity
         modelBuilder.Entity<Class>()
-            .HasMany(c => c.Subjects)
-            .WithMany(s => s.Classes)
-            .UsingEntity(j => j.ToTable("ClassSubjects"));
+            .HasMany(c => c.ClassTeachers)
+            .WithOne(ct => ct.Class)
+            .HasForeignKey(ct => ct.ClassId)
+            .OnDelete(DeleteBehavior.Cascade);
         
-        // Configure the junction table properties
-        modelBuilder.Entity("ClassSubjects", entity =>
-        {
-            entity.Property("ClassesId").IsRequired();
-            entity.Property("SubjectsId").IsRequired();
-        });
+        modelBuilder.Entity<Subject>()
+            .HasMany(s => s.Classes)
+            .WithMany(c => c.Subjects)
+            .UsingEntity<ClassTeacher>(
+                j => j
+                    .HasOne(ct => ct.Subject)
+                    .WithMany()
+                    .HasForeignKey(ct => ct.SubjectId),
+                j => j
+                    .HasOne(ct => ct.Class)
+                    .WithMany()
+                    .HasForeignKey(ct => ct.ClassId),
+                j =>
+                {
+                    j.HasKey(ct => new { ct.ClassId, ct.TeacherId, ct.SubjectId });
+                    j.ToTable("ClassTeachers");
+                }
+            );
     }
 }
