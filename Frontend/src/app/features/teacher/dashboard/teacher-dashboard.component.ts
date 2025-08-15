@@ -3,6 +3,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { User } from '../../../core/models/user.model';
 import { CommonModule, DatePipe } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
 
 interface TeacherStats {
   totalClasses: number;
@@ -31,7 +32,8 @@ interface PendingTask {
   imports:[
     DatePipe,
     CommonModule,
-    RouterModule
+    RouterModule,
+    NavbarComponent
   ],
   templateUrl: './teacher-dashboard.component.html',
   styleUrls: ['./teacher-dashboard.component.scss']

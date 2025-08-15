@@ -1,6 +1,7 @@
 import { CommonModule, DatePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
 
 interface Statistics {
   totalStudents: number;
@@ -29,7 +30,8 @@ interface Notification {
   imports:[
     DatePipe,
     CommonModule,
-    RouterModule
+    RouterModule,
+    NavbarComponent
   ],
   templateUrl: './admin-dashboard.component.html',
   styleUrls: ['./admin-dashboard.component.scss']

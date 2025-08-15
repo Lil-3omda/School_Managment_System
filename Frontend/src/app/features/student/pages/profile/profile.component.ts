@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthService } from '../../../../core/services/auth.service';
 import { StudentService } from '../../../../core/services/student.service';
 import { User } from '../../../../core/models/user.model';
@@ -25,7 +26,8 @@ import { Student } from '../../../../core/models/student.model';
     MatButtonModule,
     MatSelectModule,
     MatDatepickerModule,
-    MatNativeDateModule
+    MatNativeDateModule,
+    MatProgressSpinnerModule
   ],
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.scss']

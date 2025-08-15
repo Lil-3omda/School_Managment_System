@@ -1,0 +1,195 @@
+.classes-header-card {
+  margin-bottom: 1rem;
+  
+  .mat-card-title,
+  .mat-card-subtitle {
+    text-align: center;
+  }
+  
+  .search-field {
+    width: 300px;
+  }
+}
+
+.classes-table-card {
+  .classes-table {
+    width: 100%;
+    
+    .mat-header-cell {
+      font-weight: bold;
+      color: #333;
+      background-color: #f8f9fa;
+    }
+    
+    .mat-cell {
+      padding: 12px 8px;
+      
+      .class-name {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        
+        .class-icon {
+          color: #007bff;
+          font-size: 18px;
+        }
+        
+        strong {
+          color: #333;
+        }
+        
+        small {
+          color: #6c757d;
+        }
+      }
+      
+      .room-info {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        
+        .room-icon {
+          color: #28a745;
+          font-size: 18px;
+        }
+      }
+      
+      .time-info {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        
+        .time-icon {
+          color: #ffc107;
+          font-size: 18px;
+        }
+      }
+      
+      .capacity-info {
+        .capacity-text {
+          font-weight: 500;
+          margin-bottom: 4px;
+        }
+        
+        .capacity-bar {
+          width: 100px;
+          height: 6px;
+          background-color: #e9ecef;
+          border-radius: 3px;
+          overflow: hidden;
+          
+          .capacity-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.3s ease;
+            
+            &.capacity-primary {
+              background-color: #007bff;
+            }
+            
+            &.capacity-accent {
+              background-color: #ffc107;
+            }
+            
+            &.capacity-warn {
+              background-color: #dc3545;
+            }
+          }
+        }
+      }
+      
+      .teacher-info {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        
+        .teacher-icon {
+          color: #6f42c1;
+          font-size: 18px;
+        }
+      }
+      
+      .action-buttons {
+        display: flex;
+        gap: 4px;
+        
+        .mat-icon-button {
+          width: 36px;
+          height: 36px;
+          line-height: 36px;
+          
+          .mat-icon {
+            font-size: 18px;
+            width: 18px;
+            height: 18px;
+          }
+        }
+      }
+    }
+    
+    .class-row:hover {
+      background-color: #f8f9fa;
+      cursor: pointer;
+    }
+  }
+  
+  .no-data {
+    text-align: center;
+    padding: 2rem;
+    color: #6c757d;
+    
+    .empty-icon {
+      font-size: 48px;
+      width: 48px;
+      height: 48px;
+      margin-bottom: 1rem;
+      color: #dee2e6;
+    }
+    
+    p {
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+    }
+  }
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  
+  p {
+    margin-top: 1rem;
+    color: #6c757d;
+  }
+}
+
+@media (max-width: 768px) {
+  .classes-header-card {
+    .search-field {
+      width: 100%;
+      margin-bottom: 1rem;
+    }
+    
+    .d-flex {
+      flex-direction: column;
+      align-items: stretch !important;
+    }
+  }
+  
+  .classes-table-card {
+    .classes-table {
+      .mat-cell,
+      .mat-header-cell {
+        padding: 8px 4px;
+        font-size: 0.875rem;
+      }
+      
+      .capacity-info .capacity-bar {
+        width: 80px;
+      }
+    }
+  }
+}
