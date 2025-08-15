@@ -12,7 +12,9 @@ public class Class : BaseEntity
     // Navigation properties
     public ICollection<Student> Students { get; set; } = new List<Student>();
     public ICollection<ClassTeacher> ClassTeachers { get; set; } = new List<ClassTeacher>();
-    public ICollection<Subject> Subjects { get; set; } = new List<Subject>();
     public ICollection<Exam> Exams { get; set; } = new List<Exam>();
     public ICollection<Attendance> Attendances { get; set; } = new List<Attendance>();
+    
+    // Helper method to get subjects through ClassTeacher
+    public IEnumerable<Subject> GetSubjects() => ClassTeachers.Select(ct => ct.Subject).Distinct();
 }

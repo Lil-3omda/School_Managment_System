@@ -206,17 +206,7 @@ public class SchoolDbContext : DbContext
         modelBuilder.Entity<Salary>().Property(e => e.UpdatedBy)
             .HasMaxLength(100);
         
-        modelBuilder.Entity<ClassTeacher>().Property(e => e.CreatedAt)
-            .HasColumnType("TEXT");
-        
-        modelBuilder.Entity<ClassTeacher>().Property(e => e.UpdatedAt)
-            .HasColumnType("TEXT");
-        
-        modelBuilder.Entity<ClassTeacher>().Property(e => e.CreatedBy)
-            .HasMaxLength(100);
-        
-        modelBuilder.Entity<ClassTeacher>().Property(e => e.UpdatedBy)
-            .HasMaxLength(100);
+        // Note: ClassTeacher is a composite key entity and doesn't inherit from BaseEntity
 
         // User Configuration
         modelBuilder.Entity<User>(entity =>
@@ -420,31 +410,25 @@ public class SchoolDbContext : DbContext
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
-        // Configure the ClassTeacher relationship properly
-        // This replaces the many-to-many relationship since we have ClassTeacher as an intermediate entity
+        // Configure the ClassTeacher relationships
+        // Since ClassTeacher is already configured as a separate entity, we just need to ensure
+        // the navigation properties are properly set up
+        
+        // Class -> ClassTeacher (one-to-many)
         modelBuilder.Entity<Class>()
             .HasMany(c => c.ClassTeachers)
             .WithOne(ct => ct.Class)
             .HasForeignKey(ct => ct.ClassId)
             .OnDelete(DeleteBehavior.Cascade);
         
-        modelBuilder.Entity<Subject>()
-            .HasMany(s => s.Classes)
-            .WithMany(c => c.Subjects)
-            .UsingEntity<ClassTeacher>(
-                j => j
-                    .HasOne(ct => ct.Subject)
-                    .WithMany()
-                    .HasForeignKey(ct => ct.SubjectId),
-                j => j
-                    .HasOne(ct => ct.Class)
-                    .WithMany()
-                    .HasForeignKey(ct => ct.ClassId),
-                j =>
-                {
-                    j.HasKey(ct => new { ct.ClassId, ct.TeacherId, ct.SubjectId });
-                    j.ToTable("ClassTeachers");
-                }
-            );
+        // Teacher -> ClassTeacher (one-to-many)
+        modelBuilder.Entity<Teacher>()
+            .HasMany(t => t.ClassTeachers)
+            .WithOne(ct => ct.Teacher)
+            .HasForeignKey(ct => ct.TeacherId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        // Note: The many-to-many relationship between Class and Subject is handled through the ClassTeacher entity
+        // which is already properly configured above with its own DbSet and relationships
     }
 }
