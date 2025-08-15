@@ -10,4 +10,6 @@ public interface IAuthService
     Task<string> GenerateJwtTokenAsync(UserDto user);
     Task<UserDto?> GetUserByEmailAsync(string email);
     Task<bool> ValidatePasswordAsync(string email, string password);
+    Task ForgetPasswordAsync(string email);
+    Task ResetPasswordAsync(string token, string newPassword);
 }

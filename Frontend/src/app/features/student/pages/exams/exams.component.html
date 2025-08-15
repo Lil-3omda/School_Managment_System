@@ -1,0 +1,205 @@
+<app-layout>
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">الامتحانات</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+      <div class="btn-group me-2">
+        <button type="button" class="btn btn-sm btn-outline-secondary" (click)="loadExams()">
+          <i class="fas fa-refresh me-1"></i>
+          تحديث
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="row mb-4">
+    <div class="col-lg-3 col-md-6 mb-3">
+      <div class="card bg-info text-white">
+        <div class="card-body">
+          <div class="d-flex justify-content-between">
+            <div>
+              <div class="text-white-50 small">إجمالي الامتحانات</div>
+              <div class="h4 mb-0">{{ getExamStats().total }}</div>
+            </div>
+            <div class="align-self-center">
+              <i class="fas fa-clipboard-list fa-2x"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+      <div class="card bg-primary text-white">
+        <div class="card-body">
+          <div class="d-flex justify-content-between">
+            <div>
+              <div class="text-white-50 small">الامتحانات القادمة</div>
+              <div class="h4 mb-0">{{ getExamStats().upcoming }}</div>
+            </div>
+            <div class="align-self-center">
+              <i class="fas fa-calendar-alt fa-2x"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+      <div class="card bg-success text-white">
+        <div class="card-body">
+          <div class="d-flex justify-content-between">
+            <div>
+              <div class="text-white-50 small">الامتحانات المكتملة</div>
+              <div class="h4 mb-0">{{ getExamStats().completed }}</div>
+            </div>
+            <div class="align-self-center">
+              <i class="fas fa-check-circle fa-2x"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+      <div class="card bg-warning text-white">
+        <div class="card-body">
+          <div class="d-flex justify-content-between">
+            <div>
+              <div class="text-white-50 small">متوسط الدرجات</div>
+              <div class="h4 mb-0">{{ getExamStats().averageScore }}%</div>
+            </div>
+            <div class="align-self-center">
+              <i class="fas fa-chart-line fa-2x"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-4">
+          <label for="statusFilter" class="form-label">الحالة</label>
+          <select class="form-select" id="statusFilter" [(ngModel)]="selectedStatus">
+            <option value="all">جميع الحالات</option>
+            <option value="upcoming">قادم</option>
+            <option value="ongoing">جاري</option>
+            <option value="completed">مكتمل</option>
+            <option value="cancelled">ملغي</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label for="subjectFilter" class="form-label">المادة</label>
+          <select class="form-select" id="subjectFilter" [(ngModel)]="selectedSubject">
+            <option value="all">جميع المواد</option>
+            <option *ngFor="let subject of getUniqueSubjects()" [value]="subject">{{ subject }}</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label for="typeFilter" class="form-label">نوع الامتحان</label>
+          <select class="form-select" id="typeFilter" [(ngModel)]="selectedType">
+            <option value="all">جميع الأنواع</option>
+            <option *ngFor="let type of getUniqueTypes()" [value]="type">{{ getTypeText(type) }}</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Exams List -->
+  <div class="row">
+    <div class="col-12">
+      <div *ngIf="loading" class="text-center py-4">
+        <div class="spinner-border" role="status">
+          <span class="visually-hidden">جاري التحميل...</span>
+        </div>
+      </div>
+
+      <div *ngIf="!loading">
+        <div *ngFor="let exam of getFilteredExams()" class="card mb-3 exam-card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <div>
+              <h5 class="mb-0">{{ exam.title }}</h5>
+              <small class="text-muted">{{ exam.subject }} - {{ exam.teacher }}</small>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <span [class]="getStatusClass(exam.status)">{{ getStatusText(exam.status) }}</span>
+              <span class="badge bg-secondary">{{ getTypeText(exam.type) }}</span>
+            </div>
+          </div>
+          
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-8">
+                <div class="exam-details">
+                  <div class="detail-item">
+                    <i class="fas fa-calendar me-2 text-primary"></i>
+                    <strong>التاريخ:</strong> {{ exam.date | date:'fullDate':'ar' }}
+                  </div>
+                  <div class="detail-item">
+                    <i class="fas fa-clock me-2 text-primary"></i>
+                    <strong>الوقت:</strong> {{ exam.date | date:'shortTime':'ar' }}
+                    <span *ngIf="exam.duration > 0"> ({{ exam.duration }} دقيقة)</span>
+                  </div>
+                  <div class="detail-item">
+                    <i class="fas fa-map-marker-alt me-2 text-primary"></i>
+                    <strong>المكان:</strong> {{ exam.location }}
+                  </div>
+                  <div class="detail-item">
+                    <i class="fas fa-star me-2 text-primary"></i>
+                    <strong>الدرجة الكلية:</strong> {{ exam.totalMarks }}
+                  </div>
+                </div>
+                
+                <div *ngIf="exam.description" class="mt-3">
+                  <h6>وصف الامتحان:</h6>
+                  <p class="text-muted">{{ exam.description }}</p>
+                </div>
+                
+                <div *ngIf="exam.instructions && exam.instructions.length > 0" class="mt-3">
+                  <h6>تعليمات مهمة:</h6>
+                  <ul class="text-muted">
+                    <li *ngFor="let instruction of exam.instructions">{{ instruction }}</li>
+                  </ul>
+                </div>
+              </div>
+              
+              <div class="col-md-4">
+                <div *ngIf="exam.status === 'upcoming'" class="text-center">
+                  <div class="countdown-card">
+                    <div class="countdown-number">{{ getDaysUntilExam(exam.date) }}</div>
+                    <div class="countdown-text">يوم متبقي</div>
+                  </div>
+                </div>
+                
+                <div *ngIf="exam.status === 'completed' && exam.result" class="result-card text-center">
+                  <h6>النتيجة</h6>
+                  <div class="result-score">{{ exam.result.score }}/{{ exam.totalMarks }}</div>
+                  <div class="result-percentage">{{ exam.result.percentage }}%</div>
+                  <div class="result-grade">{{ exam.result.grade }}</div>
+                </div>
+                
+                <div *ngIf="exam.status === 'ongoing'" class="text-center">
+                  <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    الامتحان جاري حالياً
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div *ngIf="getFilteredExams().length === 0" class="text-center py-5">
+          <i class="fas fa-clipboard-list fa-3x text-muted mb-3"></i>
+          <h5 class="text-muted">لا توجد امتحانات متاحة</h5>
+          <p class="text-muted">لا توجد امتحانات تطابق المعايير المحددة</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</app-layout>

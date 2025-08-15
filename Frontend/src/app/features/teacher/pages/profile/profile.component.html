@@ -1,0 +1,158 @@
+<app-layout>
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">الملف الشخصي</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+      <div class="btn-group me-2">
+        <button type="button" class="btn btn-sm btn-outline-secondary" (click)="toggleEdit()">
+          <i [class]="editing ? 'fas fa-times' : 'fas fa-edit'" class="me-1"></i>
+          {{ editing ? 'إلغاء' : 'تعديل' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card shadow">
+        <div class="card-header">
+          <h5 class="mb-0">المعلومات الشخصية والمهنية</h5>
+        </div>
+        
+        <div class="card-body">
+          <div *ngIf="loading" class="text-center py-4">
+            <div class="spinner-border" role="status">
+              <span class="visually-hidden">جاري التحميل...</span>
+            </div>
+          </div>
+
+          <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" *ngIf="!loading">
+            <!-- Personal Information -->
+            <h6 class="text-primary mb-3">المعلومات الشخصية</h6>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="firstName" class="form-label">الاسم الأول</label>
+                <input type="text" class="form-control" id="firstName" formControlName="firstName">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="lastName" class="form-label">الاسم الأخير</label>
+                <input type="text" class="form-control" id="lastName" formControlName="lastName">
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="email" class="form-label">البريد الإلكتروني</label>
+                <input type="email" class="form-control" id="email" formControlName="email">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="phoneNumber" class="form-label">رقم الهاتف</label>
+                <input type="tel" class="form-control" id="phoneNumber" formControlName="phoneNumber">
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="dateOfBirth" class="form-label">تاريخ الميلاد</label>
+                <input type="date" class="form-control" id="dateOfBirth" formControlName="dateOfBirth">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="gender" class="form-label">الجنس</label>
+                <select class="form-select" id="gender" formControlName="gender">
+                  <option value="">اختر الجنس</option>
+                  <option value="1">ذكر</option>
+                  <option value="2">أنثى</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="address" class="form-label">العنوان</label>
+              <textarea class="form-control" id="address" formControlName="address" rows="2"></textarea>
+            </div>
+
+            <hr class="my-4">
+
+            <!-- Professional Information -->
+            <h6 class="text-primary mb-3">المعلومات المهنية</h6>
+            
+            <div class="row mb-3" *ngIf="teacherData">
+              <div class="col-md-6">
+                <label class="form-label">رقم الموظف</label>
+                <input type="text" class="form-control" [value]="teacherData.employeeNumber" readonly>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">تاريخ التعيين</label>
+                <input type="text" class="form-control" [value]="teacherData.hireDate | date:'longDate':'ar'" readonly>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="department" class="form-label">القسم</label>
+                <input type="text" class="form-control" id="department" formControlName="department">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="specialization" class="form-label">التخصص</label>
+                <input type="text" class="form-control" id="specialization" formControlName="specialization">
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="qualification" class="form-label">المؤهل العلمي</label>
+                <input type="text" class="form-control" id="qualification" formControlName="qualification">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="experience" class="form-label">سنوات الخبرة</label>
+                <input type="number" class="form-control" id="experience" formControlName="experience" min="0">
+              </div>
+            </div>
+
+            <div class="row mb-3" *ngIf="teacherData">
+              <div class="col-md-6">
+                <label class="form-label">الراتب الأساسي</label>
+                <div class="input-group">
+                  <input type="text" class="form-control" [value]="teacherData.salary" readonly>
+                  <span class="input-group-text">ريال</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2" *ngIf="editing">
+              <button type="button" class="btn btn-secondary" (click)="toggleEdit()">
+                إلغاء
+              </button>
+              <button type="submit" class="btn btn-primary" [disabled]="profileForm.invalid || loading">
+                <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+                {{ loading ? 'جاري الحفظ...' : 'حفظ التغييرات' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Additional Information Card -->
+      <div class="card shadow mt-4" *ngIf="teacherData && !editing">
+        <div class="card-header">
+          <h5 class="mb-0">معلومات إضافية</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="info-item">
+                <strong>تاريخ إنشاء الحساب:</strong>
+                <span>{{ teacherData.createdAt | date:'longDate':'ar' }}</span>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="info-item">
+                <strong>آخر تحديث:</strong>
+                <span>{{ teacherData.updatedAt | date:'medium':'ar' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</app-layout>

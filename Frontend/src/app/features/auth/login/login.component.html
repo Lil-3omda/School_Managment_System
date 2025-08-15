@@ -39,7 +39,7 @@
               </div>
             </div>
             
-            <div class="mb-4">
+            <div class="mb-3">
               <label for="password" class="form-label">كلمة المرور</label>
               <div class="input-group">
                 <span class="input-group-text">
@@ -62,6 +62,10 @@
               <div class="invalid-feedback" *ngIf="isFieldInvalid('password')">
                 كلمة المرور مطلوبة
               </div>
+            </div>
+            
+            <div class="mb-4 text-end">
+              <a routerLink="/auth/forget-password" class="text-primary small">نسيت كلمة المرور؟</a>
             </div>
             
             <div class="alert alert-danger" *ngIf="errorMessage">
