@@ -35,7 +35,7 @@ Netflix/angular.json.*
 Netflix/tsconfig.*.json
 Netflix/.output/
 Netflix/.cache/
-
+Frontend/.angular
 # ========== Swagger (Swashbuckle) ==========
 **/swagger/
 **/swagger.json
