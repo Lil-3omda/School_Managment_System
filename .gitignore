@@ -68,4 +68,12 @@ ehthumbs.db
 Desktop.ini
 
 # Linux
-*~
+*~core
+*.db
+# Angular cache
+.angular/cache
+
+# Other common exclusions
+node_modules/
+dist/
+*.log

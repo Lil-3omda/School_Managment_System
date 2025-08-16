@@ -14,6 +14,9 @@ public class User : BaseEntity
     public string Address { get; set; } = string.Empty;
     public UserRole Role { get; set; }
     public bool IsActive { get; set; } = true;
+    public string? PasswordResetToken { get; set; }
+    public DateTime? PasswordResetTokenExpires { get; set; }
+    public string FullName => $"{FirstName} {LastName}";
     
     // Navigation properties
     public Student? Student { get; set; }

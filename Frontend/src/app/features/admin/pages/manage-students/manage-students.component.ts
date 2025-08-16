@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
@@ -12,9 +12,12 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { StudentService } from '../../../../core/services/student.service';
-import { Student, CreateStudentRequest } from '../../../../core/models/student.model';
+import { Student, CreateStudentRequest,PagedResult } from '../../../../core/models/student.model';
+import { catchError, finalize } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-manage-students',
@@ -33,12 +36,13 @@ import { Student, CreateStudentRequest } from '../../../../core/models/student.m
     MatSelectModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    MatTooltipModule,
     ReactiveFormsModule
   ],
   templateUrl: './manage-students.component.html',
   styleUrls: ['./manage-students.component.scss']
 })
-export class ManageStudentsComponent implements OnInit {
+export class ManageStudentsComponent implements OnInit, AfterViewInit {
   displayedColumns: string[] = ['studentNumber', 'name', 'email', 'class', 'enrollmentDate', 'actions'];
   dataSource = new MatTableDataSource<Student>();
   loading = false;
@@ -65,69 +69,18 @@ export class ManageStudentsComponent implements OnInit {
   loadStudents(): void {
     this.loading = true;
     
-    // Mock data for now
-    const mockStudents: Student[] = [
-      {
-        id: 1,
-        userId: 3,
-        studentNumber: 'S001',
-        enrollmentDate: new Date('2023-09-01'),
-        classId: 1,
-        className: 'الصف الثالث أ',
-        guardianName: 'عبد الله الطالب',
-        guardianPhone: '0501111111',
-        guardianEmail: 'guardian@example.com',
-        user: {
-          id: 3,
-          firstName: 'محمد',
-          lastName: 'الطالب',
-          email: 'student@school.com',
-          phoneNumber: '0509876543',
-          dateOfBirth: new Date('2010-03-20'),
-          gender: 1,
-          address: 'الدمام، المملكة العربية السعودية',
-          role: 3,
-          isActive: true,
-          fullName: 'محمد الطالب',
-          createdAt: new Date(),
-          updatedAt: new Date()
-        },
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      {
-        id: 2,
-        userId: 4,
-        studentNumber: 'S002',
-        enrollmentDate: new Date('2023-09-01'),
-        classId: 1,
-        className: 'الصف الثالث أ',
-        guardianName: 'أحمد سالم',
-        guardianPhone: '0502222222',
-        guardianEmail: 'ahmed.salem@example.com',
-        user: {
-          id: 4,
-          firstName: 'سارة',
-          lastName: 'أحمد',
-          email: 'sara.ahmed@school.com',
-          phoneNumber: '0508765432',
-          dateOfBirth: new Date('2010-05-15'),
-          gender: 2,
-          address: 'الرياض، المملكة العربية السعودية',
-          role: 3,
-          isActive: true,
-          fullName: 'سارة أحمد',
-          createdAt: new Date(),
-          updatedAt: new Date()
-        },
-        createdAt: new Date(),
-        updatedAt: new Date()
-      }
-    ];
-
-    this.dataSource.data = mockStudents;
-    this.totalCount = mockStudents.length;
-    this.loading = false;
+    this.studentService.getStudents(1, 10)
+      .pipe(
+        catchError(error => {
+          console.error('Error loading students:', error);
+          return of({ items: [], totalCount: 0, pageNumber: 1, pageSize: 10, totalPages: 0 });
+        }),
+        finalize(() => this.loading = false)
+      )
+      .subscribe(result => {
+        this.dataSource.data = result.items;
+        this.totalCount = result.totalCount;
+      });
   }
 
   applyFilter(event: Event): void {

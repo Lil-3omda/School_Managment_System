@@ -1,66 +1,13 @@
-<div class="container-fluid">
-  <div class="row">
-    <!-- Sidebar -->
-    <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
-      <div class="position-sticky pt-3">
-        <ul class="nav flex-column">
-          <li class="nav-item">
-            <a class="nav-link active" routerLink="/teacher/dashboard">
-              <i class="fas fa-tachometer-alt me-2"></i>
-              الرئيسية
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" routerLink="/teacher/classes">
-              <i class="fas fa-chalkboard me-2"></i>
-              صفوفي
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" routerLink="/teacher/schedule">
-              <i class="fas fa-calendar me-2"></i>
-              الجدول الدراسي
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" routerLink="/teacher/grades">
-              <i class="fas fa-edit me-2"></i>
-              إدخال الدرجات
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" routerLink="/teacher/attendance">
-              <i class="fas fa-calendar-check me-2"></i>
-              الحضور والغياب
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" routerLink="/teacher/exams">
-              <i class="fas fa-clipboard-list me-2"></i>
-              الامتحانات
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" routerLink="/teacher/salary">
-              <i class="fas fa-money-bill-wave me-2"></i>
-              الراتب
-            </a>
-          </li>
-        </ul>
-      </div>
-    </nav>
-
-    <!-- Main content -->
-    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+<app-layout>
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
         <h1 class="h2">مرحباً {{ currentUser?.fullName }}</h1>
         <div class="btn-toolbar mb-2 mb-md-0">
           <div class="btn-group me-2">
-            <button type="button" class="btn btn-sm btn-primary">
+            <button type="button" class="btn btn-sm btn-primary" (click)="addGrades()">
               <i class="fas fa-plus me-1"></i>
               إضافة درجات
             </button>
-            <button type="button" class="btn btn-sm btn-outline-secondary">
+            <button type="button" class="btn btn-sm btn-outline-secondary" (click)="markAttendance()">
               <i class="fas fa-calendar-plus me-1"></i>
               تسجيل حضور
             </button>
@@ -161,10 +108,14 @@
                       <td>{{ class.className }}</td>
                       <td>{{ class.room }}</td>
                       <td>
-                        <button class="btn btn-sm btn-outline-primary me-1">
+                        <button class="btn btn-sm btn-outline-primary me-1" 
+                                (click)="markAttendanceForClass(class)"
+                                title="تسجيل الحضور">
                           <i class="fas fa-calendar-check"></i>
                         </button>
-                        <button class="btn btn-sm btn-outline-success">
+                        <button class="btn btn-sm btn-outline-success"
+                                (click)="addGradesForClass(class)"
+                                title="إضافة درجات">
                           <i class="fas fa-edit"></i>
                         </button>
                       </td>
@@ -227,6 +178,4 @@
           </div>
         </div>
       </div>
-    </main>
-  </div>
-</div>
+</app-layout>

@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../../core/services/auth.service';
 import { User } from '../../../core/models/user.model';
 import { CommonModule, DatePipe } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
+import { LayoutComponent } from '../../../shared/components/layout/layout.component';
 
 interface TeacherStats {
   totalClasses: number;
@@ -31,7 +32,8 @@ interface PendingTask {
   imports:[
     DatePipe,
     CommonModule,
-    RouterModule
+    RouterModule,
+    LayoutComponent
   ],
   templateUrl: './teacher-dashboard.component.html',
   styleUrls: ['./teacher-dashboard.component.scss']
@@ -48,7 +50,10 @@ export class TeacherDashboardComponent implements OnInit {
   todaySchedule: ClassSchedule[] = [];
   pendingTasks: PendingTask[] = [];
 
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.authService.currentUser$.subscribe(user => {
@@ -135,5 +140,34 @@ export class TeacherDashboardComponent implements OnInit {
       default:
         return 'bg-secondary';
     }
+  }
+
+  addGrades(): void {
+    this.router.navigate(['/teacher/grades']);
+  }
+
+  markAttendance(): void {
+    this.router.navigate(['/teacher/attendance']);
+  }
+
+  markAttendanceForClass(classItem: ClassSchedule): void {
+    // Navigate to attendance page with class context
+    this.router.navigate(['/teacher/attendance'], { 
+      queryParams: { 
+        subject: classItem.subject, 
+        className: classItem.className,
+        time: classItem.time 
+      } 
+    });
+  }
+
+  addGradesForClass(classItem: ClassSchedule): void {
+    // Navigate to grades page with class context
+    this.router.navigate(['/teacher/grades'], { 
+      queryParams: { 
+        subject: classItem.subject, 
+        className: classItem.className 
+      } 
+    });
   }
 }

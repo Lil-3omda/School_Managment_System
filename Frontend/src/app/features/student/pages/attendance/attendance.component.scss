@@ -1,0 +1,50 @@
+.card {
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.table th {
+  font-weight: 600;
+  text-align: center;
+}
+
+.table td {
+  vertical-align: middle;
+  text-align: center;
+}
+
+.arabic-numbers {
+  font-family: 'Arial', sans-serif;
+}
+
+.badge {
+  font-size: 0.8rem;
+}
+
+.attendance-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.btn-outline-secondary:hover {
+  color: #fff;
+  background-color: #6c757d;
+  border-color: #6c757d;
+}
+
+@media (max-width: 768px) {
+  .attendance-legend {
+    justify-content: center;
+  }
+  
+  .legend-item {
+    margin-bottom: 5px;
+  }
+}

@@ -178,38 +178,99 @@ public static class SeedData
         await context.Students.AddAsync(student);
         await context.SaveChangesAsync();
 
-        // Create Class-Subject relationships
+        // Create Class-Subject relationships through ClassTeacher
         var class1 = classes[0];
         var class2 = classes[1];
         var class3 = classes[2];
 
-        class1.Subjects.Add(subjects[0]); // Math
-        class1.Subjects.Add(subjects[1]); // Arabic
-        class1.Subjects.Add(subjects[2]); // Science
-
-        class2.Subjects.Add(subjects[0]); // Math
-        class2.Subjects.Add(subjects[1]); // Arabic
-        class2.Subjects.Add(subjects[3]); // History
-
-        class3.Subjects.Add(subjects[0]); // Math
-        class3.Subjects.Add(subjects[1]); // Arabic
-        class3.Subjects.Add(subjects[2]); // Science
-        class3.Subjects.Add(subjects[3]); // History
-
-        await context.SaveChangesAsync();
-
-        // Create Class-Teacher assignments
-        var classTeacher = new ClassTeacher
+        // Create ClassTeacher relationships
+        var classTeacher1 = new ClassTeacher
         {
-            ClassId = classes[0].Id,
+            ClassId = class1.Id,
             TeacherId = teacher.Id,
             SubjectId = subjects[0].Id, // Math
-            IsPrimary = true,
-            CreatedAt = DateTime.UtcNow
+            IsPrimary = true
         };
 
-        await context.ClassTeachers.AddAsync(classTeacher);
+        var classTeacher2 = new ClassTeacher
+        {
+            ClassId = class1.Id,
+            TeacherId = teacher.Id,
+            SubjectId = subjects[1].Id, // Arabic
+            IsPrimary = false
+        };
+
+        var classTeacher3 = new ClassTeacher
+        {
+            ClassId = class1.Id,
+            TeacherId = teacher.Id,
+            SubjectId = subjects[2].Id, // Science
+            IsPrimary = false
+        };
+
+        var classTeacher4 = new ClassTeacher
+        {
+            ClassId = class2.Id,
+            TeacherId = teacher.Id,
+            SubjectId = subjects[0].Id, // Math
+            IsPrimary = true
+        };
+
+        var classTeacher5 = new ClassTeacher
+        {
+            ClassId = class2.Id,
+            TeacherId = teacher.Id,
+            SubjectId = subjects[1].Id, // Arabic
+            IsPrimary = false
+        };
+
+        var classTeacher6 = new ClassTeacher
+        {
+            ClassId = class2.Id,
+            TeacherId = teacher.Id,
+            SubjectId = subjects[3].Id, // History
+            IsPrimary = false
+        };
+
+        var classTeacher7 = new ClassTeacher
+        {
+            ClassId = class3.Id,
+            TeacherId = teacher.Id,
+            SubjectId = subjects[0].Id, // Math
+            IsPrimary = true
+        };
+
+        var classTeacher8 = new ClassTeacher
+        {
+            ClassId = class3.Id,
+            TeacherId = teacher.Id,
+            SubjectId = subjects[1].Id, // Arabic
+            IsPrimary = false
+        };
+
+        var classTeacher9 = new ClassTeacher
+        {
+            ClassId = class3.Id,
+            TeacherId = teacher.Id,
+            SubjectId = subjects[2].Id, // Science
+            IsPrimary = false
+        };
+
+        var classTeacher10 = new ClassTeacher
+        {
+            ClassId = class3.Id,
+            TeacherId = teacher.Id,
+            SubjectId = subjects[3].Id, // History
+            IsPrimary = false
+        };
+
+        await context.ClassTeachers.AddRangeAsync(
+            classTeacher1, classTeacher2, classTeacher3, classTeacher4, classTeacher5,
+            classTeacher6, classTeacher7, classTeacher8, classTeacher9, classTeacher10
+        );
         await context.SaveChangesAsync();
+
+        // Note: Class-Teacher assignments are now handled above through the ClassTeacher entity
 
         // Create sample exam
         var exam = new Exam

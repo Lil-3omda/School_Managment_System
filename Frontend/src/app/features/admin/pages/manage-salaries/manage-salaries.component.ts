@@ -1,0 +1,192 @@
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatCardModule } from '@angular/material/card';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
+import { MatSortModule, MatSort } from '@angular/material/sort';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
+import { NavbarComponent } from '../../../../shared/components/navbar/navbar.component';
+import { SalaryService, SalaryRecord } from '../../../../core/services/salary.service';
+import { TeacherService, Teacher } from '../../../../core/services/teacher.service';
+import { catchError, finalize } from 'rxjs/operators';
+import { of } from 'rxjs';
+
+@Component({
+  selector: 'app-manage-salaries',
+  standalone: true,
+  imports: [
+    CommonModule,
+    MatCardModule,
+    MatTableModule,
+    MatButtonModule,
+    MatIconModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatPaginatorModule,
+    MatSortModule,
+    MatProgressSpinnerModule,
+    MatSelectModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatDialogModule,
+    MatTooltipModule,
+    ReactiveFormsModule,
+    NavbarComponent
+  ],
+  templateUrl: './manage-salaries.component.html',
+  // styleUrls: ['./manage-salaries.component.scss']
+})
+export class ManageSalariesComponent implements OnInit, AfterViewInit {
+  displayedColumns: string[] = ['teacherName', 'month', 'year', 'baseSalary', 'allowances', 'deductions', 'netSalary', 'paymentDate', 'status', 'actions'];
+  dataSource = new MatTableDataSource<SalaryRecord>();
+  loading = false;
+  searchTerm = '';
+  totalCount = 0;
+  teachers: Teacher[] = [];
+  filterForm: FormGroup;
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
+
+  constructor(
+    private salaryService: SalaryService,
+    private teacherService: TeacherService,
+    private dialog: MatDialog,
+    private fb: FormBuilder
+  ) {
+    this.filterForm = this.fb.group({
+      teacherId: [null],
+      month: [null],
+      year: [new Date().getFullYear()]
+    });
+  }
+
+  ngOnInit(): void {
+    this.loadSalaries();
+    this.loadTeachers();
+  }
+
+  ngAfterViewInit(): void {
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+  }
+
+  loadSalaries(): void {
+    this.loading = true;
+    
+    const teacherId = this.filterForm.get('teacherId')?.value;
+    const month = this.filterForm.get('month')?.value;
+    const year = this.filterForm.get('year')?.value;
+    
+    this.salaryService.getSalaryRecords(1, 10, teacherId, month, year)
+      .pipe(
+        catchError(error => {
+          console.error('Error loading salaries:', error);
+          return of({ items: [], totalCount: 0, pageNumber: 1, pageSize: 10, totalPages: 0 });
+        }),
+        finalize(() => this.loading = false)
+      )
+      .subscribe(result => {
+        this.dataSource.data = result.items;
+        this.totalCount = result.totalCount;
+      });
+  }
+
+  loadTeachers(): void {
+    this.teacherService.getTeachers(1, 100)
+      .pipe(
+        catchError(error => {
+          console.error('Error loading teachers:', error);
+          return of({ items: [], totalCount: 0, pageNumber: 1, pageSize: 100, totalPages: 0 });
+        })
+      )
+      .subscribe(result => {
+        this.teachers = result.items;
+      });
+  }
+
+  applyFilter(event: Event): void {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
+
+  onFilterChange(): void {
+    this.loadSalaries();
+  }
+
+  addSalary(): void {
+    // TODO: Implement add salary dialog
+    console.log('Add salary clicked');
+  }
+
+  viewSalary(salary: SalaryRecord): void {
+    // TODO: Implement view salary dialog
+    console.log('View salary:', salary);
+  }
+
+  editSalary(salary: SalaryRecord): void {
+    // TODO: Implement edit salary dialog
+    console.log('Edit salary:', salary);
+  }
+
+  deleteSalary(salary: SalaryRecord): void {
+    if (confirm(`هل أنت متأكد من حذف راتب ${salary.teacherName}؟`)) {
+      this.salaryService.deleteSalaryRecord(salary.id)
+        .pipe(
+          catchError(error => {
+            console.error('Error deleting salary:', error);
+            return of(void 0);
+          })
+        )
+        .subscribe(() => {
+          this.loadSalaries();
+        });
+    }
+  }
+
+  paySalary(salary: SalaryRecord): void {
+    if (confirm(`هل تريد تأكيد دفع راتب ${salary.teacherName}؟`)) {
+      this.salaryService.paySalary(salary.id)
+        .pipe(
+          catchError(error => {
+            console.error('Error paying salary:', error);
+            return of(salary);
+          })
+        )
+        .subscribe(() => {
+          this.loadSalaries();
+        });
+    }
+  }
+
+  getMonthText(month: number): string {
+    const months = ['', 'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 
+                   'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+    return months[month] || month.toString();
+  }
+
+  getStatusText(status: number): string {
+    const statuses = ['', 'قيد الانتظار', 'مدفوع', 'ملغي'];
+    return statuses[status] || 'غير محدد';
+  }
+
+  getStatusClass(status: number): string {
+    const classes = ['', 'text-warning', 'text-success', 'text-danger'];
+    return classes[status] || 'text-secondary';
+  }
+
+  exportSalaries(): void {
+    // TODO: Implement export functionality
+    console.log('Export salaries clicked');
+  }
+}

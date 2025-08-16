@@ -1,0 +1,45 @@
+.card {
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.form-control:disabled,
+.form-control[readonly] {
+  background-color: #f8f9fa;
+  opacity: 1;
+}
+
+.info-item {
+  margin-bottom: 1rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.info-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.info-item strong {
+  display: inline-block;
+  width: 150px;
+  color: #495057;
+}
+
+.text-primary {
+  border-bottom: 2px solid #007bff;
+  padding-bottom: 5px;
+  margin-bottom: 15px;
+}
+
+.btn {
+  border-radius: 8px;
+}
+
+@media (max-width: 768px) {
+  .info-item strong {
+    width: 100%;
+    display: block;
+    margin-bottom: 5px;
+  }
+}

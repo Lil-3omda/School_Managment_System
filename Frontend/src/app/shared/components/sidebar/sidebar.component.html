@@ -1,0 +1,139 @@
+<nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+  <div class="position-sticky pt-3">
+    <ul class="nav flex-column">
+      <!-- Common Dashboard Link -->
+      <li class="nav-item">
+        <a class="nav-link" [routerLink]="getDashboardRoute()" routerLinkActive="active">
+          <i class="fas fa-tachometer-alt me-2"></i>
+          الرئيسية
+        </a>
+      </li>
+
+      <!-- Student Navigation -->
+      <ng-container *ngIf="isStudent()">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/student/profile" routerLinkActive="active">
+            <i class="fas fa-user me-2"></i>
+            الملف الشخصي
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/student/schedule" routerLinkActive="active">
+            <i class="fas fa-calendar me-2"></i>
+            الجدول الدراسي
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/student/grades" routerLinkActive="active">
+            <i class="fas fa-chart-line me-2"></i>
+            الدرجات والنتائج
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/student/attendance" routerLinkActive="active">
+            <i class="fas fa-calendar-check me-2"></i>
+            سجل الحضور
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/student/exams" routerLinkActive="active">
+            <i class="fas fa-clipboard-list me-2"></i>
+            الامتحانات
+          </a>
+        </li>
+      </ng-container>
+
+      <!-- Teacher Navigation -->
+      <ng-container *ngIf="isTeacher()">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/teacher/profile" routerLinkActive="active">
+            <i class="fas fa-user me-2"></i>
+            الملف الشخصي
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/teacher/classes" routerLinkActive="active">
+            <i class="fas fa-chalkboard-teacher me-2"></i>
+            صفوفي
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/teacher/schedule" routerLinkActive="active">
+            <i class="fas fa-calendar me-2"></i>
+            الجدول الدراسي
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/teacher/grades" routerLinkActive="active">
+            <i class="fas fa-chart-line me-2"></i>
+            إدخال الدرجات
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/teacher/attendance" routerLinkActive="active">
+            <i class="fas fa-calendar-check me-2"></i>
+            الحضور والغياب
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/teacher/exams" routerLinkActive="active">
+            <i class="fas fa-clipboard-list me-2"></i>
+            الامتحانات
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/teacher/salary" routerLinkActive="active">
+            <i class="fas fa-money-bill me-2"></i>
+            الراتب
+          </a>
+        </li>
+      </ng-container>
+
+      <!-- Admin Navigation -->
+      <ng-container *ngIf="isAdmin()">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/admin/students" routerLinkActive="active">
+            <i class="fas fa-user-graduate me-2"></i>
+            إدارة الطلاب
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/admin/teachers" routerLinkActive="active">
+            <i class="fas fa-chalkboard-teacher me-2"></i>
+            إدارة المعلمين
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/admin/classes" routerLinkActive="active">
+            <i class="fas fa-school me-2"></i>
+            إدارة الصفوف
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/admin/subjects" routerLinkActive="active">
+            <i class="fas fa-book me-2"></i>
+            إدارة المواد
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/admin/exams" routerLinkActive="active">
+            <i class="fas fa-clipboard-list me-2"></i>
+            إدارة الامتحانات
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/admin/attendance-reports" routerLinkActive="active">
+            <i class="fas fa-chart-bar me-2"></i>
+            تقارير الحضور
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/admin/salaries" routerLinkActive="active">
+            <i class="fas fa-money-bill me-2"></i>
+            إدارة الرواتب
+          </a>
+        </li>
+      </ng-container>
+    </ul>
+  </div>
+</nav>

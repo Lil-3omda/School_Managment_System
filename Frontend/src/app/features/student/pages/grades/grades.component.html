@@ -1,0 +1,156 @@
+<app-layout>
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">الدرجات والنتائج</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+      <div class="btn-group me-2">
+        <button type="button" class="btn btn-sm btn-outline-secondary" (click)="loadGrades()">
+          <i class="fas fa-refresh me-1"></i>
+          تحديث
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="row mb-4">
+    <div class="col-lg-3 col-md-6 mb-3">
+      <div class="card bg-primary text-white">
+        <div class="card-body">
+          <div class="d-flex justify-content-between">
+            <div>
+              <div class="text-white-50 small">المعدل العام</div>
+              <div class="h4 mb-0">{{ gpa }}%</div>
+            </div>
+            <div class="align-self-center">
+              <i class="fas fa-chart-line fa-2x"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+      <div class="card bg-success text-white">
+        <div class="card-body">
+          <div class="d-flex justify-content-between">
+            <div>
+              <div class="text-white-50 small">المواد المجتازة</div>
+              <div class="h4 mb-0">{{ passedGradesCount }}</div>
+            </div>
+            <div class="align-self-center">
+              <i class="fas fa-check-circle fa-2x"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+      <div class="card bg-info text-white">
+        <div class="card-body">
+          <div class="d-flex justify-content-between">
+            <div>
+              <div class="text-white-50 small">إجمالي الامتحانات</div>
+              <div class="h4 mb-0">{{ totalExamsCount }}</div>
+            </div>
+            <div class="align-self-center">
+              <i class="fas fa-clipboard-list fa-2x"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+      <div class="card bg-warning text-white">
+        <div class="card-body">
+          <div class="d-flex justify-content-between">
+            <div>
+              <div class="text-white-50 small">أعلى درجة</div>
+              <div class="h4 mb-0">{{ highestPercentage }}%</div>
+            </div>
+            <div class="align-self-center">
+              <i class="fas fa-trophy fa-2x"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-6">
+          <label for="semesterFilter" class="form-label">الفصل الدراسي</label>
+          <select class="form-select" id="semesterFilter" [(ngModel)]="selectedSemester" (ngModelChange)="getFilteredGrades()">
+            <option value="all">جميع الفصول</option>
+            <option *ngFor="let semester of getUniqueSemesters()" [value]="semester">{{ semester }}</option>
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label for="subjectFilter" class="form-label">المادة</label>
+          <select class="form-select" id="subjectFilter" [(ngModel)]="selectedSubject" (ngModelChange)="getFilteredGrades()">
+            <option value="all">جميع المواد</option>
+            <option *ngFor="let subject of getUniqueSubjects()" [value]="subject">{{ subject }}</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Grades Table -->
+  <div class="card shadow">
+    <div class="card-header">
+      <h5 class="mb-0">سجل الدرجات</h5>
+    </div>
+    <div class="card-body">
+      <div *ngIf="loading" class="text-center py-4">
+        <div class="spinner-border" role="status">
+          <span class="visually-hidden">جاري التحميل...</span>
+        </div>
+      </div>
+      
+      <div *ngIf="!loading" class="table-responsive">
+        <table class="table table-hover">
+          <thead class="table-dark">
+            <tr>
+              <th>المادة</th>
+              <th>نوع الامتحان</th>
+              <th>الدرجة</th>
+              <th>النسبة المئوية</th>
+              <th>التقدير</th>
+              <th>الفصل الدراسي</th>
+              <th>التاريخ</th>
+              <th>الحالة</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let grade of getFilteredGrades()">
+              <td>{{ grade.subject }}</td>
+              <td>{{ grade.examType }}</td>
+              <td class="arabic-numbers">{{ grade.score }}/{{ grade.totalScore }}</td>
+              <td class="arabic-numbers">{{ grade.percentage }}%</td>
+              <td>
+                <span [class]="getGradeClass(grade.grade)">{{ grade.grade }}</span>
+              </td>
+              <td>{{ grade.semester }}</td>
+              <td>{{ grade.date | date:'short':'ar' }}</td>
+              <td>
+                <span [class]="grade.isPassed ? 'badge bg-success' : 'badge bg-danger'">
+                  {{ grade.isPassed ? 'نجح' : 'راسب' }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <div *ngIf="getFilteredGrades().length === 0" class="text-center py-4">
+          <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+          <p class="text-muted">لا توجد درجات متاحة</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</app-layout>

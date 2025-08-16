@@ -8,10 +8,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthService } from '../../../../core/services/auth.service';
 import { StudentService } from '../../../../core/services/student.service';
 import { User } from '../../../../core/models/user.model';
 import { Student } from '../../../../core/models/student.model';
+import { LayoutComponent } from '../../../../shared/components/layout/layout.component';
 
 @Component({
   selector: 'app-student-profile',
@@ -25,7 +27,9 @@ import { Student } from '../../../../core/models/student.model';
     MatButtonModule,
     MatSelectModule,
     MatDatepickerModule,
-    MatNativeDateModule
+    MatNativeDateModule,
+    MatProgressSpinnerModule,
+    LayoutComponent
   ],
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.scss']
@@ -69,24 +73,33 @@ export class StudentProfileComponent implements OnInit {
     if (!this.currentUser) return;
 
     this.loading = true;
-    // Mock data for now
-    this.studentData = {
-      id: 1,
-      userId: this.currentUser.id,
-      studentNumber: 'S001',
-      enrollmentDate: new Date('2023-09-01'),
-      classId: 1,
-      className: 'الصف الثالث أ',
-      guardianName: 'عبد الله الطالب',
-      guardianPhone: '0501111111',
-      guardianEmail: 'guardian@example.com',
-      user: this.currentUser,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-
-    this.populateForm();
-    this.loading = false;
+    this.studentService.getStudent(this.currentUser.id).subscribe({
+      next: (student) => {
+        this.studentData = student;
+        this.populateForm();
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Error loading student data:', error);
+        // Fallback to mock data if API fails
+        this.studentData = {
+          id: 1,
+          userId: this.currentUser!.id,
+          studentNumber: 'S001',
+          enrollmentDate: new Date('2023-09-01'),
+          classId: 1,
+          className: 'الصف الثالث أ',
+          guardianName: 'عبد الله الطالب',
+          guardianPhone: '0501111111',
+          guardianEmail: 'guardian@example.com',
+          user: this.currentUser!,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        this.populateForm();
+        this.loading = false;
+      }
+    });
   }
 
   private populateForm(): void {
@@ -121,15 +134,44 @@ export class StudentProfileComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.profileForm.valid && this.editing) {
+    if (this.profileForm.valid && this.editing && this.studentData) {
       this.loading = true;
-      // Mock update - in real implementation, call API
-      setTimeout(() => {
-        this.loading = false;
-        this.editing = false;
-        this.profileForm.disable();
-        // Show success message
-      }, 1000);
+      
+      const updatedData = {
+        ...this.profileForm.value,
+        id: this.studentData.id
+      };
+      
+      this.studentService.updateStudent(this.currentUser.id,updatedData).subscribe({
+        next: (response) => {
+          this.loading = false;
+          this.editing = false;
+          this.profileForm.disable();
+          
+          // Update current user data if needed
+          if (this.currentUser) {
+            this.currentUser.firstName = updatedData.firstName;
+            this.currentUser.lastName = updatedData.lastName;
+            this.currentUser.email = updatedData.email;
+            this.currentUser.phoneNumber = updatedData.phoneNumber;
+            this.currentUser.address = updatedData.address;
+          }
+          
+          // Update student data
+          if (this.studentData) {
+            this.studentData.guardianName = updatedData.guardianName;
+            this.studentData.guardianPhone = updatedData.guardianPhone;
+            this.studentData.guardianEmail = updatedData.guardianEmail;
+          }
+          
+          alert('تم حفظ البيانات بنجاح');
+        },
+        error: (error) => {
+          this.loading = false;
+          console.error('Error updating student data:', error);
+          alert('حدث خطأ في حفظ البيانات');
+        }
+      });
     }
   }
 

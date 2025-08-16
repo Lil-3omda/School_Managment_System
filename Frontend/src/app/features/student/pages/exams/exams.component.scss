@@ -1,0 +1,92 @@
+.card {
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.exam-card {
+  border-left: 4px solid #007bff;
+  transition: transform 0.2s ease;
+}
+
+.exam-card:hover {
+  transform: translateY(-2px);
+}
+
+.exam-details {
+  .detail-item {
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+  }
+}
+
+.countdown-card {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+  padding: 20px;
+  border-radius: 10px;
+  
+  .countdown-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  
+  .countdown-text {
+    font-size: 0.9rem;
+    opacity: 0.9;
+  }
+}
+
+.result-card {
+  background: linear-gradient(135deg, #28a745, #1e7e34);
+  color: white;
+  padding: 20px;
+  border-radius: 10px;
+  
+  .result-score {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin: 10px 0;
+  }
+  
+  .result-percentage {
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+  }
+  
+  .result-grade {
+    font-size: 1.5rem;
+    font-weight: bold;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 5px 15px;
+    border-radius: 20px;
+    display: inline-block;
+  }
+}
+
+.badge {
+  font-size: 0.8rem;
+}
+
+.btn-outline-secondary:hover {
+  color: #fff;
+  background-color: #6c757d;
+  border-color: #6c757d;
+}
+
+.alert {
+  border-radius: 8px;
+}
+
+@media (max-width: 768px) {
+  .exam-card .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .countdown-card,
+  .result-card {
+    margin-top: 15px;
+  }
+}

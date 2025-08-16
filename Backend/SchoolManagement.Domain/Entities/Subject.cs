@@ -8,6 +8,9 @@ public class Subject : BaseEntity
     public int Credits { get; set; }
     
     // Navigation properties
-    public ICollection<Class> Classes { get; set; } = new List<Class>();
+    public ICollection<ClassTeacher> ClassTeachers { get; set; } = new List<ClassTeacher>();
     public ICollection<Exam> Exams { get; set; } = new List<Exam>();
+    
+    // Helper method to get classes through ClassTeacher
+    public IEnumerable<Class> GetClasses() => ClassTeachers.Select(ct => ct.Class).Distinct();
 }

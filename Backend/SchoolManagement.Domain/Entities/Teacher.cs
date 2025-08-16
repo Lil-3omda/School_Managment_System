@@ -18,4 +18,10 @@ public class Teacher : BaseEntity
     public ICollection<ClassTeacher> ClassTeachers { get; set; } = new List<ClassTeacher>();
     public ICollection<Attendance> Attendances { get; set; } = new List<Attendance>();
     public ICollection<Salary> Salaries { get; set; } = new List<Salary>();
+    
+    // Helper method to get classes through ClassTeacher
+    public IEnumerable<Class> GetClasses() => ClassTeachers.Select(ct => ct.Class).Distinct();
+    
+    // Helper method to get subjects through ClassTeacher
+    public IEnumerable<Subject> GetSubjects() => ClassTeachers.Select(ct => ct.Subject).Distinct();
 }

@@ -150,4 +150,41 @@ public class AuthService : IAuthService
         
         return BCrypt.Net.BCrypt.Verify(password, user.PasswordHash);
     }
+
+    public async Task ForgetPasswordAsync(string email)
+    {
+        var user = await _context.Users
+            .FirstOrDefaultAsync(u => u.Email == email && !u.IsDeleted);
+        
+        if (user == null)
+            throw new ArgumentException("البريد الإلكتروني غير موجود");
+
+        // Generate password reset token (in real implementation, this would be a secure token)
+        var resetToken = Guid.NewGuid().ToString();
+        user.PasswordResetToken = resetToken;
+        user.PasswordResetTokenExpires = DateTime.UtcNow.AddHours(1); // Token expires in 1 hour
+        
+        await _context.SaveChangesAsync();
+        
+        // In real implementation, send email with reset link
+        // For now, we'll just simulate the email sending
+        // EmailService.SendPasswordResetEmail(email, resetToken);
+    }
+
+    public async Task ResetPasswordAsync(string token, string newPassword)
+    {
+        var user = await _context.Users
+            .FirstOrDefaultAsync(u => u.PasswordResetToken == token && 
+                                     u.PasswordResetTokenExpires > DateTime.UtcNow && 
+                                     !u.IsDeleted);
+        
+        if (user == null)
+            throw new ArgumentException("رمز إعادة التعيين غير صحيح أو منتهي الصلاحية");
+
+        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
+        user.PasswordResetToken = null;
+        user.PasswordResetTokenExpires = null;
+        
+        await _context.SaveChangesAsync();
+    }
 }

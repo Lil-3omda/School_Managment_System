@@ -3,6 +3,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { User } from '../../../core/models/user.model';
 import { CommonModule, DatePipe } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
 
 interface StudentStats {
   gpa: number;
@@ -39,7 +40,8 @@ interface ClassSchedule {
   imports: [
     DatePipe,
     CommonModule,
-    RouterModule
+    RouterModule,
+    NavbarComponent
   ],
   templateUrl: './student-dashboard.component.html',
   styleUrls: ['./student-dashboard.component.scss']
