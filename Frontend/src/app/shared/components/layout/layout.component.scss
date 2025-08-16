@@ -1,11 +1,22 @@
-main {
-  margin-top: 1rem;
+.layout-container {
+  margin-right: 250px; /* Space for fixed sidebar */
   min-height: calc(100vh - 56px);
-  padding-top: 1rem;
+  padding: 1rem;
+  background-color: #f8f9fa;
+}
+
+main {
+  margin-top: 0;
+  min-height: calc(100vh - 56px);
+  padding: 1rem;
 }
 
 @media (max-width: 767.98px) {
+  .layout-container {
+    margin-right: 0;
+  }
+  
   main {
-    margin-left: 0;
+    margin-right: 0;
   }
 }
