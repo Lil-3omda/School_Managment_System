@@ -18,19 +18,18 @@ public class ScheduleService : IScheduleService
     {
         var student = await _context.Students
             .Include(s => s.Class)
-            .ThenInclude(c => c.ClassTeachers)
-            .ThenInclude(ct => ct.Subject)
+                .ThenInclude(c => c.ClassTeachers)
+                    .ThenInclude(ct => ct.Subject)
             .Include(s => s.Class)
-            .ThenInclude(c => c.ClassTeachers)
-            .ThenInclude(ct => ct.Teacher)
-            .ThenInclude(t => t.User)
+                .ThenInclude(c => c.ClassTeachers)
+                    .ThenInclude(ct => ct.Teacher)
+                        .ThenInclude(t => t.User)
             .FirstOrDefaultAsync(s => s.Id == studentId);
 
-        if (student == null) return new List<ScheduleDto>();
+        if (student?.Class == null) return new List<ScheduleDto>();
 
-        // Mock schedule data - in real implementation, you would have a Schedule entity
         var schedules = new List<ScheduleDto>();
-        var classTeachers = student.Class.ClassTeachers.Where(ct => !ct.IsDeleted).ToList();
+        var classTeachers = student.Class.ClassTeachers.ToList();
 
         var days = new[] { "الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس" };
         var timeSlots = new[]
@@ -53,9 +52,9 @@ public class ScheduleService : IScheduleService
                     DayOfWeek = day,
                     StartTime = timeSlots[i].Start,
                     EndTime = timeSlots[i].End,
-                    SubjectName = classTeacher.Subject.Name,
+                    SubjectName = classTeacher.Subject?.Name ?? "N/A",
                     ClassName = student.Class.Name,
-                    TeacherName = classTeacher.Teacher.User.FullName,
+                    TeacherName = classTeacher.Teacher?.User?.FullName ?? "N/A",
                     Room = student.Class.Room,
                     ClassId = student.ClassId,
                     SubjectId = classTeacher.SubjectId,
@@ -73,11 +72,10 @@ public class ScheduleService : IScheduleService
             .Include(ct => ct.Class)
             .Include(ct => ct.Subject)
             .Include(ct => ct.Teacher)
-            .ThenInclude(t => t.User)
-            .Where(ct => ct.TeacherId == teacherId && !ct.IsDeleted)
+                .ThenInclude(t => t.User)
+            .Where(ct => ct.TeacherId == teacherId)
             .ToListAsync();
 
-        // Mock schedule data
         var schedules = new List<ScheduleDto>();
         var days = new[] { "الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس" };
         var timeSlots = new[]
@@ -100,10 +98,10 @@ public class ScheduleService : IScheduleService
                     DayOfWeek = day,
                     StartTime = timeSlots[i].Start,
                     EndTime = timeSlots[i].End,
-                    SubjectName = classTeacher.Subject.Name,
-                    ClassName = classTeacher.Class.Name,
-                    TeacherName = classTeacher.Teacher.User.FullName,
-                    Room = classTeacher.Class.Room,
+                    SubjectName = classTeacher.Subject?.Name ?? "N/A",
+                    ClassName = classTeacher.Class?.Name ?? "N/A",
+                    TeacherName = classTeacher.Teacher?.User?.FullName ?? "N/A",
+                    Room = classTeacher.Class?.Room ?? "N/A",
                     ClassId = classTeacher.ClassId,
                     SubjectId = classTeacher.SubjectId,
                     TeacherId = classTeacher.TeacherId
@@ -120,11 +118,10 @@ public class ScheduleService : IScheduleService
             .Include(ct => ct.Class)
             .Include(ct => ct.Subject)
             .Include(ct => ct.Teacher)
-            .ThenInclude(t => t.User)
-            .Where(ct => ct.ClassId == classId && !ct.IsDeleted)
+                .ThenInclude(t => t.User)
+            .Where(ct => ct.ClassId == classId)
             .ToListAsync();
 
-        // Mock schedule data
         var schedules = new List<ScheduleDto>();
         var days = new[] { "الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس" };
         var timeSlots = new[]
@@ -147,10 +144,10 @@ public class ScheduleService : IScheduleService
                     DayOfWeek = day,
                     StartTime = timeSlots[i].Start,
                     EndTime = timeSlots[i].End,
-                    SubjectName = classTeacher.Subject.Name,
-                    ClassName = classTeacher.Class.Name,
-                    TeacherName = classTeacher.Teacher.User.FullName,
-                    Room = classTeacher.Class.Room,
+                    SubjectName = classTeacher.Subject?.Name ?? "N/A",
+                    ClassName = classTeacher.Class?.Name ?? "N/A",
+                    TeacherName = classTeacher.Teacher?.User?.FullName ?? "N/A",
+                    Room = classTeacher.Class?.Room ?? "N/A",
                     ClassId = classTeacher.ClassId,
                     SubjectId = classTeacher.SubjectId,
                     TeacherId = classTeacher.TeacherId

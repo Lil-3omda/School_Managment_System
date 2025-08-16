@@ -1,6 +1,6 @@
 namespace SchoolManagement.Domain.Entities;
 
-public class ClassTeacher
+public class ClassTeacher : BaseEntity
 {
     public int ClassId { get; set; }
     public int TeacherId { get; set; }

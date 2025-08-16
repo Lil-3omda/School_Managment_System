@@ -12,7 +12,7 @@ public class Teacher : BaseEntity
     public decimal BaseSalary { get; set; }
     public SalaryType SalaryType { get; set; }
     public decimal HourlyRate { get; set; }
-    
+
     // Navigation properties
     public User User { get; set; } = null!;
     public ICollection<ClassTeacher> ClassTeachers { get; set; } = new List<ClassTeacher>();
