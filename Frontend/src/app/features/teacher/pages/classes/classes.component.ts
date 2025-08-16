@@ -14,6 +14,7 @@ import { AttendanceService } from '../../../../core/services/attendance.service'
 import { Student } from '../../../../core/models/student.model';
 import { catchError, finalize } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 interface TeacherClass {
   id: number;
@@ -60,8 +61,10 @@ interface AttendanceRecord {
     MatDialogModule,
     MatTableModule,
     MatTabsModule,
-    LayoutComponent
-  ],
+    LayoutComponent,
+    MatProgressSpinnerModule,
+    
+],
   template: `
     <app-layout>
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">

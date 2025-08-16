@@ -105,7 +105,7 @@ export class ManageStudentsComponent implements OnInit, AfterViewInit {
         catchError(error => {
           console.error('Error loading students:', error);
           this.snackBar.open('خطأ في تحميل بيانات الطلاب', 'إغلاق', { duration: 3000 });
-          return of({ data: [], totalCount: 0, pageNumber: 1, pageSize: 10, totalPages: 0, hasPreviousPage: false, hasNextPage: false });
+          return of({ data: [],  items: [], totalCount: 0, pageNumber: 1, pageSize: 10, totalPages: 0, hasPreviousPage: false, hasNextPage: false });
         }),
         finalize(() => this.loading = false)
       )
