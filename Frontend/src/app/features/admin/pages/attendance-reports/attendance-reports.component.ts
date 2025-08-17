@@ -20,6 +20,8 @@ import { ClassService, Class } from '../../../../core/services/class.service';
 import { AttendanceDialogComponent, AttendanceDialogData } from '../../../../shared/components/dialogs/attendance-dialog/attendance-dialog.component';
 import { catchError, finalize } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { MatDialog } from '@angular/material/dialog';
+
 
 @Component({
   selector: 'app-attendance-reports',
@@ -62,7 +64,8 @@ export class AttendanceReportsComponent implements OnInit, AfterViewInit {
   constructor(
     private attendanceService: AttendanceService,
     private classService: ClassService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private dialog: MatDialog
   ) {
     this.reportForm = this.fb.group({
       classId: [null],
