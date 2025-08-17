@@ -10,9 +10,10 @@ export interface SalaryRecord {
   month: number;
   year: number;
   baseSalary: number;
-  allowances: number;
+  hoursWorked: number;
+  bonus: number;
   deductions: number;
-  netSalary: number;
+  totalSalary: number;
   paymentDate: Date;
   status: number; // 1: Pending, 2: Paid, 3: Cancelled
   remarks: string;
@@ -25,18 +26,24 @@ export interface CreateSalaryRequest {
   month: number;
   year: number;
   baseSalary: number;
-  allowances: number;
+  hoursWorked: number;
+  bonus: number;
   deductions: number;
+  totalSalary: number;
+  status: number;
   paymentDate: Date;
   remarks?: string;
 }
 
 export interface PagedResult<T> {
+  data: T[];
   items: T[];
   totalCount: number;
   pageNumber: number;
   pageSize: number;
   totalPages: number;
+  hasPreviousPage: boolean;
+  hasNextPage: boolean;
 }
 
 @Injectable({
@@ -53,7 +60,7 @@ export class SalaryService {
       .set('pageSize', pageSize.toString());
     
     if (teacherId) {
-      params = params.set('teacherId', teacherId.toString());
+      return this.http.get<PagedResult<SalaryRecord>>(`${this.API_URL}/teacher/${teacherId}`, { params });
     }
     
     if (month) {
@@ -64,7 +71,12 @@ export class SalaryService {
       params = params.set('year', year.toString());
     }
     
-    return this.http.get<PagedResult<SalaryRecord>>(this.API_URL, { params });
+    return this.http.get<PagedResult<SalaryRecord>>(this.API_URL, { params }).pipe(
+      map(response => ({
+        ...response,
+        items: response.data || response.items || []
+      }))
+    );
   }
 
   getSalaryRecord(id: number): Observable<SalaryRecord> {
@@ -86,4 +98,7 @@ export class SalaryService {
   paySalary(id: number): Observable<SalaryRecord> {
     return this.http.patch<SalaryRecord>(`${this.API_URL}/${id}/pay`, {});
   }
+}
+
+import { map } from 'rxjs/operators';
 }

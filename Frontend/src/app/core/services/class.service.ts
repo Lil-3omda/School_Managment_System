@@ -6,22 +6,23 @@ import { environment } from '../../../environments/environment';
 export interface Class {
   id: number;
   name: string;
-  grade: number;
+  description: string;
   capacity: number;
-  teacherId: number;
-  teacherName: string;
-  academicYear: string;
-  isActive: boolean;
+  room: string;
+  startTime: string;
+  endTime: string;
+  studentCount: number;
   createdAt: Date;
   updatedAt: Date;
 }
 
 export interface CreateClassRequest {
   name: string;
-  grade: number;
+  description: string;
   capacity: number;
-  teacherId: number;
-  academicYear: string;
+  room: string;
+  startTime: string;
+  endTime: string;
 }
 
 export interface PagedResult<T> {
@@ -45,7 +46,12 @@ export class ClassService {
       .set('pageNumber', pageNumber.toString())
       .set('pageSize', pageSize.toString());
     
-    return this.http.get<PagedResult<Class>>(this.API_URL, { params });
+    return this.http.get<PagedResult<Class>>(this.API_URL, { params }).pipe(
+      map(response => ({
+        ...response,
+        items: response.data || response.items || []
+      }))
+    );
   }
 
   getClass(id: number): Observable<Class> {
@@ -63,4 +69,7 @@ export class ClassService {
   deleteClass(id: number): Observable<void> {
     return this.http.delete<void>(`${this.API_URL}/${id}`);
   }
+}
+
+import { map } from 'rxjs/operators';
 }

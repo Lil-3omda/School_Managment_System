@@ -288,15 +288,23 @@ export class TeacherDialogComponent implements OnInit {
     if (this.teacherForm.valid) {
       this.loading = true;
       const formData = {
-        ...this.teacherForm.value,
+        firstName: this.teacherForm.value.firstName,
+        lastName: this.teacherForm.value.lastName,
+        email: this.teacherForm.value.email,
+        phoneNumber: this.teacherForm.value.phoneNumber,
+        dateOfBirth: this.teacherForm.value.dateOfBirth,
         gender: parseInt(this.teacherForm.value.gender),
+        address: this.teacherForm.value.address,
+        employeeNumber: this.teacherForm.value.employeeNumber,
+        hireDate: this.teacherForm.value.hireDate,
+        qualification: this.teacherForm.value.qualification,
+        specialization: this.teacherForm.value.specialization,
+        baseSalary: parseFloat(this.teacherForm.value.baseSalary),
         salaryType: parseInt(this.teacherForm.value.salaryType)
+        hourlyRate: parseFloat(this.teacherForm.value.hourlyRate || 0)
       };
       
-      setTimeout(() => {
-        this.loading = false;
-        this.dialogRef.close(formData);
-      }, 1000);
+      this.dialogRef.close(formData);
     }
   }
 

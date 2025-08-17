@@ -37,11 +37,14 @@ export interface CreateAttendanceRequest {
 }
 
 export interface PagedResult<T> {
+  data: T[];
   items: T[];
   totalCount: number;
   pageNumber: number;
   pageSize: number;
   totalPages: number;
+  hasPreviousPage: boolean;
+  hasNextPage: boolean;
 }
 
 @Injectable({
@@ -65,7 +68,12 @@ export class AttendanceService {
       params = params.set('date', date.toISOString());
     }
     
-    return this.http.get<PagedResult<AttendanceRecord>>(this.API_URL, { params });
+    return this.http.get<PagedResult<AttendanceRecord>>(this.API_URL, { params }).pipe(
+      map(response => ({
+        ...response,
+        items: response.data || response.items || []
+      }))
+    );
   }
 
   getAttendanceReport(classId: number, startDate: Date, endDate: Date): Observable<AttendanceReport[]> {
@@ -88,4 +96,7 @@ export class AttendanceService {
   deleteAttendanceRecord(id: number): Observable<void> {
     return this.http.delete<void>(`${this.API_URL}/${id}`);
   }
+}
+
+import { map } from 'rxjs/operators';
 }

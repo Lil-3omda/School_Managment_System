@@ -17,7 +17,12 @@ export class StudentService {
       .set('pageNumber', pageNumber.toString())
       .set('pageSize', pageSize.toString());
     
-    return this.http.get<PagedResult<Student>>(this.API_URL, { params });
+    return this.http.get<PagedResult<Student>>(this.API_URL, { params }).pipe(
+      map(response => ({
+        ...response,
+        items: response.data || response.items || []
+      }))
+    );
   }
 
   getStudent(id: number): Observable<Student> {
@@ -29,10 +34,14 @@ export class StudentService {
   }
 
   updateStudent(id: number, student: CreateStudentRequest): Observable<Student> {
-    return this.http.put<Student>(`${this.API_URL}/${id}`, student);
   }
 
   deleteStudent(id: number): Observable<void> {
     return this.http.delete<void>(`${this.API_URL}/${id}`);
   }
+}
+
+import { map } from 'rxjs/operators';
+  hasPreviousPage: boolean;
+  hasNextPage: boolean;
 }

@@ -44,26 +44,23 @@ import { of } from 'rxjs';
   styleUrls: ['./manage-classes.component.scss']
 })
 export class ManageClassesComponent implements OnInit, AfterViewInit {
-  displayedColumns: string[] = ['name', 'grade', 'capacity', 'teacherName', 'academicYear', 'isActive', 'actions'];
+  displayedColumns: string[] = ['name', 'room', 'capacity', 'schedule', 'createdAt', 'actions'];
   dataSource = new MatTableDataSource<Class>();
   loading = false;
   searchTerm = '';
   totalCount = 0;
-  teachers: Teacher[] = [];
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
     private classService: ClassService,
-    private teacherService: TeacherService,
     private dialog: MatDialog,
     private fb: FormBuilder
   ) {}
 
   ngOnInit(): void {
     this.loadClasses();
-    this.loadTeachers();
   }
 
   ngAfterViewInit(): void {
@@ -78,26 +75,13 @@ export class ManageClassesComponent implements OnInit, AfterViewInit {
       .pipe(
         catchError(error => {
           console.error('Error loading classes:', error);
-          return of({ items: [], totalCount: 0, pageNumber: 1, pageSize: 10, totalPages: 0 });
+          return of({ data: [], items: [], totalCount: 0, pageNumber: 1, pageSize: 10, totalPages: 0, hasPreviousPage: false, hasNextPage: false });
         }),
         finalize(() => this.loading = false)
       )
       .subscribe(result => {
-        this.dataSource.data = result.items;
+        this.dataSource.data = result.data || result.items || [];
         this.totalCount = result.totalCount;
-      });
-  }
-
-  loadTeachers(): void {
-    this.teacherService.getTeachers(1, 100)
-      .pipe(
-        catchError(error => {
-          console.error('Error loading teachers:', error);
-          return of({ items: [], totalCount: 0, pageNumber: 1, pageSize: 100, totalPages: 0 });
-        })
-      )
-      .subscribe(result => {
-        this.teachers = result.items;
       });
   }
 
@@ -120,11 +104,13 @@ export class ManageClassesComponent implements OnInit, AfterViewInit {
           .pipe(
             catchError(error => {
               console.error('Error creating class:', error);
+              alert('حدث خطأ في إضافة الصف');
               return of(null);
             })
           )
           .subscribe(response => {
             if (response) {
+              alert('تم إضافة الصف بنجاح');
               this.loadClasses();
             }
           });
@@ -162,6 +148,7 @@ export class ManageClassesComponent implements OnInit, AfterViewInit {
           )
           .subscribe(response => {
             if (response) {
+              alert('تم إضافة الصف بنجاح');
               this.loadClasses();
             }
           });
@@ -184,8 +171,10 @@ export class ManageClassesComponent implements OnInit, AfterViewInit {
     }
   }
 
-  getGradeText(grade: number): string {
-    const grades = ['', 'الأول', 'الثاني', 'الثالث', 'الرابع', 'الخامس', 'السادس'];
-    return grades[grade] || grade.toString();
+  getCapacityClass(current: number, total: number): string {
+    const percentage = (current / total) * 100;
+    if (percentage >= 90) return 'capacity-warn';
+    if (percentage >= 70) return 'capacity-accent';
+    return 'capacity-primary';
   }
 }

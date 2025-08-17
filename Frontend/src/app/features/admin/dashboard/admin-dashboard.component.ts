@@ -46,7 +46,13 @@ export class AdminDashboardComponent implements OnInit {
       .pipe(
         catchError(error => {
           console.error('Error loading statistics:', error);
-          return of(this.statistics);
+          // Return fallback data if API fails
+          return of({
+            totalStudents: 0,
+            totalTeachers: 0,
+            totalClasses: 0,
+            upcomingExams: 0
+          });
         }),
         finalize(() => this.loading = false)
       )

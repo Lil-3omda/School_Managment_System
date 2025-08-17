@@ -66,67 +66,55 @@ export class TeacherDashboardComponent implements OnInit {
   }
 
   private loadTeacherStats(): void {
-    // Mock data - replace with actual API calls
-    this.teacherStats = {
-      totalClasses: 5,
-      totalStudents: 125,
-      monthlyExams: 8,
-      averageAttendance: 88
-    };
+    // TODO: Replace with actual API calls when teacher stats endpoint is available
+    if (this.currentUser) {
+      this.teacherStats = {
+        totalClasses: 5,
+        totalStudents: 125,
+        monthlyExams: 8,
+        averageAttendance: 88
+      };
+    }
   }
 
   private loadTodaySchedule(): void {
-    // Mock data - replace with actual API calls
-    this.todaySchedule = [
-      {
-        time: '08:00 - 09:00',
-        subject: 'الرياضيات',
-        className: 'الصف الثالث أ',
-        room: 'قاعة 101'
-      },
-      {
-        time: '09:15 - 10:15',
-        subject: 'الفيزياء',
-        className: 'الصف الثاني ب',
-        room: 'مختبر الفيزياء'
-      },
-      {
-        time: '10:30 - 11:30',
-        subject: 'الرياضيات',
-        className: 'الصف الأول أ',
-        room: 'قاعة 205'
-      },
-      {
-        time: '12:00 - 13:00',
-        subject: 'الفيزياء',
-        className: 'الصف الثالث ب',
-        room: 'مختبر الفيزياء'
-      }
-    ];
+    // TODO: Replace with actual API calls when schedule endpoint is available
+    if (this.currentUser) {
+      this.todaySchedule = [
+        {
+          time: '08:00 - 09:00',
+          subject: 'الرياضيات',
+          className: 'الصف الثالث أ',
+          room: 'قاعة 101'
+        },
+        {
+          time: '09:15 - 10:15',
+          subject: 'الفيزياء',
+          className: 'الصف الثاني ب',
+          room: 'مختبر الفيزياء'
+        }
+      ];
+    }
   }
 
   private loadPendingTasks(): void {
-    // Mock data - replace with actual API calls
-    this.pendingTasks = [
-      {
-        title: 'تصحيح امتحان الرياضيات',
-        description: 'امتحان الصف الثالث أ',
-        dueDate: new Date(Date.now() + 86400000),
-        priority: 'عالي'
-      },
-      {
-        title: 'إعداد امتحان الفيزياء',
-        description: 'امتحان نصفي للصف الثاني',
-        dueDate: new Date(Date.now() + 259200000),
-        priority: 'متوسط'
-      },
-      {
-        title: 'تحديث درجات الواجبات',
-        description: 'واجبات الأسبوع الماضي',
-        dueDate: new Date(Date.now() + 172800000),
-        priority: 'منخفض'
-      }
-    ];
+    // TODO: Replace with actual API calls when tasks endpoint is available
+    if (this.currentUser) {
+      this.pendingTasks = [
+        {
+          title: 'تصحيح امتحان الرياضيات',
+          description: 'امتحان الصف الثالث أ',
+          dueDate: new Date(Date.now() + 86400000),
+          priority: 'عالي'
+        },
+        {
+          title: 'إعداد امتحان الفيزياء',
+          description: 'امتحان نصفي للصف الثاني',
+          dueDate: new Date(Date.now() + 259200000),
+          priority: 'متوسط'
+        }
+      ];
+    }
   }
 
   getPriorityClass(priority: string): string {

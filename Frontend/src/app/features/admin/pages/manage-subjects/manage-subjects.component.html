@@ -65,30 +65,29 @@
                 <th mat-header-cell *matHeaderCellDef>الوصف</th>
                 <td mat-cell *matCellDef="let subject">
                   <div class="description-info">
-                    <p class="description-text">{{ subject.description }}</p>
+                    <p class="description-text">{{ subject.description | slice:0:50 }}{{ subject.description.length > 50 ? '...' : '' }}</p>
                   </div>
                 </td>
               </ng-container>
 
-              <!-- Grade Column -->
-              <ng-container matColumnDef="grade">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>المرحلة</th>
+              <!-- Credits Column -->
+              <ng-container matColumnDef="credits">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>الساعات المعتمدة</th>
                 <td mat-cell *matCellDef="let subject">
-                  <div class="grade-info">
-                    <mat-icon class="grade-icon">grade</mat-icon>
-                    {{ getGradeText(subject.grade) }}
+                  <div class="credits-info">
+                    <mat-icon class="credits-icon">schedule</mat-icon>
+                    {{ subject.credits }} ساعة
                   </div>
                 </td>
               </ng-container>
 
-              <!-- Status Column -->
-              <ng-container matColumnDef="isActive">
-                <th mat-header-cell *matHeaderCellDef>الحالة</th>
+              <!-- Created Date Column -->
+              <ng-container matColumnDef="createdAt">
+                <th mat-header-cell *matHeaderCellDef>تاريخ الإنشاء</th>
                 <td mat-cell *matCellDef="let subject">
-                  <div class="status-info">
-                    <span class="status-badge" [class]="subject.isActive ? 'status-active' : 'status-inactive'">
-                      {{ subject.isActive ? 'نشط' : 'غير نشط' }}
-                    </span>
+                  <div class="date-info">
+                    <mat-icon class="date-icon">calendar_today</mat-icon>
+                    {{ subject.createdAt | date:'shortDate':'ar' }}
                   </div>
                 </td>
               </ng-container>

@@ -40,18 +40,18 @@
                     <div>
                       <strong>{{ class.name }}</strong>
                       <br>
-                      <small class="text-muted">الصف {{ getGradeText(class.grade) }}</small>
+                      <small class="text-muted">{{ class.description }}</small>
                     </div>
                   </div>
                 </td>
               </ng-container>
 
-              <ng-container matColumnDef="grade">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>المرحلة</th>
+              <ng-container matColumnDef="room">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>القاعة</th>
                 <td mat-cell *matCellDef="let class">
-                  <div class="grade-info">
-                    <mat-icon class="grade-icon">grade</mat-icon>
-                    {{ getGradeText(class.grade) }}
+                  <div class="room-info">
+                    <mat-icon class="room-icon">room</mat-icon>
+                    {{ class.room }}
                   </div>
                 </td>
               </ng-container>
@@ -61,39 +61,34 @@
                 <td mat-cell *matCellDef="let class">
                   <div class="capacity-info">
                     <div class="capacity-text">
-                      {{ class.capacity }} طالب
+                      {{ class.studentCount }}/{{ class.capacity }} طالب
+                    </div>
+                    <div class="capacity-bar">
+                      <div class="capacity-fill" 
+                           [style.width.%]="(class.studentCount / class.capacity) * 100"
+                           [class]="getCapacityClass(class.studentCount, class.capacity)">
+                      </div>
                     </div>
                   </div>
                 </td>
               </ng-container>
 
-              <ng-container matColumnDef="teacherName">
-                <th mat-header-cell *matHeaderCellDef>المعلم المسؤول</th>
+              <ng-container matColumnDef="schedule">
+                <th mat-header-cell *matHeaderCellDef>الجدول</th>
                 <td mat-cell *matCellDef="let class">
-                  <div class="teacher-info">
-                    <mat-icon class="teacher-icon">person</mat-icon>
-                    {{ class.teacherName }}
+                  <div class="schedule-info">
+                    <mat-icon class="schedule-icon">schedule</mat-icon>
+                    {{ class.startTime }} - {{ class.endTime }}
                   </div>
                 </td>
               </ng-container>
 
-              <ng-container matColumnDef="academicYear">
-                <th mat-header-cell *matHeaderCellDef>السنة الدراسية</th>
+              <ng-container matColumnDef="createdAt">
+                <th mat-header-cell *matHeaderCellDef>تاريخ الإنشاء</th>
                 <td mat-cell *matCellDef="let class">
-                  <div class="year-info">
-                    <mat-icon class="year-icon">calendar_today</mat-icon>
-                    {{ class.academicYear }}
-                  </div>
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="isActive">
-                <th mat-header-cell *matHeaderCellDef>الحالة</th>
-                <td mat-cell *matCellDef="let class">
-                  <div class="status-info">
-                    <span class="status-badge" [class]="class.isActive ? 'status-active' : 'status-inactive'">
-                      {{ class.isActive ? 'نشط' : 'غير نشط' }}
-                    </span>
+                  <div class="date-info">
+                    <mat-icon class="date-icon">calendar_today</mat-icon>
+                    {{ class.createdAt | date:'shortDate':'ar' }}
                   </div>
                 </td>
               </ng-container>

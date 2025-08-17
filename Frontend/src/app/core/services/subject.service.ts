@@ -8,8 +8,7 @@ export interface Subject {
   name: string;
   code: string;
   description: string;
-  grade: number;
-  isActive: boolean;
+  credits: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -18,7 +17,7 @@ export interface CreateSubjectRequest {
   name: string;
   code: string;
   description: string;
-  grade: number;
+  credits: number;
 }
 
 export interface PagedResult<T> {
@@ -42,7 +41,12 @@ export class SubjectService {
       .set('pageNumber', pageNumber.toString())
       .set('pageSize', pageSize.toString());
     
-    return this.http.get<PagedResult<Subject>>(this.API_URL, { params });
+    return this.http.get<PagedResult<Subject>>(this.API_URL, { params }).pipe(
+      map(response => ({
+        ...response,
+        items: response.data || response.items || []
+      }))
+    );
   }
 
   getSubject(id: number): Observable<Subject> {
@@ -60,4 +64,7 @@ export class SubjectService {
   deleteSubject(id: number): Observable<void> {
     return this.http.delete<void>(`${this.API_URL}/${id}`);
   }
+}
+
+import { map } from 'rxjs/operators';
 }

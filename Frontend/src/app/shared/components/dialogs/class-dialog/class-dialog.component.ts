@@ -180,12 +180,16 @@ export class ClassDialogComponent implements OnInit {
   onSave(): void {
     if (this.classForm.valid) {
       this.loading = true;
-      const formData = this.classForm.value;
+      const formData = {
+        name: this.classForm.value.name,
+        description: this.classForm.value.description,
+        capacity: parseInt(this.classForm.value.capacity),
+        room: this.classForm.value.room,
+        startTime: this.classForm.value.startTime,
+        endTime: this.classForm.value.endTime
+      };
       
-      setTimeout(() => {
-        this.loading = false;
-        this.dialogRef.close(formData);
-      }, 1000);
+      this.dialogRef.close(formData);
     }
   }
 

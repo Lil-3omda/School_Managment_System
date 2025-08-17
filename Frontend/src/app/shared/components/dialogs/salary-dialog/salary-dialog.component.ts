@@ -217,6 +217,11 @@ export class SalaryDialogComponent implements OnInit {
       status: ['', Validators.required],
       paidDate: [null]
     });
+    
+    // Watch for changes to calculate total
+    this.salaryForm.get('baseSalary')?.valueChanges.subscribe(() => this.calculateTotal());
+    this.salaryForm.get('bonus')?.valueChanges.subscribe(() => this.calculateTotal());
+    this.salaryForm.get('deductions')?.valueChanges.subscribe(() => this.calculateTotal());
   }
 
   ngOnInit(): void {

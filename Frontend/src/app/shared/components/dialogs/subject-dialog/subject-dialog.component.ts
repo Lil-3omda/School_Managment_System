@@ -154,12 +154,14 @@ export class SubjectDialogComponent implements OnInit {
   onSave(): void {
     if (this.subjectForm.valid) {
       this.loading = true;
-      const formData = this.subjectForm.value;
+      const formData = {
+        name: this.subjectForm.value.name,
+        code: this.subjectForm.value.code,
+        description: this.subjectForm.value.description,
+        credits: parseInt(this.subjectForm.value.credits)
+      };
       
-      setTimeout(() => {
-        this.loading = false;
-        this.dialogRef.close(formData);
-      }, 1000);
+      this.dialogRef.close(formData);
     }
   }
 

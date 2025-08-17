@@ -40,7 +40,7 @@ import { of } from 'rxjs';
   styleUrls: ['./manage-teachers.component.scss']
 })
 export class ManageTeachersComponent implements OnInit, AfterViewInit {
-  displayedColumns: string[] = ['teacherNumber', 'name', 'email', 'subject', 'hireDate', 'salary', 'actions'];
+  displayedColumns: string[] = ['employeeNumber', 'name', 'email', 'specialization', 'hireDate', 'baseSalary', 'actions'];
   dataSource = new MatTableDataSource<Teacher>();
   loading = false;
   searchTerm = '';
@@ -70,12 +70,12 @@ export class ManageTeachersComponent implements OnInit, AfterViewInit {
       .pipe(
         catchError(error => {
           console.error('Error loading teachers:', error);
-          return of({ items: [], totalCount: 0, pageNumber: 1, pageSize: 10, totalPages: 0 });
+          return of({ data: [], items: [], totalCount: 0, pageNumber: 1, pageSize: 10, totalPages: 0, hasPreviousPage: false, hasNextPage: false });
         }),
         finalize(() => this.loading = false)
       )
       .subscribe(result => {
-        this.dataSource.data = result.items;
+        this.dataSource.data = result.data || result.items || [];
         this.totalCount = result.totalCount;
       });
   }
@@ -104,6 +104,7 @@ export class ManageTeachersComponent implements OnInit, AfterViewInit {
           )
           .subscribe(response => {
             if (response) {
+              alert('تم إضافة المعلم بنجاح');
               this.loadTeachers();
             }
           });

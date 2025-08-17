@@ -6,11 +6,13 @@ import { environment } from '../../../environments/environment';
 export interface Teacher {
   id: number;
   userId: number;
-  teacherNumber: string;
+  employeeNumber: string;
   hireDate: Date;
-  subjectId: number;
-  subjectName: string;
-  salary: number;
+  qualification: string;
+  specialization: string;
+  baseSalary: number;
+  salaryType: number;
+  hourlyRate: number;
   isActive: boolean;
   user: {
     id: number;
@@ -32,11 +34,20 @@ export interface Teacher {
 }
 
 export interface CreateTeacherRequest {
-  userId: number;
-  teacherNumber: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  dateOfBirth: Date;
+  gender: number;
+  address: string;
+  employeeNumber: string;
   hireDate: Date;
-  subjectId: number;
-  salary: number;
+  qualification: string;
+  specialization: string;
+  baseSalary: number;
+  salaryType: number;
+  hourlyRate: number;
 }
 
 export interface PagedResult<T> {
@@ -60,7 +71,12 @@ export class TeacherService {
       .set('pageNumber', pageNumber.toString())
       .set('pageSize', pageSize.toString());
     
-    return this.http.get<PagedResult<Teacher>>(this.API_URL, { params });
+    return this.http.get<PagedResult<Teacher>>(this.API_URL, { params }).pipe(
+      map(response => ({
+        ...response,
+        items: response.data || response.items || []
+      }))
+    );
   }
 
   getTeacher(id: number): Observable<Teacher> {
@@ -78,4 +94,7 @@ export class TeacherService {
   deleteTeacher(id: number): Observable<void> {
     return this.http.delete<void>(`${this.API_URL}/${id}`);
   }
+}
+
+import { map } from 'rxjs/operators';
 }

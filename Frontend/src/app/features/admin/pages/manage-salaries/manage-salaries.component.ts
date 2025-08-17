@@ -48,7 +48,7 @@ import { of } from 'rxjs';
   // styleUrls: ['./manage-salaries.component.scss']
 })
 export class ManageSalariesComponent implements OnInit, AfterViewInit {
-  displayedColumns: string[] = ['teacherName', 'month', 'year', 'baseSalary', 'allowances', 'deductions', 'netSalary', 'paymentDate', 'status', 'actions'];
+  displayedColumns: string[] = ['teacherName', 'month', 'year', 'baseSalary', 'bonus', 'deductions', 'totalSalary', 'paymentDate', 'status', 'actions'];
   dataSource = new MatTableDataSource<SalaryRecord>();
   loading = false;
   searchTerm = '';
@@ -93,12 +93,12 @@ export class ManageSalariesComponent implements OnInit, AfterViewInit {
       .pipe(
         catchError(error => {
           console.error('Error loading salaries:', error);
-          return of({ items: [], totalCount: 0, pageNumber: 1, pageSize: 10, totalPages: 0 });
+          return of({ data: [], items: [], totalCount: 0, pageNumber: 1, pageSize: 10, totalPages: 0, hasPreviousPage: false, hasNextPage: false });
         }),
         finalize(() => this.loading = false)
       )
       .subscribe(result => {
-        this.dataSource.data = result.items;
+        this.dataSource.data = result.data || result.items || [];
         this.totalCount = result.totalCount;
       });
   }
@@ -108,11 +108,11 @@ export class ManageSalariesComponent implements OnInit, AfterViewInit {
       .pipe(
         catchError(error => {
           console.error('Error loading teachers:', error);
-          return of({ items: [], totalCount: 0, pageNumber: 1, pageSize: 100, totalPages: 0 });
+          return of({ data: [], items: [], totalCount: 0, pageNumber: 1, pageSize: 100, totalPages: 0, hasPreviousPage: false, hasNextPage: false });
         })
       )
       .subscribe(result => {
-        this.teachers = result.items;
+        this.teachers = result.data || result.items || [];
       });
   }
 

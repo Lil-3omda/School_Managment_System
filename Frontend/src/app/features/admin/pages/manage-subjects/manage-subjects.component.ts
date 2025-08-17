@@ -43,7 +43,7 @@ import { of } from 'rxjs';
   // styleUrls: ['./manage-subjects.component.scss']
 })
 export class ManageSubjectsComponent implements OnInit, AfterViewInit {
-  displayedColumns: string[] = ['code', 'name', 'description', 'grade', 'isActive', 'actions'];
+  displayedColumns: string[] = ['code', 'name', 'description', 'credits', 'createdAt', 'actions'];
   dataSource = new MatTableDataSource<Subject>();
   loading = false;
   searchTerm = '';
@@ -74,12 +74,12 @@ export class ManageSubjectsComponent implements OnInit, AfterViewInit {
       .pipe(
         catchError(error => {
           console.error('Error loading subjects:', error);
-          return of({ items: [], totalCount: 0, pageNumber: 1, pageSize: 10, totalPages: 0 });
+          return of({ data: [], items: [], totalCount: 0, pageNumber: 1, pageSize: 10, totalPages: 0, hasPreviousPage: false, hasNextPage: false });
         }),
         finalize(() => this.loading = false)
       )
       .subscribe(result => {
-        this.dataSource.data = result.items;
+        this.dataSource.data = result.data || result.items || [];
         this.totalCount = result.totalCount;
       });
   }
@@ -108,6 +108,7 @@ export class ManageSubjectsComponent implements OnInit, AfterViewInit {
           )
           .subscribe(response => {
             if (response) {
+              alert('تم إضافة المادة بنجاح');
               this.loadSubjects();
             }
           });
@@ -165,10 +166,5 @@ export class ManageSubjectsComponent implements OnInit, AfterViewInit {
           this.loadSubjects();
         });
     }
-  }
-
-  getGradeText(grade: number): string {
-    const grades = ['', 'الأول', 'الثاني', 'الثالث', 'الرابع', 'الخامس', 'السادس'];
-    return grades[grade] || grade.toString();
   }
 }

@@ -73,88 +73,78 @@ export class StudentDashboardComponent implements OnInit {
   }
 
   private loadStudentStats(): void {
-    // Mock data - replace with actual API calls
-    this.studentStats = {
-      gpa: 3.75,
-      attendanceRate: 92,
-      enrolledSubjects: 6,
-      upcomingExams: 3
-    };
+    // TODO: Replace with actual API calls when student stats endpoint is available
+    if (this.currentUser) {
+      // For now, use mock data but structure it to be easily replaceable
+      this.studentStats = {
+        gpa: 3.75,
+        attendanceRate: 92,
+        enrolledSubjects: 6,
+        upcomingExams: 3
+      };
+    }
   }
 
   private loadRecentGrades(): void {
-    // Mock data - replace with actual API calls
-    this.recentGrades = [
-      {
-        subject: 'الرياضيات',
-        examType: 'امتحان نصفي',
-        score: 85,
-        totalScore: 100,
-        date: new Date(Date.now() - 86400000),
-        isPassed: true
-      },
-      {
-        subject: 'العلوم',
-        examType: 'واجب',
-        score: 78,
-        totalScore: 80,
-        date: new Date(Date.now() - 172800000),
-        isPassed: true
-      },
-      {
-        subject: 'اللغة العربية',
-        examType: 'اختبار قصير',
-        score: 45,
-        totalScore: 50,
-        date: new Date(Date.now() - 259200000),
-        isPassed: true
-      }
-    ];
+    // TODO: Replace with actual API calls when grades endpoint is available
+    if (this.currentUser) {
+      this.recentGrades = [
+        {
+          subject: 'الرياضيات',
+          examType: 'امتحان نصفي',
+          score: 85,
+          totalScore: 100,
+          date: new Date(Date.now() - 86400000),
+          isPassed: true
+        },
+        {
+          subject: 'العلوم',
+          examType: 'واجب',
+          score: 78,
+          totalScore: 80,
+          date: new Date(Date.now() - 172800000),
+          isPassed: true
+        }
+      ];
+    }
   }
 
   private loadUpcomingExams(): void {
-    // Mock data - replace with actual API calls
-    this.upcomingExams = [
-      {
-        subject: 'الفيزياء',
-        type: 'امتحان نهائي',
-        date: new Date(Date.now() + 604800000) // 7 days from now
-      },
-      {
-        subject: 'الكيمياء',
-        type: 'امتحان نصفي',
-        date: new Date(Date.now() + 1209600000) // 14 days from now
-      },
-      {
-        subject: 'التاريخ',
-        type: 'اختبار قصير',
-        date: new Date(Date.now() + 259200000) // 3 days from now
-      }
-    ];
+    // TODO: Replace with actual API calls when exams endpoint is available
+    if (this.currentUser) {
+      this.upcomingExams = [
+        {
+          subject: 'الفيزياء',
+          type: 'امتحان نهائي',
+          date: new Date(Date.now() + 604800000)
+        },
+        {
+          subject: 'الكيمياء',
+          type: 'امتحان نصفي',
+          date: new Date(Date.now() + 1209600000)
+        }
+      ];
+    }
   }
 
   private loadTodaySchedule(): void {
-    // Mock data - replace with actual API calls
-    this.todaySchedule = [
-      {
-        subject: 'الرياضيات',
-        teacher: 'أ. محمد أحمد',
-        time: '08:00 - 09:00',
-        room: 'قاعة 101'
-      },
-      {
-        subject: 'العلوم',
-        teacher: 'أ. فاطمة علي',
-        time: '09:15 - 10:15',
-        room: 'مختبر العلوم'
-      },
-      {
-        subject: 'اللغة العربية',
-        teacher: 'أ. عبد الله حسن',
-        time: '10:30 - 11:30',
-        room: 'قاعة 205'
-      }
-    ];
+    // TODO: Replace with actual API calls when schedule endpoint is available
+    if (this.currentUser) {
+      this.todaySchedule = [
+        {
+          subject: 'الرياضيات',
+          teacher: 'أ. محمد أحمد',
+          time: '08:00 - 09:00',
+          room: 'قاعة 101'
+        },
+        {
+          subject: 'العلوم',
+          teacher: 'أ. فاطمة علي',
+          time: '09:15 - 10:15',
+          room: 'مختبر العلوم'
+        }
+      ];
+    }
   }
 
   getGradeStatusClass(isPassed: boolean): string {
