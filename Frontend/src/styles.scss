@@ -11,7 +11,7 @@
 
 /* Arabic Font Support */
 body {
-  font-family: 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
+  font-family: 'Cairo', 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
   direction: rtl;
   text-align: right;
 }
@@ -132,4 +132,59 @@ body {
   border-bottom-right-radius: 0;
   border-top-left-radius: 0.25rem;
   border-bottom-left-radius: 0.25rem;
+}
+
+/* Material Icons Fix */
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Fix for mat-icon */
+.mat-icon {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Dialog Styles */
+.mat-dialog-container {
+  border-radius: 12px !important;
+}
+
+.mat-dialog-title {
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  color: #1976d2;
+  border-bottom: 2px solid #e3f2fd;
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.mat-dialog-actions {
+  border-top: 1px solid #e0e0e0;
+  padding-top: 1rem;
+  margin-top: 1.5rem;
 }

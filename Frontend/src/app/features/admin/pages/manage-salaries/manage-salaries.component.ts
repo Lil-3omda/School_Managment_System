@@ -18,6 +18,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { NavbarComponent } from '../../../../shared/components/navbar/navbar.component';
 import { SalaryService, SalaryRecord } from '../../../../core/services/salary.service';
 import { TeacherService, Teacher } from '../../../../core/services/teacher.service';
+import { SalaryDialogComponent, SalaryDialogData } from '../../../../shared/components/dialogs/salary-dialog/salary-dialog.component';
 import { catchError, finalize } from 'rxjs/operators';
 import { of } from 'rxjs';
 
@@ -125,18 +126,69 @@ export class ManageSalariesComponent implements OnInit, AfterViewInit {
   }
 
   addSalary(): void {
-    // TODO: Implement add salary dialog
-    console.log('Add salary clicked');
+    const dialogRef = this.dialog.open(SalaryDialogComponent, {
+      width: '700px',
+      data: {
+        teachers: this.teachers,
+        mode: 'add'
+      } as SalaryDialogData
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.salaryService.createSalaryRecord(result)
+          .pipe(
+            catchError(error => {
+              console.error('Error creating salary:', error);
+              return of(null);
+            })
+          )
+          .subscribe(response => {
+            if (response) {
+              this.loadSalaries();
+            }
+          });
+      }
+    });
   }
 
   viewSalary(salary: SalaryRecord): void {
-    // TODO: Implement view salary dialog
-    console.log('View salary:', salary);
+    const dialogRef = this.dialog.open(SalaryDialogComponent, {
+      width: '700px',
+      data: {
+        salary: salary,
+        teachers: this.teachers,
+        mode: 'view'
+      } as SalaryDialogData
+    });
   }
 
   editSalary(salary: SalaryRecord): void {
-    // TODO: Implement edit salary dialog
-    console.log('Edit salary:', salary);
+    const dialogRef = this.dialog.open(SalaryDialogComponent, {
+      width: '700px',
+      data: {
+        salary: salary,
+        teachers: this.teachers,
+        mode: 'edit'
+      } as SalaryDialogData
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.salaryService.updateSalaryRecord(salary.id, result)
+          .pipe(
+            catchError(error => {
+              console.error('Error updating salary:', error);
+              return of(null);
+            })
+          )
+          .subscribe(response => {
+            if (response) {
+              this.loadSalaries();
+            }
+          });
+      }
+    });
   }
 
   deleteSalary(salary: SalaryRecord): void {

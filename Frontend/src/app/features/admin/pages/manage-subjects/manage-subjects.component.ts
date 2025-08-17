@@ -15,6 +15,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NavbarComponent } from '../../../../shared/components/navbar/navbar.component';
 import { SubjectService, Subject } from '../../../../core/services/subject.service';
+import { SubjectDialogComponent, SubjectDialogData } from '../../../../shared/components/dialogs/subject-dialog/subject-dialog.component';
 import { catchError, finalize } from 'rxjs/operators';
 import { of } from 'rxjs';
 
@@ -89,18 +90,66 @@ export class ManageSubjectsComponent implements OnInit, AfterViewInit {
   }
 
   addSubject(): void {
-    // TODO: Implement add subject dialog
-    console.log('Add subject clicked');
+    const dialogRef = this.dialog.open(SubjectDialogComponent, {
+      width: '600px',
+      data: {
+        mode: 'add'
+      } as SubjectDialogData
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.subjectService.createSubject(result)
+          .pipe(
+            catchError(error => {
+              console.error('Error creating subject:', error);
+              return of(null);
+            })
+          )
+          .subscribe(response => {
+            if (response) {
+              this.loadSubjects();
+            }
+          });
+      }
+    });
   }
 
   viewSubject(subject: Subject): void {
-    // TODO: Implement view subject dialog
-    console.log('View subject:', subject);
+    const dialogRef = this.dialog.open(SubjectDialogComponent, {
+      width: '600px',
+      data: {
+        subject: subject,
+        mode: 'view'
+      } as SubjectDialogData
+    });
   }
 
   editSubject(subject: Subject): void {
-    // TODO: Implement edit subject dialog
-    console.log('Edit subject:', subject);
+    const dialogRef = this.dialog.open(SubjectDialogComponent, {
+      width: '600px',
+      data: {
+        subject: subject,
+        mode: 'edit'
+      } as SubjectDialogData
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.subjectService.updateSubject(subject.id, result)
+          .pipe(
+            catchError(error => {
+              console.error('Error updating subject:', error);
+              return of(null);
+            })
+          )
+          .subscribe(response => {
+            if (response) {
+              this.loadSubjects();
+            }
+          });
+      }
+    });
   }
 
   deleteSubject(subject: Subject): void {

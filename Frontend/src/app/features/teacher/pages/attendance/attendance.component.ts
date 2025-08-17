@@ -18,6 +18,7 @@ import { LayoutComponent } from '../../../../shared/components/layout/layout.com
 import { AuthService } from '../../../../core/services/auth.service';
 import { AttendanceService, AttendanceRecord } from '../../../../core/services/attendance.service';
 import { ClassService, Class } from '../../../../core/services/class.service';
+import { AttendanceDialogComponent, AttendanceDialogData } from '../../../../shared/components/dialogs/attendance-dialog/attendance-dialog.component';
 import { User } from '../../../../core/models/user.model';
 import { catchError, finalize } from 'rxjs/operators';
 import { of } from 'rxjs';
@@ -351,11 +352,60 @@ export class TeacherAttendanceComponent implements OnInit {
   }
 
   markAttendance(): void {
-    console.log('Mark attendance dialog');
+    const dialogRef = this.dialog.open(AttendanceDialogComponent, {
+      width: '600px',
+      data: {
+        students: [], // Load from API
+        classes: this.classes,
+        mode: 'add'
+      } as AttendanceDialogData
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.attendanceService.createAttendanceRecord(result)
+          .pipe(
+            catchError(error => {
+              console.error('Error creating attendance:', error);
+              return of(null);
+            })
+          )
+          .subscribe(response => {
+            if (response) {
+              this.loadAttendanceRecords();
+            }
+          });
+      }
+    });
   }
 
   editAttendance(record: AttendanceRecord): void {
-    console.log('Edit attendance:', record);
+    const dialogRef = this.dialog.open(AttendanceDialogComponent, {
+      width: '600px',
+      data: {
+        attendance: record,
+        students: [], // Load from API
+        classes: this.classes,
+        mode: 'edit'
+      } as AttendanceDialogData
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.attendanceService.updateAttendanceRecord(record.id, result)
+          .pipe(
+            catchError(error => {
+              console.error('Error updating attendance:', error);
+              return of(null);
+            })
+          )
+          .subscribe(response => {
+            if (response) {
+              this.loadAttendanceRecords();
+            }
+          });
+      }
+    });
   }
 
   deleteAttendance(record: AttendanceRecord): void {

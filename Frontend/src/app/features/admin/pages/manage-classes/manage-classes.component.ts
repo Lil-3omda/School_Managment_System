@@ -16,6 +16,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { NavbarComponent } from '../../../../shared/components/navbar/navbar.component';
 import { ClassService, Class } from '../../../../core/services/class.service';
 import { TeacherService, Teacher } from '../../../../core/services/teacher.service';
+import { ClassDialogComponent, ClassDialogData } from '../../../../shared/components/dialogs/class-dialog/class-dialog.component';
 import { catchError, finalize } from 'rxjs/operators';
 import { of } from 'rxjs';
 
@@ -106,18 +107,66 @@ export class ManageClassesComponent implements OnInit, AfterViewInit {
   }
 
   addClass(): void {
-    // TODO: Implement add class dialog
-    console.log('Add class clicked');
+    const dialogRef = this.dialog.open(ClassDialogComponent, {
+      width: '700px',
+      data: {
+        mode: 'add'
+      } as ClassDialogData
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.classService.createClass(result)
+          .pipe(
+            catchError(error => {
+              console.error('Error creating class:', error);
+              return of(null);
+            })
+          )
+          .subscribe(response => {
+            if (response) {
+              this.loadClasses();
+            }
+          });
+      }
+    });
   }
 
   viewClass(classData: Class): void {
-    // TODO: Implement view class dialog
-    console.log('View class:', classData);
+    const dialogRef = this.dialog.open(ClassDialogComponent, {
+      width: '700px',
+      data: {
+        class: classData,
+        mode: 'view'
+      } as ClassDialogData
+    });
   }
 
   editClass(classData: Class): void {
-    // TODO: Implement edit class dialog
-    console.log('Edit class:', classData);
+    const dialogRef = this.dialog.open(ClassDialogComponent, {
+      width: '700px',
+      data: {
+        class: classData,
+        mode: 'edit'
+      } as ClassDialogData
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.classService.updateClass(classData.id, result)
+          .pipe(
+            catchError(error => {
+              console.error('Error updating class:', error);
+              return of(null);
+            })
+          )
+          .subscribe(response => {
+            if (response) {
+              this.loadClasses();
+            }
+          });
+      }
+    });
   }
 
   deleteClass(classData: Class): void {

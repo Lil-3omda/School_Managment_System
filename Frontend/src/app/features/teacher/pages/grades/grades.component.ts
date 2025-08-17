@@ -14,6 +14,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { LayoutComponent } from '../../../../shared/components/layout/layout.component';
 import { AuthService } from '../../../../core/services/auth.service';
+import { GradeDialogComponent, GradeDialogData } from '../../../../shared/components/dialogs/grade-dialog/grade-dialog.component';
 import { User } from '../../../../core/models/user.model';
 import { catchError, finalize } from 'rxjs/operators';
 import { of } from 'rxjs';
@@ -432,16 +433,49 @@ export class TeacherGradesComponent implements OnInit {
   }
 
   addGrade(): void {
-    console.log('Add grade dialog');
+    const dialogRef = this.dialog.open(GradeDialogComponent, {
+      width: '600px',
+      data: {
+        students: this.students,
+        exams: this.exams,
+        mode: 'add'
+      } as GradeDialogData
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        // TODO: Call API to create grade
+        console.log('Creating grade:', result);
+        this.loadGrades();
+      }
+    });
   }
 
   editGrade(grade: Grade): void {
-    console.log('Edit grade:', grade);
+    const dialogRef = this.dialog.open(GradeDialogComponent, {
+      width: '600px',
+      data: {
+        grade: grade,
+        students: this.students,
+        exams: this.exams,
+        mode: 'edit'
+      } as GradeDialogData
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        // TODO: Call API to update grade
+        console.log('Updating grade:', result);
+        this.loadGrades();
+      }
+    });
   }
 
   deleteGrade(grade: Grade): void {
     if (confirm(`هل أنت متأكد من حذف درجة ${grade.studentName}؟`)) {
-      console.log('Delete grade:', grade);
+      // TODO: Call API to delete grade
+      console.log('Deleting grade:', grade);
+      this.loadGrades();
     }
   }
 

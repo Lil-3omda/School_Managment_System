@@ -17,6 +17,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { NavbarComponent } from '../../../../shared/components/navbar/navbar.component';
 import { AttendanceService, AttendanceRecord, AttendanceReport } from '../../../../core/services/attendance.service';
 import { ClassService, Class } from '../../../../core/services/class.service';
+import { AttendanceDialogComponent, AttendanceDialogData } from '../../../../shared/components/dialogs/attendance-dialog/attendance-dialog.component';
 import { catchError, finalize } from 'rxjs/operators';
 import { of } from 'rxjs';
 
@@ -163,13 +164,72 @@ export class AttendanceReportsComponent implements OnInit, AfterViewInit {
   }
 
   exportReport(): void {
-    // TODO: Implement export functionality
-    console.log('Export report clicked');
+    const filteredData = this.dataSource.filteredData;
+    if (filteredData.length === 0) {
+      alert('لا توجد بيانات للتصدير');
+      return;
+    }
+
+    const csvContent = this.generateCSV(filteredData);
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    
+    if (link.download !== undefined) {
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `attendance-report-${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  }
+
+  private generateCSV(data: AttendanceRecord[]): string {
+    const headers = ['اسم الطالب', 'الصف', 'التاريخ', 'الحالة', 'ملاحظات'];
+    const csvRows = [headers.join(',')];
+    
+    data.forEach(record => {
+      const row = [
+        record.studentName,
+        record.className,
+        new Date(record.date).toLocaleDateString('ar-SA'),
+        this.getStatusText(record.status),
+        record.remarks || ''
+      ];
+      csvRows.push(row.join(','));
+    });
+    
+    return csvRows.join('\n');
   }
 
   editAttendance(record: AttendanceRecord): void {
-    // TODO: Implement edit attendance dialog
-    console.log('Edit attendance:', record);
+    const dialogRef = this.dialog.open(AttendanceDialogComponent, {
+      width: '600px',
+      data: {
+        attendance: record,
+        students: [], // Load from API
+        classes: this.classes,
+        mode: 'edit'
+      } as AttendanceDialogData
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.attendanceService.updateAttendanceRecord(record.id, result)
+          .pipe(
+            catchError(error => {
+              console.error('Error updating attendance:', error);
+              return of(null);
+            })
+          )
+          .subscribe(response => {
+            if (response) {
+              this.loadAttendanceRecords();
+            }
+          });
+      }
+    });
   }
 
   deleteAttendance(record: AttendanceRecord): void {

@@ -12,6 +12,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NavbarComponent } from '../../../../shared/components/navbar/navbar.component';
 import { TeacherService, Teacher } from '../../../../core/services/teacher.service';
+import { TeacherDialogComponent, TeacherDialogData } from '../../../../shared/components/dialogs/teacher-dialog/teacher-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 import { catchError, finalize } from 'rxjs/operators';
 import { of } from 'rxjs';
 
@@ -47,7 +49,10 @@ export class ManageTeachersComponent implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  constructor(private teacherService: TeacherService) {}
+  constructor(
+    private teacherService: TeacherService,
+    private dialog: MatDialog
+  ) {}
 
   ngOnInit(): void {
     this.loadTeachers();
@@ -81,18 +86,66 @@ export class ManageTeachersComponent implements OnInit, AfterViewInit {
   }
 
   addTeacher(): void {
-    // TODO: Implement add teacher dialog
-    console.log('Add teacher clicked');
+    const dialogRef = this.dialog.open(TeacherDialogComponent, {
+      width: '800px',
+      data: {
+        mode: 'add'
+      } as TeacherDialogData
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.teacherService.createTeacher(result)
+          .pipe(
+            catchError(error => {
+              console.error('Error creating teacher:', error);
+              return of(null);
+            })
+          )
+          .subscribe(response => {
+            if (response) {
+              this.loadTeachers();
+            }
+          });
+      }
+    });
   }
 
   viewTeacher(teacher: Teacher): void {
-    // TODO: Implement view teacher dialog
-    console.log('View teacher:', teacher);
+    const dialogRef = this.dialog.open(TeacherDialogComponent, {
+      width: '800px',
+      data: {
+        teacher: teacher,
+        mode: 'view'
+      } as TeacherDialogData
+    });
   }
 
   editTeacher(teacher: Teacher): void {
-    // TODO: Implement edit teacher dialog
-    console.log('Edit teacher:', teacher);
+    const dialogRef = this.dialog.open(TeacherDialogComponent, {
+      width: '800px',
+      data: {
+        teacher: teacher,
+        mode: 'edit'
+      } as TeacherDialogData
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.teacherService.updateTeacher(teacher.id, result)
+          .pipe(
+            catchError(error => {
+              console.error('Error updating teacher:', error);
+              return of(null);
+            })
+          )
+          .subscribe(response => {
+            if (response) {
+              this.loadTeachers();
+            }
+          });
+      }
+    });
   }
 
   deleteTeacher(teacher: Teacher): void {

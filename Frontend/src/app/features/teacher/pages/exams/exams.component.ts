@@ -19,6 +19,7 @@ import { AuthService } from '../../../../core/services/auth.service';
 import { ExamService, Exam } from '../../../../core/services/exam.service';
 import { ClassService, Class } from '../../../../core/services/class.service';
 import { SubjectService, Subject } from '../../../../core/services/subject.service';
+import { ExamDialogComponent, ExamDialogData } from '../../../../shared/components/dialogs/exam-dialog/exam-dialog.component';
 import { User } from '../../../../core/models/user.model';
 import { catchError, finalize } from 'rxjs/operators';
 import { of } from 'rxjs';
@@ -375,15 +376,72 @@ export class TeacherExamsComponent implements OnInit {
   }
 
   createExam(): void {
-    console.log('Create exam dialog');
+    const dialogRef = this.dialog.open(ExamDialogComponent, {
+      width: '700px',
+      data: {
+        classes: this.classes,
+        subjects: this.subjects,
+        mode: 'add'
+      } as ExamDialogData
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.examService.createExam(result)
+          .pipe(
+            catchError(error => {
+              console.error('Error creating exam:', error);
+              return of(null);
+            })
+          )
+          .subscribe(response => {
+            if (response) {
+              this.loadExams();
+            }
+          });
+      }
+    });
   }
 
   viewExam(exam: Exam): void {
-    console.log('View exam:', exam);
+    const dialogRef = this.dialog.open(ExamDialogComponent, {
+      width: '700px',
+      data: {
+        exam: exam,
+        classes: this.classes,
+        subjects: this.subjects,
+        mode: 'view'
+      } as ExamDialogData
+    });
   }
 
   editExam(exam: Exam): void {
-    console.log('Edit exam:', exam);
+    const dialogRef = this.dialog.open(ExamDialogComponent, {
+      width: '700px',
+      data: {
+        exam: exam,
+        classes: this.classes,
+        subjects: this.subjects,
+        mode: 'edit'
+      } as ExamDialogData
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.examService.updateExam(exam.id, result)
+          .pipe(
+            catchError(error => {
+              console.error('Error updating exam:', error);
+              return of(null);
+            })
+          )
+          .subscribe(response => {
+            if (response) {
+              this.loadExams();
+            }
+          });
+      }
+    });
   }
 
   deleteExam(exam: Exam): void {

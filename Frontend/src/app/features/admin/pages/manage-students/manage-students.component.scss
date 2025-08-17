@@ -172,47 +172,6 @@
   }
 }
 
-/* Dialog Styles */
-.dialog-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.dialog-card {
-  width: 90%;
-  max-width: 800px;
-  max-height: 90vh;
-  overflow-y: auto;
-  border-radius: 12px;
-}
-
-.dialog-card .mat-card-header {
-  background: #1976d2;
-  color: white;
-  margin: -24px -24px 24px -24px;
-  padding: 16px 24px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  
-  .mat-card-title {
-    color: white !important;
-    margin: 0;
-  }
-  
-  button {
-    color: white;
-  }
-}
-
 @media (max-width: 768px) {
   .container-fluid {
     padding: 1rem;
@@ -250,10 +209,5 @@
   .action-buttons {
     flex-direction: column;
     gap: 2px;
-  }
-  
-  .dialog-card {
-    width: 95%;
-    margin: 1rem;
   }
 }

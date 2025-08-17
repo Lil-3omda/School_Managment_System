@@ -20,6 +20,7 @@ import { NavbarComponent } from '../../../../shared/components/navbar/navbar.com
 import { StudentService } from '../../../../core/services/student.service';
 import { ClassService, Class } from '../../../../core/services/class.service';
 import { Student, CreateStudentRequest } from '../../../../core/models/student.model';
+import { StudentPaymentDialogComponent, StudentPaymentDialogData } from '../../../../shared/components/dialogs/student-payment-dialog/student-payment-dialog.component';
 import { catchError, finalize } from 'rxjs/operators';
 import { of } from 'rxjs';
 
@@ -55,9 +56,7 @@ export class ManageStudentsComponent implements OnInit, AfterViewInit {
   loading = false;
   submitting = false;
   totalCount = 0;
-  showAddDialog = false;
   
-  studentForm: FormGroup;
   availableClasses: Class[] = [];
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -67,25 +66,8 @@ export class ManageStudentsComponent implements OnInit, AfterViewInit {
     private studentService: StudentService,
     private classService: ClassService,
     private dialog: MatDialog,
-    private fb: FormBuilder,
     private snackBar: MatSnackBar
-  ) {
-    this.studentForm = this.fb.group({
-      firstName: ['', Validators.required],
-      lastName: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
-      phoneNumber: ['', Validators.required],
-      studentNumber: ['', Validators.required],
-      classId: ['', Validators.required],
-      dateOfBirth: ['', Validators.required],
-      gender: ['', Validators.required],
-      address: ['', Validators.required],
-      guardianName: ['', Validators.required],
-      guardianPhone: ['', Validators.required],
-      guardianEmail: ['', [Validators.required, Validators.email]],
-      enrollmentDate: [new Date(), Validators.required]
-    });
-  }
+  ) {}
 
   ngOnInit(): void {
     this.loadStudents();
@@ -134,49 +116,94 @@ export class ManageStudentsComponent implements OnInit, AfterViewInit {
   }
 
   addStudent(): void {
-    this.showAddDialog = true;
-    this.studentForm.reset();
-    this.studentForm.patchValue({
-      enrollmentDate: new Date()
+    const dialogRef = this.dialog.open(StudentPaymentDialogComponent, {
+      width: '900px',
+      data: {
+        availableClasses: this.availableClasses,
+        mode: 'add'
+      } as StudentPaymentDialogData
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        const studentData: CreateStudentRequest = {
+          firstName: result.firstName,
+          lastName: result.lastName,
+          email: result.email,
+          phoneNumber: result.phoneNumber,
+          dateOfBirth: result.dateOfBirth,
+          gender: result.gender,
+          address: result.address,
+          studentNumber: result.studentNumber,
+          enrollmentDate: result.enrollmentDate,
+          classId: result.classId,
+          guardianName: result.guardianName,
+          guardianPhone: result.guardianPhone,
+          guardianEmail: result.guardianEmail
+        };
+        
+        this.studentService.createStudent(studentData)
+          .pipe(
+            catchError(error => {
+              console.error('Error creating student:', error);
+              this.snackBar.open('خطأ في إضافة الطالب', 'إغلاق', { duration: 3000 });
+              return of(null);
+            })
+          )
+          .subscribe(response => {
+            if (response) {
+              this.snackBar.open('تم إضافة الطالب بنجاح', 'إغلاق', { duration: 3000 });
+              this.loadStudents();
+            }
+          });
+      }
     });
   }
 
-  closeAddDialog(): void {
-    this.showAddDialog = false;
-    this.studentForm.reset();
-  }
-
-  onSubmitStudent(): void {
-    if (this.studentForm.valid) {
-      this.submitting = true;
-      
-      const studentData: CreateStudentRequest = {
-        ...this.studentForm.value,
-        gender: parseInt(this.studentForm.value.gender)
-      };
-      
-      this.studentService.createStudent(studentData)
-        .pipe(
-          catchError(error => {
-            console.error('Error creating student:', error);
-            this.snackBar.open('خطأ في إضافة الطالب', 'إغلاق', { duration: 3000 });
-            return of(null);
-          }),
-          finalize(() => this.submitting = false)
-        )
-        .subscribe(response => {
-          if (response) {
-            this.snackBar.open('تم إضافة الطالب بنجاح', 'إغلاق', { duration: 3000 });
-            this.closeAddDialog();
-            this.loadStudents();
-          }
-        });
-    }
-  }
-
   editStudent(student: Student): void {
-    console.log('Edit student:', student);
-    // TODO: Implement edit dialog
+    const dialogRef = this.dialog.open(StudentPaymentDialogComponent, {
+      width: '900px',
+      data: {
+        student: student,
+        availableClasses: this.availableClasses,
+        mode: 'edit'
+      } as StudentPaymentDialogData
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        const studentData: CreateStudentRequest = {
+          firstName: result.firstName,
+          lastName: result.lastName,
+          email: result.email,
+          phoneNumber: result.phoneNumber,
+          dateOfBirth: result.dateOfBirth,
+          gender: result.gender,
+          address: result.address,
+          studentNumber: result.studentNumber,
+          enrollmentDate: result.enrollmentDate,
+          classId: result.classId,
+          guardianName: result.guardianName,
+          guardianPhone: result.guardianPhone,
+          guardianEmail: result.guardianEmail
+        };
+        
+        this.studentService.updateStudent(student.id, studentData)
+          .pipe(
+            catchError(error => {
+              console.error('Error updating student:', error);
+              this.snackBar.open('خطأ في تحديث بيانات الطالب', 'إغلاق', { duration: 3000 });
+              return of(null);
+            })
+          )
+          .subscribe(response => {
+            if (response) {
+              this.snackBar.open('تم تحديث بيانات الطالب بنجاح', 'إغلاق', { duration: 3000 });
+              this.loadStudents();
+            }
+          });
+      }
+    });
   }
 
   deleteStudent(student: Student): void {
@@ -197,8 +224,14 @@ export class ManageStudentsComponent implements OnInit, AfterViewInit {
   }
 
   viewStudent(student: Student): void {
-    console.log('View student:', student);
-    // TODO: Implement view dialog
+    const dialogRef = this.dialog.open(StudentPaymentDialogComponent, {
+      width: '900px',
+      data: {
+        student: student,
+        availableClasses: this.availableClasses,
+        mode: 'view'
+      } as StudentPaymentDialogData
+    });
   }
 
   getGenderText(gender: number): string {
