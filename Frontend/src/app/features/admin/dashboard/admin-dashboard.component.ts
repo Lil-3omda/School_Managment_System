@@ -4,8 +4,8 @@ import { RouterModule } from '@angular/router';
 import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { DashboardService, DashboardStatistics, RecentActivity, Notification } from '../../../core/services/dashboard.service';
-import { catchError, finalize, forkJoin } from 'rxjs/operators';
-import { of, interval } from 'rxjs';
+import { catchError, finalize } from 'rxjs/operators';
+import { of, interval, forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-admin-dashboard',
