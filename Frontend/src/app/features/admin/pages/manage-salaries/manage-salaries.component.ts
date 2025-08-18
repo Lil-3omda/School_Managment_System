@@ -121,6 +121,12 @@ export class ManageSalariesComponent implements OnInit, AfterViewInit {
 
   applyFilter(event: Event): void {
     const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filterPredicate = (data: SalaryRecord, filter: string) => {
+      const searchTerm = filter.toLowerCase();
+      return data.teacherName.toLowerCase().includes(searchTerm) ||
+             this.getMonthText(data.month).toLowerCase().includes(searchTerm) ||
+             data.year.toString().includes(searchTerm);
+    };
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 

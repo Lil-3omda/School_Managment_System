@@ -89,6 +89,12 @@ export class ManageSubjectsComponent implements OnInit, AfterViewInit {
 
   applyFilter(event: Event): void {
     const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filterPredicate = (data: Subject, filter: string) => {
+      const searchTerm = filter.toLowerCase();
+      return data.name.toLowerCase().includes(searchTerm) ||
+             data.code.toLowerCase().includes(searchTerm) ||
+             data.description.toLowerCase().includes(searchTerm);
+    };
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 

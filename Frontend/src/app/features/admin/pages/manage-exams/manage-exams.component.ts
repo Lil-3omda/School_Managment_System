@@ -123,6 +123,13 @@ export class ManageExamsComponent implements OnInit, AfterViewInit {
 
   applyFilter(event: Event): void {
     const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filterPredicate = (data: Exam, filter: string) => {
+      const searchTerm = filter.toLowerCase();
+      return data.title.toLowerCase().includes(searchTerm) ||
+             data.description.toLowerCase().includes(searchTerm) ||
+             data.subjectName.toLowerCase().includes(searchTerm) ||
+             data.className.toLowerCase().includes(searchTerm);
+    };
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 

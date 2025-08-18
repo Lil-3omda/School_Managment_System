@@ -112,6 +112,15 @@ export class ManageStudentsComponent implements OnInit, AfterViewInit {
 
   applyFilter(event: Event): void {
     const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filterPredicate = (data: Student, filter: string) => {
+      const searchTerm = filter.toLowerCase();
+      return data.user.firstName.toLowerCase().includes(searchTerm) ||
+             data.user.lastName.toLowerCase().includes(searchTerm) ||
+             data.user.fullName.toLowerCase().includes(searchTerm) ||
+             data.user.email.toLowerCase().includes(searchTerm) ||
+             data.studentNumber.toLowerCase().includes(searchTerm) ||
+             data.className.toLowerCase().includes(searchTerm);
+    };
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 

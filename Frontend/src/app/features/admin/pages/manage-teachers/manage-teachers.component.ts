@@ -85,6 +85,15 @@ export class ManageTeachersComponent implements OnInit, AfterViewInit {
 
   applyFilter(event: Event): void {
     const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filterPredicate = (data: Teacher, filter: string) => {
+      const searchTerm = filter.toLowerCase();
+      return data.user.firstName.toLowerCase().includes(searchTerm) ||
+             data.user.lastName.toLowerCase().includes(searchTerm) ||
+             data.user.fullName.toLowerCase().includes(searchTerm) ||
+             data.user.email.toLowerCase().includes(searchTerm) ||
+             data.employeeNumber.toLowerCase().includes(searchTerm) ||
+             data.specialization.toLowerCase().includes(searchTerm);
+    };
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 

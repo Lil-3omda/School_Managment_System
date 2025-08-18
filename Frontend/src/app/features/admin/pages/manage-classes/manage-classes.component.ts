@@ -90,6 +90,12 @@ export class ManageClassesComponent implements OnInit, AfterViewInit {
 
   applyFilter(event: Event): void {
     const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filterPredicate = (data: Class, filter: string) => {
+      const searchTerm = filter.toLowerCase();
+      return data.name.toLowerCase().includes(searchTerm) ||
+             data.description.toLowerCase().includes(searchTerm) ||
+             data.room.toLowerCase().includes(searchTerm);
+    };
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 

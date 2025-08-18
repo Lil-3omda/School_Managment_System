@@ -148,6 +148,12 @@ export class AttendanceReportsComponent implements OnInit, AfterViewInit {
 
   applyFilter(event: Event): void {
     const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filterPredicate = (data: AttendanceRecord, filter: string) => {
+      const searchTerm = filter.toLowerCase();
+      return (data.studentName || '').toLowerCase().includes(searchTerm) ||
+             data.className.toLowerCase().includes(searchTerm) ||
+             (data.teacherName || '').toLowerCase().includes(searchTerm);
+    };
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 

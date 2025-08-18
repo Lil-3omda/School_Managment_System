@@ -173,6 +173,65 @@ body {
   width: 100%;
 }
 
+/* Fix for dropdown z-index issues */
+.mat-select-panel {
+  background: white !important;
+  z-index: 9999 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  border-radius: 8px !important;
+  border: 1px solid #e0e0e0 !important;
+}
+
+.mat-option {
+  background: white !important;
+  color: #333 !important;
+  padding: 12px 16px !important;
+  border-bottom: 1px solid #f5f5f5 !important;
+}
+
+.mat-option:hover {
+  background: #f8f9fa !important;
+  color: #1976d2 !important;
+}
+
+.mat-option.mat-selected {
+  background: #e3f2fd !important;
+  color: #1976d2 !important;
+}
+
+.mat-option:last-child {
+  border-bottom: none !important;
+}
+
+/* Fix for Bootstrap dropdown z-index */
+.dropdown-menu {
+  z-index: 9999 !important;
+  background-color: white !important;
+  border: 1px solid rgba(0,0,0,.15) !important;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175) !important;
+}
+
+.navbar .dropdown {
+  position: relative !important;
+  z-index: 9999 !important;
+}
+
+/* Fix for clickable links */
+.clickable-link {
+  cursor: pointer !important;
+  text-decoration: none !important;
+  position: relative;
+  z-index: 10;
+  display: inline-block;
+  padding: 2px 4px;
+  transition: all 0.3s ease;
+}
+
+.clickable-link:hover {
+  text-decoration: underline !important;
+  transform: scale(1.05);
+}
+
 .mat-form-field-appearance-outline .mat-form-field-outline {
   border-radius: 10px !important;
   border-width: 2px !important;
