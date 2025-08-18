@@ -63,16 +63,24 @@
         <h1 class="h2">لوحة تحكم المدير</h1>
         <div class="btn-toolbar mb-2 mb-md-0">
           <div class="btn-group me-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary" (click)="refreshDashboard()" [disabled]="loading">
+              <span *ngIf="loading" class="spinner-border spinner-border-sm me-1"></span>
+              <i *ngIf="!loading" class="fas fa-sync-alt me-1"></i>
+              {{ loading ? 'جاري التحديث...' : 'تحديث' }}
+            </button>
             <button type="button" class="btn btn-sm btn-outline-secondary">
               <i class="fas fa-download me-1"></i>
               تصدير التقارير
             </button>
           </div>
+          <div class="text-muted small">
+            آخر تحديث: {{ lastUpdated | date:'short':'ar' }}
+          </div>
         </div>
       </div>
 
       <!-- Statistics Cards -->
-      <div class="row mb-4">
+      <div class="row mb-4" *ngIf="!loading">
         <div class="col-xl-3 col-md-6 mb-4">
           <div class="card dashboard-card border-right-primary">
             <div class="card-body">
@@ -82,7 +90,7 @@
                     إجمالي الطلاب
                   </div>
                   <div class="h5 mb-0 font-weight-bold text-gray-800">
-                    {{ statistics.totalStudents }}
+                    {{ statistics.totalStudents | number }}
                   </div>
                 </div>
                 <div class="col-auto">
@@ -102,7 +110,7 @@
                     إجمالي المعلمين
                   </div>
                   <div class="h5 mb-0 font-weight-bold text-gray-800">
-                    {{ statistics.totalTeachers }}
+                    {{ statistics.totalTeachers | number }}
                   </div>
                 </div>
                 <div class="col-auto">
@@ -122,7 +130,7 @@
                     إجمالي الصفوف
                   </div>
                   <div class="h5 mb-0 font-weight-bold text-gray-800">
-                    {{ statistics.totalClasses }}
+                    {{ statistics.totalClasses | number }}
                   </div>
                 </div>
                 <div class="col-auto">
@@ -142,7 +150,7 @@
                     الامتحانات القادمة
                   </div>
                   <div class="h5 mb-0 font-weight-bold text-gray-800">
-                    {{ statistics.upcomingExams }}
+                    {{ statistics.upcomingExams | number }}
                   </div>
                 </div>
                 <div class="col-auto">
@@ -154,15 +162,32 @@
         </div>
       </div>
 
+      <!-- Loading State -->
+      <div class="row mb-4" *ngIf="loading">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-body text-center py-5">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">جاري تحميل البيانات...</span>
+              </div>
+              <p class="mt-3 text-muted">جاري تحميل إحصائيات لوحة التحكم...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Recent Activities -->
-      <div class="row">
+      <div class="row" *ngIf="!loading">
         <div class="col-lg-8">
           <div class="card shadow mb-4">
             <div class="card-header py-3">
-              <h6 class="m-0 font-weight-bold text-primary">الأنشطة الأخيرة</h6>
+              <div class="d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-primary">الأنشطة الأخيرة</h6>
+                <small class="text-muted">{{ recentActivities.length }} نشاط</small>
+              </div>
             </div>
             <div class="card-body">
-              <div class="table-responsive">
+              <div class="table-responsive" *ngIf="recentActivities.length > 0">
                 <table class="table table-bordered" width="100%" cellspacing="0">
                   <thead>
                     <tr>
@@ -186,6 +211,10 @@
                   </tbody>
                 </table>
               </div>
+              <div class="text-center py-4" *ngIf="recentActivities.length === 0">
+                <i class="fas fa-history fa-3x text-muted mb-3"></i>
+                <p class="text-muted">لا توجد أنشطة حديثة</p>
+              </div>
             </div>
           </div>
         </div>
@@ -193,18 +222,38 @@
         <div class="col-lg-4">
           <div class="card shadow mb-4">
             <div class="card-header py-3">
-              <h6 class="m-0 font-weight-bold text-primary">الإشعارات</h6>
+              <div class="d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-primary">الإشعارات</h6>
+                <span class="badge bg-primary">{{ notifications.filter(n => !n.isRead).length }}</span>
+              </div>
             </div>
             <div class="card-body">
-              <div class="list-group list-group-flush">
-                <div class="list-group-item" *ngFor="let notification of notifications">
+              <div class="list-group list-group-flush" *ngIf="notifications.length > 0">
+                <div class="list-group-item notification-item" 
+                     *ngFor="let notification of notifications"
+                     [class.unread]="!notification.isRead"
+                     (click)="markNotificationAsRead(notification)">
                   <div class="d-flex w-100 justify-content-between">
-                    <h6 class="mb-1">{{ notification.title }}</h6>
-                    <small>{{ notification.date | date:'short':'ar' }}</small>
+                    <h6 class="mb-1">
+                      <i class="fas fa-circle text-primary me-1" *ngIf="!notification.isRead" style="font-size: 0.5rem;"></i>
+                      {{ notification.title }}
+                    </h6>
+                    <small class="text-muted">{{ notification.date | date:'short':'ar' }}</small>
                   </div>
                   <p class="mb-1">{{ notification.message }}</p>
-                  <small [class]="'text-' + notification.type">{{ notification.type }}</small>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <small [class]="'badge bg-' + getNotificationTypeClass(notification.type)">
+                      {{ getNotificationTypeText(notification.type) }}
+                    </small>
+                    <small class="text-muted" *ngIf="notification.isRead">
+                      <i class="fas fa-check"></i> مقروء
+                    </small>
+                  </div>
                 </div>
+              </div>
+              <div class="text-center py-4" *ngIf="notifications.length === 0">
+                <i class="fas fa-bell-slash fa-3x text-muted mb-3"></i>
+                <p class="text-muted">لا توجد إشعارات جديدة</p>
               </div>
             </div>
           </div>

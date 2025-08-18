@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
 export interface DashboardStatistics {
@@ -33,11 +34,22 @@ export interface Notification {
 })
 export class DashboardService {
   private readonly API_URL = `${environment.apiUrl}/dashboard`;
+  private statisticsSubject = new BehaviorSubject<DashboardStatistics>({
+    totalStudents: 0,
+    totalTeachers: 0,
+    totalClasses: 0,
+    upcomingExams: 0
+  });
+  
+  public statistics$ = this.statisticsSubject.asObservable();
 
   constructor(private http: HttpClient) {}
 
   getStatistics(): Observable<DashboardStatistics> {
-    return this.http.get<DashboardStatistics>(`${this.API_URL}/statistics`);
+    return this.http.get<DashboardStatistics>(`${this.API_URL}/statistics`)
+      .pipe(
+        tap(stats => this.statisticsSubject.next(stats))
+      );
   }
 
   getRecentActivities(): Observable<RecentActivity[]> {
@@ -50,5 +62,23 @@ export class DashboardService {
 
   markNotificationAsRead(id: number): Observable<void> {
     return this.http.patch<void>(`${this.API_URL}/notifications/${id}/read`, {});
+  }
+
+  // Get cached statistics without making API call
+  getCachedStatistics(): DashboardStatistics {
+    return this.statisticsSubject.value;
+  }
+
+  // Refresh all dashboard data
+  refreshDashboard(): Observable<{
+    statistics: DashboardStatistics;
+    activities: RecentActivity[];
+    notifications: Notification[];
+  }> {
+    return this.http.get<{
+      statistics: DashboardStatistics;
+      activities: RecentActivity[];
+      notifications: Notification[];
+    }>(`${this.API_URL}/refresh`);
   }
 }

@@ -21,31 +21,83 @@ public class DashboardController : ControllerBase
     [Authorize(Roles = "Admin")]
     public async Task<ActionResult<DashboardStatisticsDto>> GetStatistics()
     {
-        var statistics = await _dashboardService.GetDashboardStatisticsAsync();
-        return Ok(statistics);
+        try
+        {
+            var statistics = await _dashboardService.GetDashboardStatisticsAsync();
+            return Ok(statistics);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "خطأ في تحميل الإحصائيات", details = ex.Message });
+        }
     }
 
     [HttpGet("activities")]
     [Authorize(Roles = "Admin")]
     public async Task<ActionResult<List<RecentActivityDto>>> GetRecentActivities()
     {
-        var activities = await _dashboardService.GetRecentActivitiesAsync();
-        return Ok(activities);
+        try
+        {
+            var activities = await _dashboardService.GetRecentActivitiesAsync();
+            return Ok(activities);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "خطأ في تحميل الأنشطة", details = ex.Message });
+        }
     }
 
     [HttpGet("notifications")]
     [Authorize(Roles = "Admin")]
     public async Task<ActionResult<List<NotificationDto>>> GetNotifications()
     {
-        var notifications = await _dashboardService.GetNotificationsAsync();
-        return Ok(notifications);
+        try
+        {
+            var notifications = await _dashboardService.GetNotificationsAsync();
+            return Ok(notifications);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "خطأ في تحميل الإشعارات", details = ex.Message });
+        }
     }
 
     [HttpPatch("notifications/{id}/read")]
     [Authorize(Roles = "Admin")]
     public async Task<ActionResult> MarkNotificationAsRead(int id)
     {
-        await _dashboardService.MarkNotificationAsReadAsync(id);
-        return NoContent();
+        try
+        {
+            await _dashboardService.MarkNotificationAsReadAsync(id);
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "خطأ في تحديث الإشعار", details = ex.Message });
+        }
+    }
+
+    [HttpGet("refresh")]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<object>> RefreshDashboard()
+    {
+        try
+        {
+            var statistics = await _dashboardService.GetDashboardStatisticsAsync();
+            var activities = await _dashboardService.GetRecentActivitiesAsync();
+            var notifications = await _dashboardService.GetNotificationsAsync();
+
+            return Ok(new
+            {
+                statistics,
+                activities,
+                notifications,
+                lastUpdated = DateTime.UtcNow
+            });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "خطأ في تحديث لوحة التحكم", details = ex.Message });
+        }
     }
 }
