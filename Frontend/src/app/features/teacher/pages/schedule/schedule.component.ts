@@ -9,6 +9,9 @@ import { LayoutComponent } from '../../../../shared/components/layout/layout.com
 import { AuthService } from '../../../../core/services/auth.service';
 import { ScheduleService, Schedule } from '../../../../core/services/schedule.service';
 import { User } from '../../../../core/models/user.model';
+import { TeacherService } from '../../../../core/services/teacher.service';
+import { catchError, finalize } from 'rxjs/operators';
+import { of } from 'rxjs';
 import { catchError, finalize } from 'rxjs/operators';
 import { of } from 'rxjs';
 
@@ -211,7 +214,8 @@ export class TeacherScheduleComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private scheduleService: ScheduleService
+    private scheduleService: ScheduleService,
+    private teacherService: TeacherService
   ) {}
 
   ngOnInit(): void {
@@ -228,47 +232,29 @@ export class TeacherScheduleComponent implements OnInit {
 
     this.loading = true;
     
-    // Get teacher ID from current user (you might need to implement this)
-    const teacherId = 1; // This should come from the teacher service
-    
-    this.scheduleService.getTeacherSchedule(teacherId)
+    this.teacherService.getTeacher(this.currentUser.id)
       .pipe(
         catchError(error => {
-          console.error('Error loading schedule:', error);
-          // Return mock data as fallback
-          return of([
-            {
-              id: 1,
-              dayOfWeek: 'الأحد',
-              startTime: '08:00',
-              endTime: '09:00',
-              subjectName: 'الرياضيات',
-              className: 'الصف الثالث أ',
-              teacherName: 'أ. فاطمة المعلمة',
-              room: 'قاعة 101',
-              classId: 1,
-              subjectId: 1,
-              teacherId: 1
-            },
-            {
-              id: 2,
-              dayOfWeek: 'الأحد',
-              startTime: '09:15',
-              endTime: '10:15',
-              subjectName: 'الفيزياء',
-              className: 'الصف الثاني ب',
-              teacherName: 'أ. فاطمة المعلمة',
-              room: 'مختبر الفيزياء',
-              classId: 2,
-              subjectId: 2,
-              teacherId: 1
-            }
-          ] as Schedule[]);
-        }),
-        finalize(() => this.loading = false)
+          console.error('Error loading teacher:', error);
+          return of(null);
+        })
       )
-      .subscribe(scheduleData => {
-        this.schedule = scheduleData;
+      .subscribe(teacher => {
+        if (teacher) {
+          this.scheduleService.getTeacherSchedule(teacher.id)
+            .pipe(
+              catchError(error => {
+                console.error('Error loading schedule:', error);
+                return of([]);
+              }),
+              finalize(() => this.loading = false)
+            )
+            .subscribe(scheduleData => {
+              this.schedule = scheduleData;
+            });
+        } else {
+          this.loading = false;
+        }
       });
   }
 

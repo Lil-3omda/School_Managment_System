@@ -68,4 +68,16 @@ export class ExamService {
   deleteExam(id: number): Observable<void> {
     return this.http.delete<void>(`${this.API_URL}/${id}`);
   }
+
+  getExamsByTeacher(teacherId: number, pageNumber: number = 1, pageSize: number = 10): Observable<PagedResult<Exam>> {
+    const params = new HttpParams()
+      .set('pageNumber', pageNumber.toString())
+      .set('pageSize', pageSize.toString());
+    
+    return this.http.get<PagedResult<Exam>>(`${this.API_URL}/teacher/${teacherId}`, { params });
+  }
+
+  getUpcomingExamsForStudent(studentId: number): Observable<Exam[]> {
+    return this.http.get<Exam[]>(`${this.API_URL}/upcoming/student/${studentId}`);
+  }
 }

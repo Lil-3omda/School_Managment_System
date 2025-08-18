@@ -18,6 +18,11 @@ import { GradeDialogComponent, GradeDialogData } from '../../../../shared/compon
 import { User } from '../../../../core/models/user.model';
 import { catchError, finalize } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { TeacherService } from '../../../../core/services/teacher.service';
+import { ClassService } from '../../../../core/services/class.service';
+import { StudentService } from '../../../../core/services/student.service';
+import { GradeService } from '../../../../core/services/grade.service';
+import { ExamService } from '../../../../core/services/exam.service';
 
 interface Grade {
   id: number;
@@ -344,7 +349,12 @@ export class TeacherGradesComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private dialog: MatDialog,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private teacherService: TeacherService,
+    private classService: ClassService,
+    private studentService: StudentService,
+    private gradeService: GradeService,
+    private examService: ExamService
   ) {
     this.filterForm = this.fb.group({
       examId: [''],
@@ -371,56 +381,153 @@ export class TeacherGradesComponent implements OnInit {
   loadGrades(): void {
     this.loading = true;
     
-    // Mock data - replace with actual API call
-    setTimeout(() => {
-      const mockGrades: Grade[] = [
-        {
-          id: 1,
-          studentId: 1,
-          studentName: 'محمد أحمد',
-          examId: 1,
-          examName: 'امتحان الرياضيات الشهري',
-          subjectName: 'الرياضيات',
-          marksObtained: 85,
-          totalMarks: 100,
-          gradeValue: 'A',
-          isPassed: true,
-          remarks: 'أداء ممتاز',
-          examDate: new Date(),
-          createdAt: new Date(),
-          updatedAt: new Date()
-        }
-      ];
-      
-      this.dataSource.data = mockGrades;
+    if (!this.currentUser) {
       this.loading = false;
-    }, 1000);
+      return;
+    }
+
+    this.teacherService.getTeacher(this.currentUser.id)
+      .pipe(
+        catchError(error => {
+          console.error('Error loading teacher:', error);
+          return of(null);
+        })
+      )
+      .subscribe(teacher => {
+        if (teacher) {
+          // Load exams for this teacher first
+          this.examService.getExamsByTeacher(teacher.id, 1, 100)
+            .pipe(
+              catchError(error => {
+                console.error('Error loading teacher exams:', error);
+                return of({ data: [], totalCount: 0, pageNumber: 1, pageSize: 100, totalPages: 0, hasPreviousPage: false, hasNextPage: false });
+              })
+            )
+            .subscribe(examsResult => {
+              // Load grades for each exam
+              const allGrades: Grade[] = [];
+              let completedRequests = 0;
+              const totalExams = examsResult.data.length;
+              
+              if (totalExams === 0) {
+                this.dataSource.data = [];
+                this.loading = false;
+                return;
+              }
+              
+              examsResult.data.forEach(exam => {
+                this.gradeService.getGradesByExam(exam.id, 1, 100)
+                  .pipe(
+                    catchError(error => {
+                      console.error('Error loading grades for exam:', error);
+                      return of({ data: [], totalCount: 0, pageNumber: 1, pageSize: 100, totalPages: 0, hasPreviousPage: false, hasNextPage: false });
+                    })
+                  )
+                  .subscribe(gradesResult => {
+                    allGrades.push(...gradesResult.data);
+                    completedRequests++;
+                    
+                    if (completedRequests === totalExams) {
+                      this.dataSource.data = allGrades;
+                      this.loading = false;
+                    }
+                  });
+              });
+            });
+        } else {
+          this.loading = false;
+        }
+      });
   }
 
   loadExams(): void {
-    // Mock data - replace with actual API call
-    this.exams = [
-      {
-        id: 1,
-        name: 'امتحان الرياضيات الشهري',
-        subjectName: 'الرياضيات',
-        className: 'الصف الثالث أ',
-        totalMarks: 100,
-        examDate: new Date()
-      }
-    ];
+    if (!this.currentUser) return;
+
+    this.teacherService.getTeacher(this.currentUser.id)
+      .pipe(
+        catchError(error => {
+          console.error('Error loading teacher:', error);
+          return of(null);
+        })
+      )
+      .subscribe(teacher => {
+        if (teacher) {
+          this.examService.getExamsByTeacher(teacher.id, 1, 100)
+            .pipe(
+              catchError(error => {
+                console.error('Error loading exams:', error);
+                return of({ data: [], totalCount: 0, pageNumber: 1, pageSize: 100, totalPages: 0, hasPreviousPage: false, hasNextPage: false });
+              })
+            )
+            .subscribe(result => {
+              this.exams = result.data.map(exam => ({
+                id: exam.id,
+                name: exam.name,
+                subjectName: exam.subjectName,
+                className: exam.className,
+                totalMarks: exam.totalMarks,
+                examDate: new Date(exam.examDate)
+              }));
+            });
+        }
+      });
   }
 
   loadStudents(): void {
-    // Mock data - replace with actual API call
-    this.students = [
-      {
-        id: 1,
-        studentNumber: 'S001',
-        fullName: 'محمد أحمد',
-        className: 'الصف الثالث أ'
-      }
-    ];
+    if (!this.currentUser) return;
+
+    this.teacherService.getTeacher(this.currentUser.id)
+      .pipe(
+        catchError(error => {
+          console.error('Error loading teacher:', error);
+          return of(null);
+        })
+      )
+      .subscribe(teacher => {
+        if (teacher) {
+          this.classService.getClassesByTeacher(teacher.id)
+            .pipe(
+              catchError(error => {
+                console.error('Error loading teacher classes:', error);
+                return of([]);
+              })
+            )
+            .subscribe(classes => {
+              // Load students for each class
+              const allStudents: Student[] = [];
+              let completedRequests = 0;
+              
+              if (classes.length === 0) {
+                this.students = [];
+                return;
+              }
+              
+              classes.forEach(cls => {
+                this.studentService.getStudents(1, 100)
+                  .pipe(
+                    catchError(error => {
+                      console.error('Error loading students:', error);
+                      return of({ data: [], totalCount: 0, pageNumber: 1, pageSize: 100, totalPages: 0, hasPreviousPage: false, hasNextPage: false });
+                    })
+                  )
+                  .subscribe(result => {
+                    const classStudents = result.data.filter(student => student.classId === cls.id);
+                    allStudents.push(...classStudents.map(student => ({
+                      id: student.id,
+                      studentNumber: student.studentNumber,
+                      fullName: student.user.fullName,
+                      className: student.className
+                    })));
+                    
+                    completedRequests++;
+                    if (completedRequests === classes.length) {
+                      this.students = allStudents;
+                    }
+                  });
+              });
+            });
+        }
+      });
   }
 
   applyFilter(event: Event): void {

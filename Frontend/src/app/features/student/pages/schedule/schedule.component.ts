@@ -7,6 +7,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { AuthService } from '../../../../core/services/auth.service';
 import { ScheduleService } from '../../../../core/services/schedule.service';
 import { User } from '../../../../core/models/user.model';
+import { StudentService } from '../../../../core/services/student.service';
+import { catchError, finalize } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 interface ScheduleItem {
   id: number;
@@ -47,7 +50,8 @@ export class StudentScheduleComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private scheduleService: ScheduleService
+    private scheduleService: ScheduleService,
+    private studentService: StudentService
   ) {}
 
   ngOnInit(): void {
@@ -62,65 +66,43 @@ export class StudentScheduleComponent implements OnInit {
   private loadSchedule(): void {
     this.loading = true;
     
-    // Mock data for now
-    this.schedule = [
-      {
-        id: 1,
-        dayOfWeek: 'الأحد',
-        startTime: '08:00',
-        endTime: '09:00',
-        subjectName: 'الرياضيات',
-        teacherName: 'أ. محمد أحمد',
-        room: 'قاعة 101'
-      },
-      {
-        id: 2,
-        dayOfWeek: 'الأحد',
-        startTime: '09:15',
-        endTime: '10:15',
-        subjectName: 'العلوم',
-        teacherName: 'أ. فاطمة علي',
-        room: 'مختبر العلوم'
-      },
-      {
-        id: 3,
-        dayOfWeek: 'الأحد',
-        startTime: '10:30',
-        endTime: '11:30',
-        subjectName: 'اللغة العربية',
-        teacherName: 'أ. عبد الله حسن',
-        room: 'قاعة 205'
-      },
-      {
-        id: 4,
-        dayOfWeek: 'الاثنين',
-        startTime: '08:00',
-        endTime: '09:00',
-        subjectName: 'الفيزياء',
-        teacherName: 'أ. سارة محمد',
-        room: 'مختبر الفيزياء'
-      },
-      {
-        id: 5,
-        dayOfWeek: 'الاثنين',
-        startTime: '09:15',
-        endTime: '10:15',
-        subjectName: 'الكيمياء',
-        teacherName: 'أ. أحمد سالم',
-        room: 'مختبر الكيمياء'
-      },
-      {
-        id: 6,
-        dayOfWeek: 'الثلاثاء',
-        startTime: '08:00',
-        endTime: '09:00',
-        subjectName: 'التاريخ',
-        teacherName: 'أ. نورا عبد الله',
-        room: 'قاعة 301'
-      }
-    ];
+    if (!this.currentUser) {
+      this.loading = false;
+      return;
+    }
 
-    this.loading = false;
+    this.studentService.getStudent(this.currentUser.id)
+      .pipe(
+        catchError(error => {
+          console.error('Error loading student:', error);
+          return of(null);
+        })
+      )
+      .subscribe(student => {
+        if (student) {
+          this.scheduleService.getStudentSchedule(student.id)
+            .pipe(
+              catchError(error => {
+                console.error('Error loading schedule:', error);
+                return of([]);
+              }),
+              finalize(() => this.loading = false)
+            )
+            .subscribe(scheduleData => {
+              this.schedule = scheduleData.map(item => ({
+                id: item.id,
+                dayOfWeek: item.dayOfWeek,
+                startTime: item.startTime,
+                endTime: item.endTime,
+                subjectName: item.subjectName,
+                teacherName: item.teacherName,
+                room: item.room
+              }));
+            });
+        } else {
+          this.loading = false;
+        }
+      });
   }
 
   getScheduleForDay(day: string): ScheduleItem[] {

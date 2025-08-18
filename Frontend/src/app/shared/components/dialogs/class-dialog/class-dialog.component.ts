@@ -189,7 +189,10 @@ export class ClassDialogComponent implements OnInit {
         endTime: this.classForm.value.endTime
       };
       
-      this.dialogRef.close(formData);
+      setTimeout(() => {
+        this.loading = false;
+        this.dialogRef.close(formData);
+      }, 1000);
     }
   }
 

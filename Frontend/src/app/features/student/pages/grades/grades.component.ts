@@ -4,6 +4,10 @@ import { FormsModule } from '@angular/forms';
 import { LayoutComponent } from '../../../../shared/components/layout/layout.component';
 import { AuthService } from '../../../../core/services/auth.service';
 import { User } from '../../../../core/models/user.model';
+import { GradeService } from '../../../../core/services/grade.service';
+import { StudentService } from '../../../../core/services/student.service';
+import { catchError, finalize } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 interface Grade {
   id: number;
@@ -43,6 +47,11 @@ export class StudentGradesComponent implements OnInit {
   gpa = 0;
 
   constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private gradeService: GradeService,
+    private studentService: StudentService
+  ) {}
 
   ngOnInit(): void {
     this.authService.currentUser$.subscribe(user => {
@@ -55,61 +64,48 @@ export class StudentGradesComponent implements OnInit {
 
   loadGrades(): void {
     this.loading = true;
-    // Mock data - replace with actual API call
-    setTimeout(() => {
-      this.grades = [
-        {
-          id: 1,
-          subject: 'الرياضيات',
-          examType: 'امتحان نصفي',
-          score: 85,
-          totalScore: 100,
-          percentage: 85,
-          grade: 'A',
-          date: new Date('2024-01-15'),
-          semester: 'الفصل الأول',
-          isPassed: true
-        },
-        {
-          id: 2,
-          subject: 'اللغة العربية',
-          examType: 'امتحان نهائي',
-          score: 92,
-          totalScore: 100,
-          percentage: 92,
-          grade: 'A+',
-          date: new Date('2024-01-20'),
-          semester: 'الفصل الأول',
-          isPassed: true
-        },
-        {
-          id: 3,
-          subject: 'العلوم',
-          examType: 'اختبار قصير',
-          score: 78,
-          totalScore: 100,
-          percentage: 78,
-          grade: 'B+',
-          date: new Date('2024-01-10'),
-          semester: 'الفصل الأول',
-          isPassed: true
-        },
-        {
-          id: 4,
-          subject: 'التاريخ',
-          examType: 'امتحان نصفي',
-          score: 65,
-          totalScore: 100,
-          percentage: 65,
-          grade: 'C+',
-          date: new Date('2024-01-12'),
-          semester: 'الفصل الأول',
-          isPassed: true
-        }
-      ];
-      this.calculateSummaryStats();
+    
+    if (!this.currentUser) {
       this.loading = false;
-    }, 1000);
+      return;
+    }
+
+    this.studentService.getStudent(this.currentUser.id)
+      .pipe(
+        catchError(error => {
+          console.error('Error loading student:', error);
+          return of(null);
+        })
+      )
+      .subscribe(student => {
+        if (student) {
+          this.gradeService.getGradesByStudent(student.id, 1, 100)
+            .pipe(
+              catchError(error => {
+                console.error('Error loading grades:', error);
+                return of({ data: [], totalCount: 0, pageNumber: 1, pageSize: 100, totalPages: 0, hasPreviousPage: false, hasNextPage: false });
+              }),
+              finalize(() => this.loading = false)
+            )
+            .subscribe(result => {
+              this.grades = result.data.map(grade => ({
+                id: grade.id,
+                subject: grade.subjectName,
+                examType: grade.examName,
+                score: grade.marksObtained,
+                totalScore: grade.totalMarks,
+                percentage: Math.round((grade.marksObtained / grade.totalMarks) * 100),
+                grade: grade.gradeValue,
+                date: new Date(grade.examDate),
+                semester: 'الفصل الأول', // TODO: Add semester to API
+                isPassed: grade.isPassed
+              }));
+              this.calculateSummaryStats();
+            });
+        } else {
+          this.loading = false;
+        }
+      });
   }
 
   getFilteredGrades(): Grade[] {

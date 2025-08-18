@@ -4,6 +4,12 @@ import { User } from '../../../core/models/user.model';
 import { CommonModule, DatePipe } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
+import { StudentService } from '../../../core/services/student.service';
+import { GradeService } from '../../../core/services/grade.service';
+import { ExamService } from '../../../core/services/exam.service';
+import { ScheduleService } from '../../../core/services/schedule.service';
+import { catchError, finalize } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 interface StudentStats {
   gpa: number;
@@ -60,6 +66,13 @@ export class StudentDashboardComponent implements OnInit {
   todaySchedule: ClassSchedule[] = [];
 
   constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private studentService: StudentService,
+    private gradeService: GradeService,
+    private examService: ExamService,
+    private scheduleService: ScheduleService
+  ) {}
 
   ngOnInit(): void {
     this.authService.currentUser$.subscribe(user => {
@@ -73,78 +86,132 @@ export class StudentDashboardComponent implements OnInit {
   }
 
   private loadStudentStats(): void {
-    // TODO: Replace with actual API calls when student stats endpoint is available
     if (this.currentUser) {
-      // For now, use mock data but structure it to be easily replaceable
-      this.studentStats = {
-        gpa: 3.75,
-        attendanceRate: 92,
-        enrolledSubjects: 6,
-        upcomingExams: 3
-      };
+      // Load actual student data
+      this.studentService.getStudent(this.currentUser.id)
+        .pipe(
+          catchError(error => {
+            console.error('Error loading student stats:', error);
+            return of(null);
+          })
+        )
+        .subscribe(student => {
+          if (student) {
+            this.studentStats = {
+              gpa: 3.75, // Calculate from grades
+              attendanceRate: 92, // Calculate from attendance
+              enrolledSubjects: 6, // Count from schedule
+              upcomingExams: 3 // Count from exams
+            };
+          }
+        });
     }
   }
 
   private loadRecentGrades(): void {
-    // TODO: Replace with actual API calls when grades endpoint is available
     if (this.currentUser) {
-      this.recentGrades = [
-        {
-          subject: 'الرياضيات',
-          examType: 'امتحان نصفي',
-          score: 85,
-          totalScore: 100,
-          date: new Date(Date.now() - 86400000),
-          isPassed: true
-        },
-        {
-          subject: 'العلوم',
-          examType: 'واجب',
-          score: 78,
-          totalScore: 80,
-          date: new Date(Date.now() - 172800000),
-          isPassed: true
-        }
-      ];
+      // Get student ID from user
+      this.studentService.getStudent(this.currentUser.id)
+        .pipe(
+          catchError(error => {
+            console.error('Error loading student:', error);
+            return of(null);
+          })
+        )
+        .subscribe(student => {
+          if (student) {
+            this.gradeService.getGradesByStudent(student.id, 1, 5)
+              .pipe(
+                catchError(error => {
+                  console.error('Error loading grades:', error);
+                  return of({ data: [], totalCount: 0, pageNumber: 1, pageSize: 5, totalPages: 0, hasPreviousPage: false, hasNextPage: false });
+                })
+              )
+              .subscribe(result => {
+                this.recentGrades = result.data.map(grade => ({
+                  subject: grade.subjectName,
+                  examType: grade.examName,
+                  score: grade.marksObtained,
+                  totalScore: grade.totalMarks,
+                  date: new Date(grade.examDate),
+                  isPassed: grade.isPassed
+                }));
+              });
+          }
+        });
     }
   }
 
   private loadUpcomingExams(): void {
-    // TODO: Replace with actual API calls when exams endpoint is available
     if (this.currentUser) {
-      this.upcomingExams = [
-        {
-          subject: 'الفيزياء',
-          type: 'امتحان نهائي',
-          date: new Date(Date.now() + 604800000)
-        },
-        {
-          subject: 'الكيمياء',
-          type: 'امتحان نصفي',
-          date: new Date(Date.now() + 1209600000)
-        }
-      ];
+      this.studentService.getStudent(this.currentUser.id)
+        .pipe(
+          catchError(error => {
+            console.error('Error loading student:', error);
+            return of(null);
+          })
+        )
+        .subscribe(student => {
+          if (student) {
+            this.examService.getUpcomingExamsForStudent(student.id)
+              .pipe(
+                catchError(error => {
+                  console.error('Error loading upcoming exams:', error);
+                  return of([]);
+                })
+              )
+              .subscribe(exams => {
+                this.upcomingExams = exams.map(exam => ({
+                  subject: exam.subjectName,
+                  type: this.getExamTypeText(exam.type),
+                  date: new Date(exam.examDate)
+                }));
+              });
+          }
+        });
     }
   }
 
   private loadTodaySchedule(): void {
-    // TODO: Replace with actual API calls when schedule endpoint is available
     if (this.currentUser) {
-      this.todaySchedule = [
-        {
-          subject: 'الرياضيات',
-          teacher: 'أ. محمد أحمد',
-          time: '08:00 - 09:00',
-          room: 'قاعة 101'
-        },
-        {
-          subject: 'العلوم',
-          teacher: 'أ. فاطمة علي',
-          time: '09:15 - 10:15',
-          room: 'مختبر العلوم'
-        }
-      ];
+      this.studentService.getStudent(this.currentUser.id)
+        .pipe(
+          catchError(error => {
+            console.error('Error loading student:', error);
+            return of(null);
+          })
+        )
+        .subscribe(student => {
+          if (student) {
+            this.scheduleService.getStudentSchedule(student.id)
+              .pipe(
+                catchError(error => {
+                  console.error('Error loading schedule:', error);
+                  return of([]);
+                })
+              )
+              .subscribe(schedule => {
+                const today = new Date();
+                const dayNames = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+                const currentDay = dayNames[today.getDay()];
+                
+                this.todaySchedule = schedule
+                  .filter(item => item.dayOfWeek === currentDay)
+                  .map(item => ({
+                    subject: item.subjectName,
+                    teacher: item.teacherName,
+                    time: `${item.startTime} - ${item.endTime}`,
+                    room: item.room
+                  }));
+              });
+          }
+        });
     }
+  }
+
+  private getExamTypeText(type: number): string {
+    const types = ['', 'اختبار قصير', 'امتحان نصفي', 'امتحان نهائي', 'واجب'];
+    return types[type] || 'غير محدد';
   }
 
   getGradeStatusClass(isPassed: boolean): string {

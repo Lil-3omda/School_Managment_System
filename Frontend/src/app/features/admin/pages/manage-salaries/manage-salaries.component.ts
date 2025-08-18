@@ -21,6 +21,7 @@ import { TeacherService, Teacher } from '../../../../core/services/teacher.servi
 import { SalaryDialogComponent, SalaryDialogData } from '../../../../shared/components/dialogs/salary-dialog/salary-dialog.component';
 import { catchError, finalize } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-manage-salaries',
@@ -42,7 +43,8 @@ import { of } from 'rxjs';
     MatDialogModule,
     MatTooltipModule,
     ReactiveFormsModule,
-    NavbarComponent
+    NavbarComponent,
+    MatSnackBarModule
   ],
   templateUrl: './manage-salaries.component.html',
   // styleUrls: ['./manage-salaries.component.scss']
@@ -63,7 +65,8 @@ export class ManageSalariesComponent implements OnInit, AfterViewInit {
     private salaryService: SalaryService,
     private teacherService: TeacherService,
     private dialog: MatDialog,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private snackBar: MatSnackBar
   ) {
     this.filterForm = this.fb.group({
       teacherId: [null],
@@ -145,6 +148,7 @@ export class ManageSalariesComponent implements OnInit, AfterViewInit {
           )
           .subscribe(response => {
             if (response) {
+              this.snackBar.open('تم إضافة الراتب بنجاح', 'إغلاق', { duration: 3000 });
               this.loadSalaries();
             }
           });
@@ -184,6 +188,7 @@ export class ManageSalariesComponent implements OnInit, AfterViewInit {
           )
           .subscribe(response => {
             if (response) {
+              this.snackBar.open('تم تحديث الراتب بنجاح', 'إغلاق', { duration: 3000 });
               this.loadSalaries();
             }
           });
@@ -201,6 +206,7 @@ export class ManageSalariesComponent implements OnInit, AfterViewInit {
           })
         )
         .subscribe(() => {
+          this.snackBar.open('تم حذف الراتب بنجاح', 'إغلاق', { duration: 3000 });
           this.loadSalaries();
         });
     }
@@ -216,6 +222,7 @@ export class ManageSalariesComponent implements OnInit, AfterViewInit {
           })
         )
         .subscribe(() => {
+          this.snackBar.open('تم دفع الراتب بنجاح', 'إغلاق', { duration: 3000 });
           this.loadSalaries();
         });
     }

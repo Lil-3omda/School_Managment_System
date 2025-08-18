@@ -22,6 +22,7 @@ import { AttendanceDialogComponent, AttendanceDialogData } from '../../../../sha
 import { User } from '../../../../core/models/user.model';
 import { catchError, finalize } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { TeacherService } from '../../../../core/services/teacher.service';
 
 @Component({
   selector: 'app-teacher-attendance',
@@ -286,7 +287,8 @@ export class TeacherAttendanceComponent implements OnInit {
     private attendanceService: AttendanceService,
     private classService: ClassService,
     private dialog: MatDialog,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private teacherService: TeacherService
   ) {
     this.filterForm = this.fb.group({
       classId: [''],
@@ -316,29 +318,60 @@ export class TeacherAttendanceComponent implements OnInit {
     const classId = this.filterForm.get('classId')?.value;
     const date = this.filterForm.get('date')?.value;
     
-    this.attendanceService.getAttendanceRecords(1, 10, classId, date)
+    if (!this.currentUser) {
+      this.loading = false;
+      return;
+    }
+
+    this.teacherService.getTeacher(this.currentUser.id)
       .pipe(
         catchError(error => {
-          console.error('Error loading attendance records:', error);
-          return of({ items: [], totalCount: 0, pageNumber: 1, pageSize: 10, totalPages: 0 });
-        }),
-        finalize(() => this.loading = false)
+          console.error('Error loading teacher:', error);
+          return of(null);
+        })
       )
-      .subscribe(result => {
-        this.dataSource.data = result.items;
+      .subscribe(teacher => {
+        if (teacher) {
+          this.attendanceService.getAttendanceRecords(1, 10, classId, date)
+            .pipe(
+              catchError(error => {
+                console.error('Error loading attendance records:', error);
+                return of({ data: [], totalCount: 0, pageNumber: 1, pageSize: 10, totalPages: 0, hasPreviousPage: false, hasNextPage: false });
+              }),
+              finalize(() => this.loading = false)
+            )
+            .subscribe(result => {
+              this.dataSource.data = result.data;
+            });
+        } else {
+          this.loading = false;
+        }
       });
   }
 
   loadClasses(): void {
-    this.classService.getClasses(1, 100)
+    if (!this.currentUser) return;
+
+    this.teacherService.getTeacher(this.currentUser.id)
       .pipe(
         catchError(error => {
-          console.error('Error loading classes:', error);
-          return of({ items: [], totalCount: 0, pageNumber: 1, pageSize: 100, totalPages: 0 });
+          console.error('Error loading teacher:', error);
+          return of(null);
         })
       )
-      .subscribe(result => {
-        this.classes = result.items;
+      .subscribe(teacher => {
+        if (teacher) {
+          this.classService.getClassesByTeacher(teacher.id)
+            .pipe(
+              catchError(error => {
+                console.error('Error loading classes:', error);
+                return of([]);
+              })
+            )
+            .subscribe(classes => {
+              this.classes = classes;
+            });
+        }
       });
   }
 

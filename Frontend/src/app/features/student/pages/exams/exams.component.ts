@@ -4,6 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { LayoutComponent } from '../../../../shared/components/layout/layout.component';
 import { AuthService } from '../../../../core/services/auth.service';
 import { User } from '../../../../core/models/user.model';
+import { ExamService } from '../../../../core/services/exam.service';
+import { StudentService } from '../../../../core/services/student.service';
+import { GradeService } from '../../../../core/services/grade.service';
+import { catchError, finalize } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 interface Exam {
   id: number;
@@ -44,7 +49,12 @@ export class StudentExamsComponent implements OnInit {
   selectedSubject = 'all';
   selectedType = 'all';
 
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private examService: ExamService,
+    private studentService: StudentService,
+    private gradeService: GradeService
+  ) {}
 
   ngOnInit(): void {
     this.authService.currentUser$.subscribe(user => {
@@ -57,78 +67,99 @@ export class StudentExamsComponent implements OnInit {
 
   loadExams(): void {
     this.loading = true;
-    // Mock data - replace with actual API call
-    setTimeout(() => {
-      this.exams = [
-        {
-          id: 1,
-          subject: 'الرياضيات',
-          title: 'امتحان الجبر والهندسة',
-          type: 'midterm',
-          date: new Date('2024-02-15T09:00:00'),
-          duration: 120,
-          totalMarks: 100,
-          status: 'upcoming',
-          location: 'قاعة A101',
-          teacher: 'أ. أحمد محمد',
-          description: 'امتحان نصف الفصل يشمل الوحدات 1-4',
-          instructions: [
-            'إحضار آلة حاسبة علمية',
-            'الوصول قبل 15 دقيقة من بداية الامتحان',
-            'عدم استخدام الهاتف المحمول'
-          ]
-        },
-        {
-          id: 2,
-          subject: 'اللغة العربية',
-          title: 'اختبار الأدب والنثر',
-          type: 'quiz',
-          date: new Date('2024-01-20T10:30:00'),
-          duration: 60,
-          totalMarks: 50,
-          status: 'completed',
-          location: 'قاعة B205',
-          teacher: 'أ. فاطمة علي',
-          result: {
-            score: 42,
-            grade: 'A',
-            percentage: 84
-          }
-        },
-        {
-          id: 3,
-          subject: 'العلوم',
-          title: 'امتحان الكيمياء النهائي',
-          type: 'final',
-          date: new Date('2024-03-01T08:00:00'),
-          duration: 180,
-          totalMarks: 150,
-          status: 'upcoming',
-          location: 'المختبر العلمي',
-          teacher: 'أ. محمد حسن',
-          description: 'امتحان نهاية الفصل شامل لجميع الوحدات',
-          instructions: [
-            'إحضار معطف المختبر',
-            'الوصول قبل 30 دقيقة',
-            'مراجعة قوانين السلامة'
-          ]
-        },
-        {
-          id: 4,
-          subject: 'التاريخ',
-          title: 'واجب بحثي - الحضارة الإسلامية',
-          type: 'assignment',
-          date: new Date('2024-01-30T23:59:00'),
-          duration: 0,
-          totalMarks: 25,
-          status: 'upcoming',
-          location: 'تسليم إلكتروني',
-          teacher: 'أ. سارة أحمد',
-          description: 'بحث عن إنجازات الحضارة الإسلامية في العصر العباسي'
-        }
-      ];
+    
+    if (!this.currentUser) {
       this.loading = false;
-    }, 1000);
+      return;
+    }
+
+    this.studentService.getStudent(this.currentUser.id)
+      .pipe(
+        catchError(error => {
+          console.error('Error loading student:', error);
+          return of(null);
+        })
+      )
+      .subscribe(student => {
+        if (student) {
+          // Load upcoming exams
+          this.examService.getUpcomingExamsForStudent(student.id)
+            .pipe(
+              catchError(error => {
+                console.error('Error loading upcoming exams:', error);
+                return of([]);
+              })
+            )
+            .subscribe(upcomingExams => {
+              // Load grades for completed exams
+              this.gradeService.getGradesByStudent(student.id, 1, 100)
+                .pipe(
+                  catchError(error => {
+                    console.error('Error loading grades:', error);
+                    return of({ data: [], totalCount: 0, pageNumber: 1, pageSize: 100, totalPages: 0, hasPreviousPage: false, hasNextPage: false });
+                  }),
+                  finalize(() => this.loading = false)
+                )
+                .subscribe(gradesResult => {
+                  // Combine upcoming exams and completed exams with grades
+                  const upcomingExamsList: Exam[] = upcomingExams.map(exam => ({
+                    id: exam.id,
+                    subject: exam.subjectName,
+                    title: exam.name,
+                    type: this.mapExamType(exam.type),
+                    date: new Date(exam.examDate),
+                    duration: this.parseDuration(exam.duration),
+                    totalMarks: exam.totalMarks,
+                    status: 'upcoming',
+                    location: 'قاعة الامتحانات',
+                    teacher: 'المعلم',
+                    description: exam.description
+                  }));
+
+                  const completedExamsList: Exam[] = gradesResult.data.map(grade => ({
+                    id: grade.examId,
+                    subject: grade.subjectName,
+                    title: grade.examName,
+                    type: 'completed',
+                    date: new Date(grade.examDate),
+                    duration: 0,
+                    totalMarks: grade.totalMarks,
+                    status: 'completed',
+                    location: 'قاعة الامتحانات',
+                    teacher: 'المعلم',
+                    description: grade.examName,
+                    result: {
+                      score: grade.marksObtained,
+                      grade: grade.gradeValue,
+                      percentage: Math.round((grade.marksObtained / grade.totalMarks) * 100)
+                    }
+                  }));
+
+                  this.exams = [...upcomingExamsList, ...completedExamsList];
+                });
+            });
+        } else {
+          this.loading = false;
+        }
+      });
+  }
+
+  private mapExamType(type: number): 'midterm' | 'final' | 'quiz' | 'assignment' {
+    switch (type) {
+      case 1: return 'quiz';
+      case 2: return 'midterm';
+      case 3: return 'final';
+      case 4: return 'assignment';
+      default: return 'quiz';
+    }
+  }
+
+  private parseDuration(duration: string): number {
+    // Parse TimeSpan format "HH:mm:ss" to minutes
+    const parts = duration.split(':');
+    const hours = parseInt(parts[0]) || 0;
+    const minutes = parseInt(parts[1]) || 0;
+    return hours * 60 + minutes;
   }
 
   getFilteredExams(): Exam[] {

@@ -304,7 +304,10 @@ export class TeacherDialogComponent implements OnInit {
         hourlyRate: parseFloat(this.teacherForm.value.hourlyRate || 0)
       };
       
-      this.dialogRef.close(formData);
+      setTimeout(() => {
+        this.loading = false;
+        this.dialogRef.close(formData);
+      }, 1000);
     }
   }
 

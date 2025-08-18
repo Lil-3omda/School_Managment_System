@@ -18,6 +18,7 @@ import { SubjectService, Subject } from '../../../../core/services/subject.servi
 import { SubjectDialogComponent, SubjectDialogData } from '../../../../shared/components/dialogs/subject-dialog/subject-dialog.component';
 import { catchError, finalize } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-manage-subjects',
@@ -37,7 +38,8 @@ import { of } from 'rxjs';
     MatDialogModule,
     MatTooltipModule,
     ReactiveFormsModule,
-    NavbarComponent
+    NavbarComponent,
+    MatSnackBarModule
   ],
   templateUrl: './manage-subjects.component.html',
   // styleUrls: ['./manage-subjects.component.scss']
@@ -55,7 +57,8 @@ export class ManageSubjectsComponent implements OnInit, AfterViewInit {
   constructor(
     private subjectService: SubjectService,
     private dialog: MatDialog,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -108,7 +111,7 @@ export class ManageSubjectsComponent implements OnInit, AfterViewInit {
           )
           .subscribe(response => {
             if (response) {
-              alert('تم إضافة المادة بنجاح');
+              this.snackBar.open('تم إضافة المادة بنجاح', 'إغلاق', { duration: 3000 });
               this.loadSubjects();
             }
           });
@@ -146,6 +149,7 @@ export class ManageSubjectsComponent implements OnInit, AfterViewInit {
           )
           .subscribe(response => {
             if (response) {
+              this.snackBar.open('تم تحديث المادة بنجاح', 'إغلاق', { duration: 3000 });
               this.loadSubjects();
             }
           });
@@ -163,6 +167,7 @@ export class ManageSubjectsComponent implements OnInit, AfterViewInit {
           })
         )
         .subscribe(() => {
+          this.snackBar.open('تم حذف المادة بنجاح', 'إغلاق', { duration: 3000 });
           this.loadSubjects();
         });
     }

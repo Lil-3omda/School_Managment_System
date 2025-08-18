@@ -4,6 +4,13 @@ import { User } from '../../../core/models/user.model';
 import { CommonModule, DatePipe } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { LayoutComponent } from '../../../shared/components/layout/layout.component';
+import { TeacherService } from '../../../core/services/teacher.service';
+import { ClassService } from '../../../core/services/class.service';
+import { StudentService } from '../../../core/services/student.service';
+import { ExamService } from '../../../core/services/exam.service';
+import { ScheduleService } from '../../../core/services/schedule.service';
+import { catchError, finalize } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 interface TeacherStats {
   totalClasses: number;
@@ -52,7 +59,12 @@ export class TeacherDashboardComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private teacherService: TeacherService,
+    private classService: ClassService,
+    private studentService: StudentService,
+    private examService: ExamService,
+    private scheduleService: ScheduleService
   ) {}
 
   ngOnInit(): void {
@@ -66,55 +78,113 @@ export class TeacherDashboardComponent implements OnInit {
   }
 
   private loadTeacherStats(): void {
-    // TODO: Replace with actual API calls when teacher stats endpoint is available
     if (this.currentUser) {
-      this.teacherStats = {
-        totalClasses: 5,
-        totalStudents: 125,
-        monthlyExams: 8,
-        averageAttendance: 88
-      };
+      // Get teacher data and calculate stats
+      this.teacherService.getTeacher(this.currentUser.id)
+        .pipe(
+          catchError(error => {
+            console.error('Error loading teacher stats:', error);
+            return of(null);
+          })
+        )
+        .subscribe(teacher => {
+          if (teacher) {
+            // Load classes for this teacher
+            this.classService.getClassesByTeacher(teacher.id)
+              .pipe(
+                catchError(error => {
+                  console.error('Error loading teacher classes:', error);
+                  return of([]);
+                })
+              )
+              .subscribe(classes => {
+                this.teacherStats = {
+                  totalClasses: classes.length,
+                  totalStudents: classes.reduce((sum, cls) => sum + cls.studentCount, 0),
+                  monthlyExams: 8, // TODO: Calculate from exams
+                  averageAttendance: 88 // TODO: Calculate from attendance
+                };
+              });
+          }
+        });
     }
   }
 
   private loadTodaySchedule(): void {
-    // TODO: Replace with actual API calls when schedule endpoint is available
     if (this.currentUser) {
-      this.todaySchedule = [
-        {
-          time: '08:00 - 09:00',
-          subject: 'الرياضيات',
-          className: 'الصف الثالث أ',
-          room: 'قاعة 101'
-        },
-        {
-          time: '09:15 - 10:15',
-          subject: 'الفيزياء',
-          className: 'الصف الثاني ب',
-          room: 'مختبر الفيزياء'
-        }
-      ];
+      this.teacherService.getTeacher(this.currentUser.id)
+        .pipe(
+          catchError(error => {
+            console.error('Error loading teacher:', error);
+            return of(null);
+          })
+        )
+        .subscribe(teacher => {
+          if (teacher) {
+            this.scheduleService.getTeacherSchedule(teacher.id)
+              .pipe(
+                catchError(error => {
+                  console.error('Error loading schedule:', error);
+                  return of([]);
+                })
+              )
+              .subscribe(schedule => {
+                const today = new Date();
+                const dayNames = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+                const currentDay = dayNames[today.getDay()];
+                
+                this.todaySchedule = schedule
+                  .filter(item => item.dayOfWeek === currentDay)
+                  .map(item => ({
+                    time: `${item.startTime} - ${item.endTime}`,
+                    subject: item.subjectName,
+                    className: item.className,
+                    room: item.room
+                  }));
+              });
+          }
+        });
     }
   }
 
   private loadPendingTasks(): void {
-    // TODO: Replace with actual API calls when tasks endpoint is available
     if (this.currentUser) {
-      this.pendingTasks = [
-        {
-          title: 'تصحيح امتحان الرياضيات',
-          description: 'امتحان الصف الثالث أ',
-          dueDate: new Date(Date.now() + 86400000),
-          priority: 'عالي'
-        },
-        {
-          title: 'إعداد امتحان الفيزياء',
-          description: 'امتحان نصفي للصف الثاني',
-          dueDate: new Date(Date.now() + 259200000),
-          priority: 'متوسط'
-        }
-      ];
+      // Load pending tasks from exams and grades
+      this.teacherService.getTeacher(this.currentUser.id)
+        .pipe(
+          catchError(error => {
+            console.error('Error loading teacher:', error);
+            return of(null);
+          })
+        )
+        .subscribe(teacher => {
+          if (teacher) {
+            this.examService.getExamsByTeacher(teacher.id, 1, 10)
+              .pipe(
+                catchError(error => {
+                  console.error('Error loading teacher exams:', error);
+                  return of({ data: [], totalCount: 0, pageNumber: 1, pageSize: 10, totalPages: 0, hasPreviousPage: false, hasNextPage: false });
+                })
+              )
+              .subscribe(result => {
+                const upcomingExams = result.data.filter(exam => new Date(exam.examDate) > new Date());
+                this.pendingTasks = upcomingExams.map(exam => ({
+                  title: `إعداد ${exam.name}`,
+                  description: `${exam.subjectName} - ${exam.className}`,
+                  dueDate: new Date(exam.examDate),
+                  priority: this.getExamPriority(new Date(exam.examDate))
+                }));
+              });
+          }
+        });
     }
+  }
+
+  private getExamPriority(examDate: Date): string {
+    const daysUntil = Math.ceil((examDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+    if (daysUntil <= 3) return 'عالي';
+    if (daysUntil <= 7) return 'متوسط';
+    return 'منخفض';
   }
 
   getPriorityClass(priority: string): string {

@@ -20,6 +20,7 @@ import { ClassService, Class } from '../../../../core/services/class.service';
 import { ExamDialogComponent, ExamDialogData } from '../../../../shared/components/dialogs/exam-dialog/exam-dialog.component';
 import { catchError, finalize } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-manage-exams',
@@ -39,7 +40,8 @@ import { of } from 'rxjs';
     MatDialogModule,
     MatTooltipModule,
     ReactiveFormsModule,
-    NavbarComponent
+    NavbarComponent,
+    MatSnackBarModule
   ],
   templateUrl: './manage-exams.component.html',
   // styleUrls: ['./manage-exams.component.scss']
@@ -61,7 +63,8 @@ export class ManageExamsComponent implements OnInit, AfterViewInit {
     private subjectService: SubjectService,
     private classService: ClassService,
     private dialog: MatDialog,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -144,6 +147,7 @@ export class ManageExamsComponent implements OnInit, AfterViewInit {
           )
           .subscribe(response => {
             if (response) {
+              this.snackBar.open('تم إضافة الامتحان بنجاح', 'إغلاق', { duration: 3000 });
               this.loadExams();
             }
           });
@@ -185,6 +189,7 @@ export class ManageExamsComponent implements OnInit, AfterViewInit {
           )
           .subscribe(response => {
             if (response) {
+              this.snackBar.open('تم تحديث الامتحان بنجاح', 'إغلاق', { duration: 3000 });
               this.loadExams();
             }
           });
@@ -202,6 +207,7 @@ export class ManageExamsComponent implements OnInit, AfterViewInit {
           })
         )
         .subscribe(() => {
+          this.snackBar.open('تم حذف الامتحان بنجاح', 'إغلاق', { duration: 3000 });
           this.loadExams();
         });
     }

@@ -4,6 +4,10 @@ import { FormsModule } from '@angular/forms';
 import { LayoutComponent } from '../../../../shared/components/layout/layout.component';
 import { AuthService } from '../../../../core/services/auth.service';
 import { User } from '../../../../core/models/user.model';
+import { AttendanceService } from '../../../../core/services/attendance.service';
+import { StudentService } from '../../../../core/services/student.service';
+import { catchError, finalize } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 interface AttendanceRecord {
   id: number;
@@ -39,7 +43,11 @@ export class StudentAttendanceComponent implements OnInit {
     'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'
   ];
 
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private attendanceService: AttendanceService,
+    private studentService: StudentService
+  ) {}
 
   ngOnInit(): void {
     this.authService.currentUser$.subscribe(user => {
@@ -52,54 +60,54 @@ export class StudentAttendanceComponent implements OnInit {
 
   loadAttendance(): void {
     this.loading = true;
-    // Mock data - replace with actual API call
-    setTimeout(() => {
-      this.attendanceRecords = [
-        {
-          id: 1,
-          date: new Date('2024-01-15'),
-          subject: 'الرياضيات',
-          teacher: 'أ. أحمد محمد',
-          status: 'present',
-          period: 1
-        },
-        {
-          id: 2,
-          date: new Date('2024-01-15'),
-          subject: 'اللغة العربية',
-          teacher: 'أ. فاطمة علي',
-          status: 'present',
-          period: 2
-        },
-        {
-          id: 3,
-          date: new Date('2024-01-16'),
-          subject: 'العلوم',
-          teacher: 'أ. محمد حسن',
-          status: 'late',
-          period: 1,
-          notes: 'تأخير 10 دقائق'
-        },
-        {
-          id: 4,
-          date: new Date('2024-01-16'),
-          subject: 'التاريخ',
-          teacher: 'أ. سارة أحمد',
-          status: 'absent',
-          period: 3,
-          notes: 'غياب بعذر طبي'
-        },
-        {
-          id: 5,
-          date: new Date('2024-01-17'),
-          subject: 'الرياضيات',
-          teacher: 'أ. أحمد محمد',
-          status: 'present',
-          period: 1
-        }
-      ];
+    
+    if (!this.currentUser) {
       this.loading = false;
-    }, 1000);
+      return;
+    }
+
+    this.studentService.getStudent(this.currentUser.id)
+      .pipe(
+        catchError(error => {
+          console.error('Error loading student:', error);
+          return of(null);
+        })
+      )
+      .subscribe(student => {
+        if (student) {
+          this.attendanceService.getStudentAttendance(student.id, 1, 100)
+            .pipe(
+              catchError(error => {
+                console.error('Error loading attendance:', error);
+                return of({ data: [], totalCount: 0, pageNumber: 1, pageSize: 100, totalPages: 0, hasPreviousPage: false, hasNextPage: false });
+              }),
+              finalize(() => this.loading = false)
+            )
+            .subscribe(result => {
+              this.attendanceRecords = result.data.map(record => ({
+                id: record.id,
+                date: new Date(record.date),
+                subject: 'المادة', // TODO: Get from schedule
+                teacher: record.teacherName || 'غير محدد',
+                status: this.mapStatusToString(record.status),
+                period: 1, // TODO: Get from schedule
+                notes: record.remarks
+              }));
+            });
+        } else {
+          this.loading = false;
+        }
+      });
+  }
+
+  private mapStatusToString(status: number): 'present' | 'absent' | 'late' | 'excused' {
+    switch (status) {
+      case 1: return 'present';
+      case 2: return 'absent';
+      case 3: return 'late';
+      case 4: return 'excused';
+      default: return 'absent';
+    }
   }
 
   getFilteredRecords(): AttendanceRecord[] {

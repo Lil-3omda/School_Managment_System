@@ -161,7 +161,10 @@ export class SubjectDialogComponent implements OnInit {
         credits: parseInt(this.subjectForm.value.credits)
       };
       
-      this.dialogRef.close(formData);
+      setTimeout(() => {
+        this.loading = false;
+        this.dialogRef.close(formData);
+      }, 1000);
     }
   }
 

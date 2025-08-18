@@ -21,6 +21,7 @@ import { AttendanceDialogComponent, AttendanceDialogData } from '../../../../sha
 import { catchError, finalize } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 
 @Component({
@@ -42,7 +43,8 @@ import { MatDialog } from '@angular/material/dialog';
     MatNativeDateModule,
     MatTooltipModule,
     ReactiveFormsModule,
-    NavbarComponent
+    NavbarComponent,
+    MatSnackBarModule
   ],
   templateUrl: './attendance-reports.component.html',
   // styleUrls: ['./attendance-reports.component.scss']
@@ -65,7 +67,8 @@ export class AttendanceReportsComponent implements OnInit, AfterViewInit {
     private attendanceService: AttendanceService,
     private classService: ClassService,
     private fb: FormBuilder,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
   ) {
     this.reportForm = this.fb.group({
       classId: [null],
@@ -228,6 +231,7 @@ export class AttendanceReportsComponent implements OnInit, AfterViewInit {
           )
           .subscribe(response => {
             if (response) {
+              this.snackBar.open('تم تحديث سجل الحضور بنجاح', 'إغلاق', { duration: 3000 });
               this.loadAttendanceRecords();
             }
           });
@@ -245,6 +249,7 @@ export class AttendanceReportsComponent implements OnInit, AfterViewInit {
           })
         )
         .subscribe(() => {
+          this.snackBar.open('تم حذف سجل الحضور بنجاح', 'إغلاق', { duration: 3000 });
           this.loadAttendanceRecords();
         });
     }

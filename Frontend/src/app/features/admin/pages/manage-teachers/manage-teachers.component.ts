@@ -16,6 +16,7 @@ import { TeacherDialogComponent, TeacherDialogData } from '../../../../shared/co
 import { MatDialog } from '@angular/material/dialog';
 import { catchError, finalize } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 
 
@@ -34,7 +35,8 @@ import { of } from 'rxjs';
     MatSortModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
-    NavbarComponent
+    NavbarComponent,
+    MatSnackBarModule
   ],
   templateUrl: './manage-teachers.component.html',
   styleUrls: ['./manage-teachers.component.scss']
@@ -51,7 +53,8 @@ export class ManageTeachersComponent implements OnInit, AfterViewInit {
 
   constructor(
     private teacherService: TeacherService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -104,7 +107,7 @@ export class ManageTeachersComponent implements OnInit, AfterViewInit {
           )
           .subscribe(response => {
             if (response) {
-              alert('تم إضافة المعلم بنجاح');
+              this.snackBar.open('تم إضافة المعلم بنجاح', 'إغلاق', { duration: 3000 });
               this.loadTeachers();
             }
           });
@@ -142,6 +145,7 @@ export class ManageTeachersComponent implements OnInit, AfterViewInit {
           )
           .subscribe(response => {
             if (response) {
+              this.snackBar.open('تم تحديث المعلم بنجاح', 'إغلاق', { duration: 3000 });
               this.loadTeachers();
             }
           });
@@ -159,6 +163,7 @@ export class ManageTeachersComponent implements OnInit, AfterViewInit {
           })
         )
         .subscribe(() => {
+          this.snackBar.open('تم حذف المعلم بنجاح', 'إغلاق', { duration: 3000 });
           this.loadTeachers();
         });
     }

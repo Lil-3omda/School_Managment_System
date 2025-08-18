@@ -15,6 +15,7 @@ import { LayoutComponent } from '../../../../shared/components/layout/layout.com
 import { AuthService } from '../../../../core/services/auth.service';
 import { SalaryService, SalaryRecord } from '../../../../core/services/salary.service';
 import { User } from '../../../../core/models/user.model';
+import { TeacherService } from '../../../../core/services/teacher.service';
 import { catchError, finalize } from 'rxjs/operators';
 import { of } from 'rxjs';
 
@@ -368,7 +369,8 @@ export class TeacherSalaryComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private salaryService: SalaryService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private teacherService: TeacherService
   ) {
     this.filterForm = this.fb.group({
       month: [''],
@@ -393,22 +395,33 @@ export class TeacherSalaryComponent implements OnInit {
   loadSalaries(): void {
     this.loading = true;
     
-    // Get teacher ID from current user
-    const teacherId = 1; // This should come from the teacher service
     const month = this.filterForm.get('month')?.value;
     const year = this.filterForm.get('year')?.value;
     
-    this.salaryService.getSalaryRecords(1, 10, teacherId, month, year)
+    this.teacherService.getTeacher(this.currentUser.id)
       .pipe(
         catchError(error => {
-          console.error('Error loading salaries:', error);
-          return of({ items: [], totalCount: 0, pageNumber: 1, pageSize: 10, totalPages: 0 });
-        }),
-        finalize(() => this.loading = false)
+          console.error('Error loading teacher:', error);
+          return of(null);
+        })
       )
-      .subscribe(result => {
-        this.dataSource.data = result.items;
-        this.calculateSalaryStats(result.items);
+      .subscribe(teacher => {
+        if (teacher) {
+          this.salaryService.getTeacherSalaries(teacher.id, 1, 10)
+            .pipe(
+              catchError(error => {
+                console.error('Error loading salaries:', error);
+                return of({ data: [], totalCount: 0, pageNumber: 1, pageSize: 10, totalPages: 0, hasPreviousPage: false, hasNextPage: false });
+              }),
+              finalize(() => this.loading = false)
+            )
+            .subscribe(result => {
+              this.dataSource.data = result.data;
+              this.calculateSalaryStats(result.data);
+            });
+        } else {
+          this.loading = false;
+        }
       });
   }
 

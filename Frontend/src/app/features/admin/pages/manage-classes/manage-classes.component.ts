@@ -19,6 +19,7 @@ import { TeacherService, Teacher } from '../../../../core/services/teacher.servi
 import { ClassDialogComponent, ClassDialogData } from '../../../../shared/components/dialogs/class-dialog/class-dialog.component';
 import { catchError, finalize } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-manage-classes',
@@ -38,7 +39,8 @@ import { of } from 'rxjs';
     MatDialogModule,
     MatTooltipModule,
     ReactiveFormsModule,
-    NavbarComponent
+    NavbarComponent,
+    MatSnackBarModule
   ],
   templateUrl: './manage-classes.component.html',
   styleUrls: ['./manage-classes.component.scss']
@@ -56,7 +58,8 @@ export class ManageClassesComponent implements OnInit, AfterViewInit {
   constructor(
     private classService: ClassService,
     private dialog: MatDialog,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -110,7 +113,7 @@ export class ManageClassesComponent implements OnInit, AfterViewInit {
           )
           .subscribe(response => {
             if (response) {
-              alert('تم إضافة الصف بنجاح');
+              this.snackBar.open('تم إضافة الصف بنجاح', 'إغلاق', { duration: 3000 });
               this.loadClasses();
             }
           });
@@ -148,7 +151,7 @@ export class ManageClassesComponent implements OnInit, AfterViewInit {
           )
           .subscribe(response => {
             if (response) {
-              alert('تم إضافة الصف بنجاح');
+              this.snackBar.open('تم تحديث الصف بنجاح', 'إغلاق', { duration: 3000 });
               this.loadClasses();
             }
           });
@@ -166,6 +169,7 @@ export class ManageClassesComponent implements OnInit, AfterViewInit {
           })
         )
         .subscribe(() => {
+          this.snackBar.open('تم حذف الصف بنجاح', 'إغلاق', { duration: 3000 });
           this.loadClasses();
         });
     }
