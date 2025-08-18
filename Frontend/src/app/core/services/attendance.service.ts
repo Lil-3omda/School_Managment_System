@@ -58,6 +58,7 @@ export interface StudentAttendanceDto {
 
 export interface PagedResult<T> {
   data: T[];
+  items: T[];
   totalCount: number;
   pageNumber: number;
   pageSize: number;

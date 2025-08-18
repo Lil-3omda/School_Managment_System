@@ -46,7 +46,6 @@ export class StudentGradesComponent implements OnInit {
   highestPercentage = 0;
   gpa = 0;
 
-  constructor(private authService: AuthService) {}
   constructor(
     private authService: AuthService,
     private gradeService: GradeService,

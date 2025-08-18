@@ -12,8 +12,7 @@ import { User } from '../../../../core/models/user.model';
 import { TeacherService } from '../../../../core/services/teacher.service';
 import { catchError, finalize } from 'rxjs/operators';
 import { of } from 'rxjs';
-import { catchError, finalize } from 'rxjs/operators';
-import { of } from 'rxjs';
+
 
 @Component({
   selector: 'app-teacher-schedule',

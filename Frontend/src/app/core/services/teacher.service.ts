@@ -38,6 +38,7 @@ export interface CreateTeacherRequest {
 
 export interface PagedResult<T> {
   data: T[];
+  items: T[];
   totalCount: number;
   pageNumber: number;
   pageSize: number;

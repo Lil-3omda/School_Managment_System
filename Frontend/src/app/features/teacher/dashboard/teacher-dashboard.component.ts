@@ -97,10 +97,10 @@ export class TeacherDashboardComponent implements OnInit {
                   return of([]);
                 })
               )
-              .subscribe(classes => {
+              .subscribe((classes: any[]) => {
                 this.teacherStats = {
                   totalClasses: classes.length,
-                  totalStudents: classes.reduce((sum, cls) => sum + cls.studentCount, 0),
+                  totalStudents: classes.reduce((sum, cls) => sum + (cls.studentCount || 0), 0),
                   monthlyExams: 8, // TODO: Calculate from exams
                   averageAttendance: 88 // TODO: Calculate from attendance
                 };

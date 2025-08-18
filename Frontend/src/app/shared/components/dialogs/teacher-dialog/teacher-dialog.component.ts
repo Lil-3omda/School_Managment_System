@@ -300,7 +300,7 @@ export class TeacherDialogComponent implements OnInit {
         qualification: this.teacherForm.value.qualification,
         specialization: this.teacherForm.value.specialization,
         baseSalary: parseFloat(this.teacherForm.value.baseSalary),
-        salaryType: parseInt(this.teacherForm.value.salaryType)
+        salaryType: parseInt(this.teacherForm.value.salaryType),
         hourlyRate: parseFloat(this.teacherForm.value.hourlyRate || 0)
       };
       

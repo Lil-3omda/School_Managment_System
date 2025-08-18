@@ -18,6 +18,8 @@ export interface SalaryRecord {
   paidDate?: Date;
   createdAt: Date;
   updatedAt?: Date;
+  allowances: number;
+  netSalary: number;
 }
 
 export interface CreateSalaryRequest {
@@ -35,6 +37,7 @@ export interface CreateSalaryRequest {
 
 export interface PagedResult<T> {
   data: T[];
+  items: T[];
   totalCount: number;
   pageNumber: number;
   pageSize: number;

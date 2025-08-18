@@ -30,6 +30,7 @@ export interface CreateExamRequest {
 }
 
 export interface PagedResult<T> {
+  data: T[];
   items: T[];
   totalCount: number;
   pageNumber: number;

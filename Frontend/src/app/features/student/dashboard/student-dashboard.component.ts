@@ -65,7 +65,6 @@ export class StudentDashboardComponent implements OnInit {
   upcomingExams: Exam[] = [];
   todaySchedule: ClassSchedule[] = [];
 
-  constructor(private authService: AuthService) {}
   constructor(
     private authService: AuthService,
     private studentService: StudentService,
