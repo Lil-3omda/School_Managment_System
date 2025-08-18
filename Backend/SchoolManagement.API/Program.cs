@@ -16,13 +16,13 @@ builder.Services.AddEndpointsApiExplorer();
 // Configure Swagger with JWT support
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo 
-    { 
-        Title = "School Management API", 
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "School Management API",
         Version = "v1",
         Description = "A comprehensive school management system API"
     });
-    
+
     // Add JWT Authentication to Swagger
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
@@ -32,7 +32,7 @@ builder.Services.AddSwaggerGen(c =>
         Type = SecuritySchemeType.ApiKey,
         Scheme = "Bearer"
     });
-    
+
     c.AddSecurityRequirement(new OpenApiSecurityRequirement()
     {
         {
@@ -54,7 +54,7 @@ builder.Services.AddSwaggerGen(c =>
 
 // Database
 builder.Services.AddDbContext<SchoolDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // AutoMapper
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -99,7 +99,7 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod()
               .AllowCredentials();
     });
-    
+
     options.AddPolicy("AllowAngularApp", policy =>
     {
         policy.WithOrigins("http://localhost:4200", "https://localhost:4200")
@@ -126,30 +126,34 @@ if (app.Environment.IsDevelopment())
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<SchoolDbContext>();
-    
-    try
-    {
-        // Force database recreation to ensure schema matches current entities
-        await context.Database.EnsureDeletedAsync();
-        await context.Database.EnsureCreatedAsync();
-        
-        // Verify that the database was created with the correct schema
-        var userTableExists = await context.Database.ExecuteSqlRawAsync(
-            "SELECT name FROM sqlite_master WHERE type='table' AND name='Users'");
-        
-        if (userTableExists == 0)
-        {
-            throw new InvalidOperationException("Users table was not created properly");
-        }
-        
-        await SeedData.Initialize(context);
-    }
-    catch (Exception ex)
-    {
-        // Log the error and continue - this will help diagnose any database creation issues
-        Console.WriteLine($"Database initialization error: {ex.Message}");
-        throw;
-    }
+
+    //try
+    //{
+    //    // Force database recreation to ensure schema matches current entities
+    //    //await context.Database.EnsureDeletedAsync();
+    //    //await context.Database.EnsureCreatedAsync();
+    //    //await context.Database.MigrateAsync();
+
+    //    // Verify that the database was created with the correct schema
+    //    //var userTableExists = await context.Database.ExecuteSqlRawAsync(
+    //    //    "SELECT name FROM sqlite_master WHERE type='table' AND name='Users'");
+
+    //    if (userTableExists == 0)
+    //    {
+    //        throw new InvalidOperationException("Users table was not created properly");
+    //    }
+
+    //    if (!context.Users.Any())
+    //    {
+    //        await SeedData.Initialize(context);
+    //    }
+    //}
+    //catch (Exception ex)
+    //{
+    //    // Log the error and continue - this will help diagnose any database creation issues
+    //    Console.WriteLine($"Database initialization error: {ex.Message}");
+    //    throw;
+    //}
 }
 
 app.UseHttpsRedirection();
