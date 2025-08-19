@@ -240,10 +240,9 @@ export class ExamDialogComponent implements OnInit {
         duration: `${this.examForm.value.duration}:00:00` // Convert to TimeSpan format
       };
       
-      setTimeout(() => {
-        this.loading = false;
-        this.dialogRef.close(formData);
-      }, 1000);
+      // Return the form data immediately instead of using setTimeout
+      this.loading = false;
+      this.dialogRef.close(formData);
     }
   }
 
