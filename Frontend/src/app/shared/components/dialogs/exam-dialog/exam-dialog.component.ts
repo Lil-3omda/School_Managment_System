@@ -10,6 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MetadataService, KeyValueItem } from '../../../../core/services/metadata.service';
 
 export interface ExamDialogData {
   exam?: any;
@@ -57,10 +58,7 @@ export interface ExamDialogData {
             <mat-form-field appearance="outline" class="w-100">
               <mat-label>نوع الامتحان</mat-label>
               <mat-select formControlName="type" [disabled]="data.mode === 'view'">
-                <mat-option value="1">اختبار قصير</mat-option>
-                <mat-option value="2">امتحان نصفي</mat-option>
-                <mat-option value="3">امتحان نهائي</mat-option>
-                <mat-option value="4">واجب</mat-option>
+                <mat-option *ngFor="let t of examTypes" [value]="t.id.toString()">{{ t.name }}</mat-option>
               </mat-select>
               <mat-error *ngIf="examForm.get('type')?.hasError('required')">
                 نوع الامتحان مطلوب
@@ -187,11 +185,13 @@ export interface ExamDialogData {
 export class ExamDialogComponent implements OnInit {
   examForm: FormGroup;
   loading = false;
+  examTypes: KeyValueItem[] = [];
 
   constructor(
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<ExamDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: ExamDialogData
+    @Inject(MAT_DIALOG_DATA) public data: ExamDialogData,
+    private metadataService: MetadataService
   ) {
     this.examForm = this.fb.group({
       name: ['', Validators.required],
@@ -207,6 +207,7 @@ export class ExamDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.metadataService.getExamTypes().subscribe(items => this.examTypes = items);
     if (this.data.exam && this.data.mode !== 'add') {
       this.examForm.patchValue({
         name: this.data.exam.name,
@@ -237,7 +238,7 @@ export class ExamDialogComponent implements OnInit {
       const formData = {
         ...this.examForm.value,
         type: parseInt(this.examForm.value.type),
-        duration: `${this.examForm.value.duration}:00:00` // Convert to TimeSpan format
+        duration: `${this.examForm.value.duration}:00:00`
       };
       
       setTimeout(() => {

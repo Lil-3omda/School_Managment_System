@@ -9,9 +9,6 @@ public static class SeedData
 {
     public static async Task Initialize(SchoolDbContext context)
     {
-        // Ensure database is created
-        await context.Database.EnsureCreatedAsync();
-
         // Check if data already exists
         if (await context.Users.AnyAsync())
         {

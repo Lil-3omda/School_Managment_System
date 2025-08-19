@@ -10,6 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MetadataService, KeyValueItem } from '../../../../core/services/metadata.service';
 
 export interface SalaryDialogData {
   salary?: any;
@@ -140,9 +141,7 @@ export interface SalaryDialogData {
             <mat-form-field appearance="outline" class="w-100">
               <mat-label>حالة الدفع</mat-label>
               <mat-select formControlName="status" [disabled]="data.mode === 'view'">
-                <mat-option value="1">قيد الانتظار</mat-option>
-                <mat-option value="2">مدفوع</mat-option>
-                <mat-option value="3">ملغي</mat-option>
+                <mat-option *ngFor="let st of salaryStatuses" [value]="st.id.toString()">{{ st.name }}</mat-option>
               </mat-select>
               <mat-error *ngIf="salaryForm.get('status')?.hasError('required')">
                 حالة الدفع مطلوبة
@@ -199,11 +198,13 @@ export interface SalaryDialogData {
 export class SalaryDialogComponent implements OnInit {
   salaryForm: FormGroup;
   loading = false;
+  salaryStatuses: KeyValueItem[] = [];
 
   constructor(
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<SalaryDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: SalaryDialogData
+    @Inject(MAT_DIALOG_DATA) public data: SalaryDialogData,
+    private metadataService: MetadataService
   ) {
     this.salaryForm = this.fb.group({
       teacherId: ['', Validators.required],
@@ -225,6 +226,9 @@ export class SalaryDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Load dynamic salary statuses from backend metadata
+    this.metadataService.getSalaryStatuses().subscribe(items => this.salaryStatuses = items);
+
     if (this.data.salary && this.data.mode !== 'add') {
       this.salaryForm.patchValue({
         teacherId: this.data.salary.teacherId,

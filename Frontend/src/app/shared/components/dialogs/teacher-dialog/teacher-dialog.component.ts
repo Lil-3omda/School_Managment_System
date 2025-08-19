@@ -10,6 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MetadataService, KeyValueItem } from '../../../../core/services/metadata.service';
 
 export interface TeacherDialogData {
   teacher?: any;
@@ -124,8 +125,7 @@ export interface TeacherDialogData {
             <mat-form-field appearance="outline" class="w-100">
               <mat-label>الجنس</mat-label>
               <mat-select formControlName="gender" [disabled]="data.mode === 'view'">
-                <mat-option value="1">ذكر</mat-option>
-                <mat-option value="2">أنثى</mat-option>
+                <mat-option *ngFor="let g of genders" [value]="g.id.toString()">{{ g.name }}</mat-option>
               </mat-select>
               <mat-error *ngIf="teacherForm.get('gender')?.hasError('required')">
                 الجنس مطلوب
@@ -168,8 +168,7 @@ export interface TeacherDialogData {
             <mat-form-field appearance="outline" class="w-100">
               <mat-label>نوع الراتب</mat-label>
               <mat-select formControlName="salaryType" [disabled]="data.mode === 'view'">
-                <mat-option value="1">ثابت</mat-option>
-                <mat-option value="2">بالساعة</mat-option>
+                <mat-option *ngFor="let st of salaryTypes" [value]="st.id.toString()">{{ st.name }}</mat-option>
               </mat-select>
               <mat-error *ngIf="teacherForm.get('salaryType')?.hasError('required')">
                 نوع الراتب مطلوب
@@ -230,11 +229,14 @@ export interface TeacherDialogData {
 export class TeacherDialogComponent implements OnInit {
   teacherForm: FormGroup;
   loading = false;
+  genders: KeyValueItem[] = [];
+  salaryTypes: KeyValueItem[] = [];
 
   constructor(
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<TeacherDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: TeacherDialogData
+    @Inject(MAT_DIALOG_DATA) public data: TeacherDialogData,
+    private metadataService: MetadataService
   ) {
     this.teacherForm = this.fb.group({
       firstName: ['', Validators.required],
@@ -255,6 +257,8 @@ export class TeacherDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.metadataService.getGenders().subscribe(items => this.genders = items);
+    this.metadataService.getSalaryTypes().subscribe(items => this.salaryTypes = items);
     if (this.data.teacher && this.data.mode !== 'add') {
       this.teacherForm.patchValue({
         firstName: this.data.teacher.user?.firstName,

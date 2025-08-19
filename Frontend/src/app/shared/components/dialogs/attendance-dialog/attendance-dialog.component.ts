@@ -10,6 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MetadataService, KeyValueItem } from '../../../../core/services/metadata.service';
 
 export interface AttendanceDialogData {
   attendance?: any;
@@ -88,10 +89,7 @@ export interface AttendanceDialogData {
             <mat-form-field appearance="outline" class="w-100">
               <mat-label>حالة الحضور</mat-label>
               <mat-select formControlName="status" [disabled]="data.mode === 'view'">
-                <mat-option value="1">حاضر</mat-option>
-                <mat-option value="2">غائب</mat-option>
-                <mat-option value="3">متأخر</mat-option>
-                <mat-option value="4">معذور</mat-option>
+                <mat-option *ngFor="let s of attendanceStatuses" [value]="s.id.toString()">{{ s.name }}</mat-option>
               </mat-select>
               <mat-error *ngIf="attendanceForm.get('status')?.hasError('required')">
                 حالة الحضور مطلوبة
@@ -141,11 +139,13 @@ export interface AttendanceDialogData {
 export class AttendanceDialogComponent implements OnInit {
   attendanceForm: FormGroup;
   loading = false;
+  attendanceStatuses: KeyValueItem[] = [];
 
   constructor(
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<AttendanceDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: AttendanceDialogData
+    @Inject(MAT_DIALOG_DATA) public data: AttendanceDialogData,
+    private metadataService: MetadataService
   ) {
     this.attendanceForm = this.fb.group({
       date: [new Date(), Validators.required],
@@ -157,6 +157,7 @@ export class AttendanceDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.metadataService.getAttendanceStatuses().subscribe(items => this.attendanceStatuses = items);
     if (this.data.attendance && this.data.mode !== 'add') {
       this.attendanceForm.patchValue({
         date: new Date(this.data.attendance.date),

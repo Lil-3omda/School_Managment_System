@@ -788,3 +788,22 @@ body {
   padding-top: 1rem;
   margin-top: 1.5rem;
 }
+
+/* Enhanced Material Select Dropdown Styling */
+.mat-mdc-select-panel {
+  border-radius: 10px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+}
+
+.mat-mdc-option.mdc-list-item {
+  padding: 10px 16px !important;
+}
+
+.mat-mdc-option.mdc-list-item.mdc-list-item--selected .mdc-list-item__primary-text,
+.mat-mdc-option.mdc-list-item:hover .mdc-list-item__primary-text {
+  font-weight: 600;
+}
+
+.mat-mdc-select-value-text {
+  font-weight: 500;
+}
