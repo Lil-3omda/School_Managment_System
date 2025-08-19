@@ -24,60 +24,60 @@ public class SchoolDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
         
-        // Configure SQLite-specific settings
+        // Configure SQL Server-specific settings
         modelBuilder.Entity<User>().Property(e => e.PasswordResetTokenExpires)
-            .HasColumnType("TEXT");
+            .HasColumnType("datetime2");
         
         modelBuilder.Entity<Class>().Property(e => e.StartTime)
-            .HasColumnType("TEXT");
+            .HasColumnType("time");
         
         modelBuilder.Entity<Class>().Property(e => e.EndTime)
-            .HasColumnType("TEXT");
+            .HasColumnType("time");
         
         modelBuilder.Entity<Exam>().Property(e => e.Duration)
-            .HasColumnType("TEXT");
+            .HasColumnType("time");
         
         modelBuilder.Entity<Exam>().Property(e => e.ExamDate)
-            .HasColumnType("TEXT");
+            .HasColumnType("datetime2");
         
         modelBuilder.Entity<Attendance>().Property(e => e.Date)
-            .HasColumnType("TEXT");
+            .HasColumnType("date");
         
         modelBuilder.Entity<Salary>().Property(e => e.PaidDate)
-            .HasColumnType("TEXT");
+            .HasColumnType("datetime2");
         
-        // Configure decimal properties for SQLite
+        // Configure decimal properties for SQL Server
         modelBuilder.Entity<Teacher>().Property(e => e.BaseSalary)
-            .HasColumnType("REAL");
+            .HasColumnType("decimal(18,2)");
         
         modelBuilder.Entity<Teacher>().Property(e => e.HourlyRate)
-            .HasColumnType("REAL");
+            .HasColumnType("decimal(18,2)");
         
         modelBuilder.Entity<Exam>().Property(e => e.TotalMarks)
-            .HasColumnType("REAL");
+            .HasColumnType("decimal(5,2)");
         
         modelBuilder.Entity<Exam>().Property(e => e.PassingMarks)
-            .HasColumnType("REAL");
+            .HasColumnType("decimal(5,2)");
         
         modelBuilder.Entity<Grade>().Property(e => e.MarksObtained)
-            .HasColumnType("REAL");
+            .HasColumnType("decimal(5,2)");
         
         modelBuilder.Entity<Salary>().Property(e => e.BaseSalary)
-            .HasColumnType("REAL");
+            .HasColumnType("decimal(18,2)");
         
         modelBuilder.Entity<Salary>().Property(e => e.HoursWorked)
-            .HasColumnType("REAL");
+            .HasColumnType("decimal(8,2)");
         
         modelBuilder.Entity<Salary>().Property(e => e.Bonus)
-            .HasColumnType("REAL");
+            .HasColumnType("decimal(18,2)");
         
         modelBuilder.Entity<Salary>().Property(e => e.Deductions)
-            .HasColumnType("REAL");
+            .HasColumnType("decimal(18,2)");
         
         modelBuilder.Entity<Salary>().Property(e => e.TotalSalary)
-            .HasColumnType("REAL");
+            .HasColumnType("decimal(18,2)");
         
-        // Configure enum properties for SQLite
+        // Configure enum properties for SQL Server
         modelBuilder.Entity<User>().Property(e => e.Gender)
             .HasConversion<int>();
         
@@ -96,12 +96,12 @@ public class SchoolDbContext : DbContext
         modelBuilder.Entity<Salary>().Property(e => e.Status)
             .HasConversion<int>();
         
-        // Configure BaseEntity properties for SQLite
+        // Configure BaseEntity properties for SQL Server
         modelBuilder.Entity<User>().Property(e => e.CreatedAt)
-            .HasColumnType("TEXT");
+            .HasColumnType("datetime2");
         
         modelBuilder.Entity<User>().Property(e => e.UpdatedAt)
-            .HasColumnType("TEXT");
+            .HasColumnType("datetime2");
         
         modelBuilder.Entity<User>().Property(e => e.CreatedBy)
             .HasMaxLength(100);
@@ -111,10 +111,10 @@ public class SchoolDbContext : DbContext
         
         // Configure BaseEntity properties for other entities
         modelBuilder.Entity<Student>().Property(e => e.CreatedAt)
-            .HasColumnType("TEXT");
+            .HasColumnType("datetime2");
         
         modelBuilder.Entity<Student>().Property(e => e.UpdatedAt)
-            .HasColumnType("TEXT");
+            .HasColumnType("datetime2");
         
         modelBuilder.Entity<Student>().Property(e => e.CreatedBy)
             .HasMaxLength(100);
@@ -123,10 +123,10 @@ public class SchoolDbContext : DbContext
             .HasMaxLength(100);
         
         modelBuilder.Entity<Teacher>().Property(e => e.CreatedAt)
-            .HasColumnType("TEXT");
+            .HasColumnType("datetime2");
         
         modelBuilder.Entity<Teacher>().Property(e => e.UpdatedAt)
-            .HasColumnType("TEXT");
+            .HasColumnType("datetime2");
         
         modelBuilder.Entity<Teacher>().Property(e => e.CreatedBy)
             .HasMaxLength(100);
@@ -135,10 +135,10 @@ public class SchoolDbContext : DbContext
             .HasMaxLength(100);
         
         modelBuilder.Entity<Class>().Property(e => e.CreatedAt)
-            .HasColumnType("TEXT");
+            .HasColumnType("datetime2");
         
         modelBuilder.Entity<Class>().Property(e => e.UpdatedAt)
-            .HasColumnType("TEXT");
+            .HasColumnType("datetime2");
         
         modelBuilder.Entity<Class>().Property(e => e.CreatedBy)
             .HasMaxLength(100);
@@ -147,10 +147,10 @@ public class SchoolDbContext : DbContext
             .HasMaxLength(100);
         
         modelBuilder.Entity<Subject>().Property(e => e.CreatedAt)
-            .HasColumnType("TEXT");
+            .HasColumnType("datetime2");
         
         modelBuilder.Entity<Subject>().Property(e => e.UpdatedAt)
-            .HasColumnType("TEXT");
+            .HasColumnType("datetime2");
         
         modelBuilder.Entity<Subject>().Property(e => e.CreatedBy)
             .HasMaxLength(100);
@@ -159,10 +159,10 @@ public class SchoolDbContext : DbContext
             .HasMaxLength(100);
         
         modelBuilder.Entity<Exam>().Property(e => e.CreatedAt)
-            .HasColumnType("TEXT");
+            .HasColumnType("datetime2");
         
         modelBuilder.Entity<Exam>().Property(e => e.UpdatedAt)
-            .HasColumnType("TEXT");
+            .HasColumnType("datetime2");
         
         modelBuilder.Entity<Exam>().Property(e => e.CreatedBy)
             .HasMaxLength(100);
@@ -171,10 +171,10 @@ public class SchoolDbContext : DbContext
             .HasMaxLength(100);
         
         modelBuilder.Entity<Grade>().Property(e => e.CreatedAt)
-            .HasColumnType("TEXT");
+            .HasColumnType("datetime2");
         
         modelBuilder.Entity<Grade>().Property(e => e.UpdatedAt)
-            .HasColumnType("TEXT");
+            .HasColumnType("datetime2");
         
         modelBuilder.Entity<Grade>().Property(e => e.CreatedBy)
             .HasMaxLength(100);
@@ -183,10 +183,10 @@ public class SchoolDbContext : DbContext
             .HasMaxLength(100);
         
         modelBuilder.Entity<Attendance>().Property(e => e.CreatedAt)
-            .HasColumnType("TEXT");
+            .HasColumnType("datetime2");
         
         modelBuilder.Entity<Attendance>().Property(e => e.UpdatedAt)
-            .HasColumnType("TEXT");
+            .HasColumnType("datetime2");
         
         modelBuilder.Entity<Attendance>().Property(e => e.CreatedBy)
             .HasMaxLength(100);
@@ -195,10 +195,10 @@ public class SchoolDbContext : DbContext
             .HasMaxLength(100);
         
         modelBuilder.Entity<Salary>().Property(e => e.CreatedAt)
-            .HasColumnType("TEXT");
+            .HasColumnType("datetime2");
         
         modelBuilder.Entity<Salary>().Property(e => e.UpdatedAt)
-            .HasColumnType("TEXT");
+            .HasColumnType("datetime2");
         
         modelBuilder.Entity<Salary>().Property(e => e.CreatedBy)
             .HasMaxLength(100);
