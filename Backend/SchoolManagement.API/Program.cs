@@ -127,33 +127,23 @@ using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<SchoolDbContext>();
 
-    //try
-    //{
-    //    // Force database recreation to ensure schema matches current entities
-    //    //await context.Database.EnsureDeletedAsync();
-    //    //await context.Database.EnsureCreatedAsync();
-    //    //await context.Database.MigrateAsync();
-
-    //    // Verify that the database was created with the correct schema
-    //    //var userTableExists = await context.Database.ExecuteSqlRawAsync(
-    //    //    "SELECT name FROM sqlite_master WHERE type='table' AND name='Users'");
-
-    //    if (userTableExists == 0)
-    //    {
-    //        throw new InvalidOperationException("Users table was not created properly");
-    //    }
-
-    //    if (!context.Users.Any())
-    //    {
-    //        await SeedData.Initialize(context);
-    //    }
-    //}
-    //catch (Exception ex)
-    //{
-    //    // Log the error and continue - this will help diagnose any database creation issues
-    //    Console.WriteLine($"Database initialization error: {ex.Message}");
-    //    throw;
-    //}
+    try
+    {
+        // Ensure database is created and migrated
+        await context.Database.EnsureCreatedAsync();
+        
+        // Seed initial data if database is empty
+        if (!context.Users.Any())
+        {
+            await SeedData.Initialize(context);
+        }
+    }
+    catch (Exception ex)
+    {
+        // Log the error and continue - this will help diagnose any database creation issues
+        Console.WriteLine($"Database initialization error: {ex.Message}");
+        // Don't throw to allow the app to start even if seeding fails
+    }
 }
 
 app.UseHttpsRedirection();
